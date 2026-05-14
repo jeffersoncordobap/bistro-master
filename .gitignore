@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos Virtuales 
+venv/
+env/
+.env/
+ENV/
+
+# Base de datos de desarrollo (SQLite)
+*.sqlite3
+
+# Archivos de configuración sensible
+.env
+local_settings.py
+
+# Archivos de medios y estáticos (Media & Static)
+/static/
+/media/
+
+# Logs y bases de datos temporales
+*.log
+db.sqlite3
+
+# Carpetas de IDEs (VS Code, PyCharm)
+.vscode/
+.idea/
