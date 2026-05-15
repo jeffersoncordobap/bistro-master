@@ -9,7 +9,9 @@ solo_numeros = RegexValidator(
 )
 
 class Usuario(AbstractUser):
-
+    
+    REQUIRED_FIELDS = ['email', 'cedula', 'telefono']
+    
     class Roles(models.TextChoices):
         ADMIN = 'admin', 'Administrador'
         MESERO = 'mesero', 'Mesero'
@@ -19,7 +21,9 @@ class Usuario(AbstractUser):
     restaurante = models.ForeignKey(
         Restaurante,
         on_delete=models.CASCADE,
-        related_name='usuarios'
+        related_name='usuarios',
+        null=True,
+        blank=True
     )
 
     cedula = models.CharField(
@@ -32,9 +36,12 @@ class Usuario(AbstractUser):
         validators=[solo_numeros]
     )
 
+    
     rol = models.CharField(
         max_length=20,
-        choices=Roles.choices
+        choices=Roles.choices,
+        null=True,
+        blank=True
     )
 
     class Meta:

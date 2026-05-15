@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Registro Restaurante
+    </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body style="background: linear-gradient(to right, #141e30, #243b55);">
+
+    <div class="container py-5">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-8">
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                    <!-- HEADER -->
+
+                    <div class="bg-dark text-white text-center p-4">
+
+                        <h1 class="fw-bold mb-2">
+                            Bistro Master
+                        </h1>
+
+                        <p class="mb-0">
+                            Crea tu restaurante y administra tu negocio
+                        </p>
+
+                    </div>
+
+                    <!-- BODY -->
+
+                    <div class="card-body p-5 bg-white">
+
+                        <form method="POST">
+
+                            {% csrf_token %}
+
+                            <!-- RESTAURANTE -->
+
+                            <div class="mb-5">
+
+                                <h3 class="fw-bold text-primary mb-4">
+
+                                    Datos del Restaurante
+
+                                </h3>
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Nombre
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ restaurante_form.nombre.errors }}
+                                        </div>
+
+                                        {{ restaurante_form.nombre }}
+
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            NIT
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ restaurante_form.nit.errors }}
+                                        </div>
+
+                                        {{ restaurante_form.nit }}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="mb-3">
+
+                                    <label class="form-label fw-semibold">
+                                        Dirección
+                                    </label>
+
+                                    <div class="text-danger small">
+                                        {{ restaurante_form.direccion.errors }}
+                                    </div>
+
+                                    {{ restaurante_form.direccion }}
+
+                                </div>
+
+                                <div>
+
+                                    <label class="form-label fw-semibold">
+                                        Teléfono
+                                    </label>
+
+                                    <div class="text-danger small">
+                                        {{ restaurante_form.telefono.errors }}
+                                    </div>
+
+                                    {{ restaurante_form.telefono }}
+
+                                </div>
+
+                            </div>
+
+                            <!-- ADMINISTRADOR -->
+
+                            <div class="mb-4">
+
+                                <h3 class="fw-bold text-success mb-4">
+
+                                    Administrador Principal
+
+                                </h3>
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Usuario
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.username.errors }}
+                                        </div>
+
+                                        {{ usuario_form.username }}
+
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Correo electrónico
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.email.errors }}
+                                        </div>
+
+                                        {{ usuario_form.email }}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Cédula
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.cedula.errors }}
+                                        </div>
+
+                                        {{ usuario_form.cedula }}
+
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Teléfono
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.telefono.errors }}
+                                        </div>
+
+                                        {{ usuario_form.telefono }}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="form-label fw-semibold">
+                                            Contraseña
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.password1.errors }}
+                                        </div>
+
+                                        {{ usuario_form.password1 }}
+
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+
+                                        <label class="form-label fw-semibold">
+                                            Confirmar contraseña
+                                        </label>
+
+                                        <div class="text-danger small">
+                                            {{ usuario_form.password2.errors }}
+                                        </div>
+
+                                        {{ usuario_form.password2 }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- BOTÓN -->
+
+                            <div class="d-grid">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary btn-lg fw-bold rounded-3 py-3"
+                                >
+
+                                    Registrar Restaurante
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
