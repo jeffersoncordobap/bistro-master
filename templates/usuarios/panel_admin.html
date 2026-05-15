@@ -1,11 +1,178 @@
-<h1>
-    Panel Administrador
-</h1>
+{% extends 'dashboard/base.html' %}
 
-<p>
-    Bienvenido {{ request.user.username }}
-</p>
+{% block title %}
+    Dashboard Admin
+{% endblock %}
 
-<p>
-    Tipo de usuario {{ request.user.rol }}
-</p>
+{% block page_title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+<!-- BIENVENIDA -->
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <h3 class="fw-bold">
+
+            Bienvenido {{ request.user.username }}
+
+        </h3>
+
+        <p class="text-muted mb-0">
+
+            Administra tu restaurante desde este panel.
+
+        </p>
+
+    </div>
+
+</div>
+
+<!-- INFORMACIÓN RESTAURANTE -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-3">
+
+                    Restaurante
+
+                </h5>
+
+                <p>
+
+                    <strong>Nombre:</strong>
+                    {{ restaurante.nombre }}
+
+                </p>
+
+                <p>
+
+                    <strong>Estado:</strong>
+
+                    {% if restaurante.estado == 'abierto' %}
+
+                        <span class="badge bg-success">
+                            Abierto
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Cerrado
+                        </span>
+
+                    {% endif %}
+
+                </p>
+
+                <p class="mb-0">
+
+                    <strong>URL pública:</strong>
+
+                    <br>
+
+                    <a href="#">
+
+                        /restaurantes/{{ restaurante.slug }}/
+
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MÉTRICAS -->
+
+    <div class="col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="fw-bold mb-4">
+
+                    Métricas rápidas
+
+                </h5>
+
+                <div class="row text-center g-3">
+
+                    <div class="col-4">
+
+                        <div class="border rounded p-3">
+
+                            <h3 class="fw-bold text-primary">
+
+                                {{ empleados }}
+
+                            </h3>
+
+                            <small>
+                                Empleados
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-4">
+
+                        <div class="border rounded p-3">
+
+                            <h3 class="fw-bold text-success">
+
+                                {{ meseros }}
+
+                            </h3>
+
+                            <small>
+                                Meseros
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-4">
+
+                        <div class="border rounded p-3">
+
+                            <h3 class="fw-bold text-danger">
+
+                                {{ domiciliarios }}
+
+                            </h3>
+
+                            <small>
+                                Domiciliarios
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

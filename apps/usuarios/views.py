@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from apps.restaurantes.forms import RestauranteForm
 from apps.usuarios.forms import RegistroAdministradorForm
-from .forms import LoginForm
+from .forms import LoginForm, UsuarioForm
 
 from .decorators import rol_requerido
 from apps.usuarios.models import Usuario
@@ -123,9 +123,29 @@ def login_usuario(request):
 @rol_requerido([Usuario.Roles.ADMIN])
 def panel_admin(request):
 
+    restaurante = request.user.restaurante
+
+    empleados = restaurante.usuarios.count()
+
+    meseros = restaurante.usuarios.filter(
+        rol=Usuario.Roles.MESERO
+    ).count()
+
+    domiciliarios = restaurante.usuarios.filter(
+        rol=Usuario.Roles.DOMICILIARIO
+    ).count()
+
+    context = {
+        'restaurante': restaurante,
+        'empleados': empleados,
+        'meseros': meseros,
+        'domiciliarios': domiciliarios
+    }
+
     return render(
         request,
-        'usuarios/panel_admin.html'
+        'usuarios/panel_admin.html',
+        context
     )
 
 
@@ -146,4 +166,68 @@ def panel_domiciliario(request):
     return render(
         request,
         'usuarios/panel_domiciliario.html'
+    )
+    
+    
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+def lista_usuarios(request):
+
+    usuarios = Usuario.objects.filter(
+        restaurante=request.user.restaurante
+    ).exclude(
+        id=request.user.id
+    )
+
+    context = {
+        'usuarios': usuarios
+    }
+
+    return render(
+        request,
+        'dashboard/usuarios/lista.html',
+        context
+    )
+    
+    
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+def crear_usuario(request):
+
+    if request.method == 'POST':
+
+        form = UsuarioForm(
+            request.POST,
+            restaurante=request.user.restaurante
+        )
+
+        if form.is_valid():
+
+            usuario = form.save(commit=False)
+
+            usuario.restaurante = request.user.restaurante
+
+            usuario.save()
+            
+            messages.success(
+                request,
+                f'{usuario.get_rol_display()} creado correctamente.'
+            )
+
+            return redirect('lista_usuarios')
+
+    else:
+
+        form = UsuarioForm(
+            restaurante=request.user.restaurante
+        )
+
+    context = {
+        'form': form
+    }
+
+    return render(
+        request,
+        'dashboard/usuarios/crear.html',
+        context
     )
