@@ -45,3 +45,34 @@ class RestauranteForm(forms.ModelForm):
             ),
 
         }
+        
+        
+class RestauranteUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Restaurante
+
+        fields = [
+            'nombre',
+            'direccion',
+            'telefono',
+            'estado'
+        ]
+        def __init__(self, *args, **kwargs):
+
+            super().__init__(*args, **kwargs)
+
+            for field in self.fields.values():
+
+                if isinstance(field.widget, forms.Select):
+
+                    field.widget.attrs.update({
+                        'class': 'form-select'
+                    })
+
+                else:
+
+                    field.widget.attrs.update({
+                        'class': 'form-control'
+                    })            

@@ -133,13 +133,37 @@
 
                         </td>
 
-                        <td>
+                       <td class="d-flex gap-2">
 
-                            <a href="#" class="btn btn-sm btn-warning">
+                            <a
+                                href="{% url 'editar_usuario' usuario.id %}"
+                                class="btn btn-sm btn-warning">
 
                                 Editar
 
                             </a>
+
+                            {% if usuario.is_active %}
+
+                                <a
+                                    href="{% url 'toggle_usuario' usuario.id %}"
+                                    class="btn btn-sm btn-danger">
+
+                                    Desactivar
+
+                                </a>
+
+                            {% else %}
+
+                                <a
+                                    href="{% url 'toggle_usuario' usuario.id %}"
+                                    class="btn btn-sm btn-success">
+
+                                    Activar
+
+                                </a>
+
+                            {% endif %}
 
                         </td>
 

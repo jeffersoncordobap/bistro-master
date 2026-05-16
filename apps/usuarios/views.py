@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import logout
 
 from apps.restaurantes.forms import RestauranteForm
 from apps.usuarios.forms import RegistroAdministradorForm
-from .forms import LoginForm, UsuarioForm
+from .forms import LoginForm, UsuarioForm, UsuarioUpdateForm
 
 from .decorators import rol_requerido
 from apps.usuarios.models import Usuario
@@ -231,3 +233,100 @@ def crear_usuario(request):
         'dashboard/usuarios/crear.html',
         context
     )
+    
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+def editar_usuario(request, usuario_id):
+
+    usuario = get_object_or_404(
+        Usuario,
+        id=usuario_id,
+        restaurante=request.user.restaurante
+    )
+
+    if request.method == 'POST':
+
+        form = UsuarioUpdateForm(
+            request.POST,
+            instance=usuario,
+            restaurante=request.user.restaurante
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                'Usuario actualizado correctamente.'
+            )
+
+            return redirect('lista_usuarios')
+
+    else:
+
+        form = UsuarioUpdateForm(
+            instance=usuario,
+            restaurante=request.user.restaurante
+        )
+
+    context = {
+        'form': form,
+        'usuario': usuario
+    }
+
+    return render(
+        request,
+        'dashboard/usuarios/editar.html',
+        context
+    )
+    
+    
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+def toggle_usuario(request, usuario_id):
+
+    usuario = get_object_or_404(
+        Usuario,
+        id=usuario_id,
+        restaurante=request.user.restaurante
+    )
+    
+    if usuario.rol == Usuario.Roles.ADMIN:
+        messages.error(
+            request,
+            'No puedes desactivar administradores.'
+        )
+        return redirect('lista_usuarios')
+
+    usuario.is_active = not usuario.is_active
+
+    usuario.save()
+
+    if usuario.is_active:
+
+        messages.success(
+            request,
+            'Usuario activado correctamente.'
+        )
+
+    else:
+
+        messages.success(
+            request,
+            'Usuario desactivado correctamente.'
+        )
+
+    return redirect('lista_usuarios')
+
+@login_required
+def logout_usuario(request):
+
+    logout(request)
+
+    messages.success(
+        request,
+        'Sesión cerrada correctamente.'
+    )
+
+    return redirect('inicio')

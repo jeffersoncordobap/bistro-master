@@ -107,7 +107,7 @@
 
                     <li class="nav-item">
 
-                        <a href="#" class="nav-link text-dark">
+                        <a href="{% url 'configuracion_restaurante' %}" class="nav-link text-dark">
 
                             <i class="bi bi-gear"></i>
                             Configuración
@@ -118,7 +118,10 @@
 
                     <li class="nav-item mt-4">
 
-                        <a href="#" class="nav-link text-danger">
+                        <a
+                            href="{% url 'logout' %}"
+                            class="nav-link text-danger"
+                            onclick="return confirm('¿Estás seguro de cerrar sesión?')">
 
                             <i class="bi bi-box-arrow-right"></i>
                             Cerrar sesión
