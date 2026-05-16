@@ -59,20 +59,22 @@ class RestauranteUpdateForm(forms.ModelForm):
             'telefono',
             'estado'
         ]
-        def __init__(self, *args, **kwargs):
 
-            super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
 
-            for field in self.fields.values():
+        super().__init__(*args, **kwargs)
 
-                if isinstance(field.widget, forms.Select):
+        for nombre, field in self.fields.items():
 
-                    field.widget.attrs.update({
-                        'class': 'form-select'
-                    })
+            if isinstance(field.widget, forms.Select):
 
-                else:
+                field.widget.attrs.update({
+                    'class': 'form-select form-select-lg rounded-3'
+                })
 
-                    field.widget.attrs.update({
-                        'class': 'form-control'
-                    })            
+            else:
+
+                field.widget.attrs.update({
+                    'class': 'form-control form-control-lg rounded-3',
+                    'placeholder': f'Ingrese {field.label.lower()}'
+                })  

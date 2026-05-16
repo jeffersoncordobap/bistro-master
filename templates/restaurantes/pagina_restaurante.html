@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        {{ restaurante.nombre }}
+
+    </title>
+
+    <!-- Bootstrap -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body class="bg-light">
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="#">
+
+                Bistro Master
+
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- HERO / BANNER -->
+
+    <section
+        class="text-white py-5"
+        style="background: linear-gradient(to right, #141e30, #243b55);">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <h1 class="display-4 fw-bold mb-3">
+
+                        {{ restaurante.nombre }}
+
+                    </h1>
+
+                    <p class="lead mb-4">
+
+                        Bienvenido a nuestro restaurante.
+                        Realiza tus domicilios fácilmente.
+
+                    </p>
+
+                    {% if restaurante.estado == 'abierto' %}
+
+                        <span class="badge bg-success fs-6 px-3 py-2">
+
+                            <i class="bi bi-check-circle-fill"></i>
+                            Restaurante Abierto
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger fs-6 px-3 py-2">
+
+                            <i class="bi bi-x-circle-fill"></i>
+                            Restaurante Cerrado
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+
+                    <div
+                        class="bg-white text-dark rounded-4 shadow p-4">
+
+                        <h4 class="fw-bold mb-4">
+
+                            Información
+
+                        </h4>
+
+                        <p class="mb-3">
+
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+
+                            {{ restaurante.direccion }}
+
+                        </p>
+
+                        <p class="mb-4">
+
+                            <i class="bi bi-telephone-fill text-primary"></i>
+
+                            {{ restaurante.telefono }}
+
+                        </p>
+
+                        <button
+                            class="btn btn-warning btn-lg w-100 fw-bold">
+
+                            <i class="bi bi-bicycle"></i>
+                            Pedir domicilio
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- MENÚ -->
+
+    <section class="py-5">
+
+        <div class="container">
+
+            <div class="text-center mb-5">
+
+                <h2 class="fw-bold">
+
+                    Nuestro Menú
+
+                </h2>
+
+                <p class="text-muted">
+
+                    Próximamente podrás visualizar aquí
+                    todos los productos del restaurante.
+
+                </p>
+
+            </div>
+
+            <!-- PRODUCTOS DEMO -->
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                        <div class="card-body text-center p-4">
+
+                            <div class="mb-3">
+
+                                <i class="bi bi-cup-hot-fill fs-1 text-warning"></i>
+
+                            </div>
+
+                            <h4 class="fw-bold">
+
+                                Almuerzo Ejecutivo
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                Incluye sopa, seco y bebida.
+
+                            </p>
+
+                            <h5 class="fw-bold text-primary">
+
+                                $18.000
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                        <div class="card-body text-center p-4">
+
+                            <div class="mb-3">
+
+                                <i class="bi bi-cup-straw fs-1 text-danger"></i>
+
+                            </div>
+
+                            <h4 class="fw-bold">
+
+                                Coca-Cola
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                Bebida personal 400ml.
+
+                            </p>
+
+                            <h5 class="fw-bold text-primary">
+
+                                $4.000
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                        <div class="card-body text-center p-4">
+
+                            <div class="mb-3">
+
+                                <i class="bi bi-egg-fried fs-1 text-success"></i>
+
+                            </div>
+
+                            <h4 class="fw-bold">
+
+                                Desayuno Especial
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                Huevos, pan, bebida caliente y fruta.
+
+                            </p>
+
+                            <h5 class="fw-bold text-primary">
+
+                                $14.000
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="bg-dark text-light py-4 mt-5">
+
+        <div class="container text-center">
+
+            <p class="mb-0">
+
+                © 2026 Bistro Master ·
+                Plataforma Multi-Restaurante
+
+            </p>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

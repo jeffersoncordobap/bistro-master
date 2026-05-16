@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+
 {% block title %}
     Configuración
 {% endblock %}
@@ -15,56 +16,117 @@
 
     <div class="col-lg-4">
 
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
 
-            <div class="card-body">
+            <!-- HEADER -->
 
-                <h4 class="mb-4">
+            <div
+                class="text-white p-4"
+                style="background: linear-gradient(to right, #141e30, #243b55);">
 
-                    Información actual
+                <h3 class="fw-bold mb-1">
 
-                </h4>
-
-                <p>
-                    <strong>Restaurante:</strong><br>
                     {{ restaurante.nombre }}
+
+                </h3>
+
+                <p class="mb-0 opacity-75">
+
+                    Panel de configuración
+
                 </p>
 
-                <p>
-                    <strong>NIT:</strong><br>
-                    {{ restaurante.nit }}
-                </p>
+            </div>
 
-                <p>
-                    <strong>Estado:</strong><br>
+            <!-- BODY -->
+
+            <div class="card-body p-4">
+
+                <div class="mb-4">
+
+                    <small class="text-muted d-block mb-1">
+
+                        NIT
+
+                    </small>
+
+                    <strong>
+
+                        {{ restaurante.nit }}
+
+                    </strong>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <small class="text-muted d-block mb-1">
+
+                        Estado actual
+
+                    </small>
 
                     {% if restaurante.estado == 'abierto' %}
 
-                        <span class="badge bg-success">
+                        <span class="badge bg-success fs-6">
+
+                            <i class="bi bi-check-circle-fill"></i>
                             Abierto
+
                         </span>
 
                     {% else %}
 
-                        <span class="badge bg-danger">
+                        <span class="badge bg-danger fs-6">
+
+                            <i class="bi bi-x-circle-fill"></i>
                             Cerrado
+
                         </span>
 
                     {% endif %}
 
-                </p>
+                </div>
 
-                <p>
-                    <strong>URL pública:</strong><br>
+                <!-- URL PÚBLICA -->
 
-                    <a
-                        href="/restaurantes/{{ restaurante.slug }}/"
-                        target="_blank">
+                <div class="mb-4">
 
-                        /restaurantes/{{ restaurante.slug }}/
+                    <small class="text-muted d-block mb-3">
 
-                    </a>
-                </p>
+                        Página pública restaurante
+
+                    </small>
+
+                    <div class="d-grid gap-2">
+
+                        <!-- VER PÁGINA -->
+
+                        <a
+                            href="{% url 'pagina_restaurante' restaurante.slug %}"
+                            target="_blank"
+                            class="btn btn-dark">
+
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            Ver página pública
+
+                        </a>
+
+                        <!-- COPIAR URL -->
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            onclick="copiarURL()">
+
+                            <i class="bi bi-copy"></i>
+                            Copiar URL
+
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -76,15 +138,26 @@
 
     <div class="col-lg-8">
 
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm rounded-4">
 
-            <div class="card-body">
+            <div class="card-body p-4 p-lg-5">
 
-                <h4 class="mb-4">
+                <div class="mb-4">
 
-                    Editar configuración
+                    <h3 class="fw-bold">
 
-                </h4>
+                        Editar configuración
+
+                    </h3>
+
+                    <p class="text-muted mb-0">
+
+                        Actualiza la información principal
+                        de tu restaurante.
+
+                    </p>
+
+                </div>
 
                 <form method="POST">
 
@@ -92,7 +165,7 @@
 
                     <div class="mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
 
                             Nombre
 
@@ -110,7 +183,7 @@
 
                     <div class="mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
 
                             Dirección
 
@@ -128,7 +201,7 @@
 
                     <div class="mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
 
                             Teléfono
 
@@ -146,7 +219,7 @@
 
                     <div class="mb-4">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
 
                             Estado del restaurante
 
@@ -162,20 +235,22 @@
 
                     </div>
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
 
                         <button
                             type="submit"
-                            class="btn btn-primary">
+                            class="btn btn-primary px-4">
 
+                            <i class="bi bi-save"></i>
                             Guardar cambios
 
                         </button>
 
                         <a
                             href="{% url 'panel_admin' %}"
-                            class="btn btn-secondary">
+                            class="btn btn-secondary px-4">
 
+                            <i class="bi bi-arrow-left"></i>
                             Volver
 
                         </a>
@@ -191,5 +266,19 @@
     </div>
 
 </div>
+
+<script>
+
+    function copiarURL() {
+
+        const url = "{{ request.scheme }}://{{ request.get_host }}{% url 'pagina_restaurante' restaurante.slug %}";
+
+        navigator.clipboard.writeText(url);
+
+        alert("URL copiada correctamente");
+
+    }
+
+</script>
 
 {% endblock %}

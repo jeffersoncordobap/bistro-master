@@ -1,6 +1,8 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from apps.usuarios.models import Usuario
+from apps.restaurantes.models import Restaurante
+
 from .forms import RestauranteUpdateForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -45,5 +47,23 @@ def configuracion_restaurante(request):
     return render(
         request,
         'dashboard/configuracion/configuracion.html',
+        context
+    )
+    
+
+def pagina_restaurante(request, slug):
+
+    restaurante = get_object_or_404(
+        Restaurante,
+        slug=slug
+    )
+
+    context = {
+        'restaurante': restaurante
+    }
+
+    return render(
+        request,
+        'restaurantes/pagina_restaurante.html',
         context
     )
