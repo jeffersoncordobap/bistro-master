@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm
 
 from .models import Usuario
 
@@ -225,3 +226,14 @@ class UsuarioUpdateForm(forms.ModelForm):
                 )
 
         return cleaned_data
+    
+    
+class CustomPasswordResetForm(PasswordResetForm):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control'
+        })

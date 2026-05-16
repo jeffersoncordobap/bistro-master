@@ -43,6 +43,10 @@ class Usuario(AbstractUser):
         null=True,
         blank=True
     )
+    
+    email = models.EmailField(
+    unique=True
+    )
 
     class Meta:
         constraints = [
