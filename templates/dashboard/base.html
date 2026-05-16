@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        {% block title %}
+            Dashboard
+        {% endblock %}
+
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+</head>
+
+<body class="bg-light">
+
+    <div class="container-fluid">
+
+        <div class="row min-vh-100">
+
+            <!-- SIDEBAR -->
+
+            <aside class="col-md-3 col-lg-2 bg-white border-end p-4">
+
+                <h4 class="fw-bold mb-4 text-danger">
+
+                    Bistro Master
+
+                </h4>
+
+                <ul class="nav flex-column gap-2">
+
+                    <li class="nav-item">
+
+                        <a href="{% url 'panel_admin' %}" class="nav-link text-dark">
+
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a href="{% url 'lista_usuarios' %}" class="nav-link text-dark">
+
+                            <i class="bi bi-people"></i>
+                            Usuarios
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a href="#" class="nav-link text-dark">
+
+                            <i class="bi bi-bag"></i>
+                            Pedidos
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a href="#" class="nav-link text-dark">
+
+                            <i class="bi bi-scooter"></i>
+                            Domicilios
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a href="#" class="nav-link text-dark">
+
+                            <i class="bi bi-box-seam"></i>
+                            Inventario
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a href="#" class="nav-link text-dark">
+
+                            <i class="bi bi-ticket-perforated"></i>
+                            Tiqueteras
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a href="{% url 'configuracion_restaurante' %}" class="nav-link text-dark">
+
+                            <i class="bi bi-gear"></i>
+                            Configuración
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item mt-4">
+
+                        <a
+                            href="{% url 'logout' %}"
+                            class="nav-link text-danger"
+                            onclick="return confirm('¿Estás seguro de cerrar sesión?')">
+
+                            <i class="bi bi-box-arrow-right"></i>
+                            Cerrar sesión
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </aside>
+
+            <!-- CONTENIDO -->
+
+            <main class="col-md-9 col-lg-10 p-4">
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="alert alert-success alert-dismissible fade show">
+
+                            {{ message }}
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                            </button>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+                <!-- NAVBAR SUPERIOR -->
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <div>
+
+                        <h2 class="fw-bold">
+
+                            {% block page_title %}
+                                Panel
+                            {% endblock %}
+
+                        </h2>
+
+                    </div>
+
+                    <div>
+
+                        <span class="fw-semibold">
+
+                            {{ request.user.username }}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- CONTENIDO DINÁMICO -->
+
+                {% block content %}
+
+                {% endblock %}
+
+            </main>
+
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
