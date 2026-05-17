@@ -86,8 +86,8 @@
 
                         <a href="#" class="nav-link text-dark">
 
-                            <i class="bi bi-box-seam"></i>
-                            Inventario
+                            <i class="bi bi-ticket-perforated"></i>
+                            Tiqueteras
 
                         </a>
 
@@ -95,10 +95,23 @@
 
                     <li class="nav-item">
 
-                        <a href="#" class="nav-link text-dark">
+                        <a href="{% url 'lista_productos' %}" class="nav-link text-dark">
 
-                            <i class="bi bi-ticket-perforated"></i>
-                            Tiqueteras
+                            <i class="bi bi-box-seam"></i>
+                            Productos
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a
+                            href="{% url 'lista_categorias' %}"
+                            class="nav-link text-dark">
+
+                            <i class="bi bi-tags"></i>
+                            Categorías
 
                         </a>
 

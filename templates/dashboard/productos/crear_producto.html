@@ -1,0 +1,241 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+    Crear Producto
+{% endblock %}
+
+{% block page_title %}
+    Crear Producto
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body p-4 p-lg-5">
+
+                <div class="mb-4">
+
+                    <h3 class="fw-bold">
+
+                        Nuevo producto
+
+                    </h3>
+
+                    <p class="text-muted mb-0">
+
+                        Agrega un producto al menú
+                        de tu restaurante.
+
+                    </p>
+
+                </div>
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Categoría
+
+                        </label>
+
+                        {{ form.categoria }}
+
+                        <div class="text-danger small mt-1">
+
+                            {{ form.categoria.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Nombre
+
+                        </label>
+
+                        {{ form.nombre }}
+
+                        <div class="text-danger small mt-1">
+
+                            {{ form.nombre.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Descripción
+
+                        </label>
+
+                        {{ form.descripcion }}
+
+                        <div class="text-danger small mt-1">
+
+                            {{ form.descripcion.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Precio
+
+                            </label>
+
+                            {{ form.precio }}
+
+                            <div class="text-danger small mt-1">
+
+                                {{ form.precio.errors }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Imagen
+
+                            </label>
+
+                            {{ form.imagen }}
+
+                            <div class="text-danger small mt-1">
+
+                                {{ form.imagen.errors }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <div class="form-check">
+
+                                {{ form.disponible }}
+
+                                <label class="form-check-label">
+
+                                    Producto disponible
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <div class="form-check">
+
+                                {{ form.control_stock }}
+
+                                <label class="form-check-label">
+
+                                    Controlar stock
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Stock
+
+                        </label>
+
+                        {{ form.stock }}
+
+                        <div class="text-danger small mt-1">
+
+                            {{ form.stock.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Cantidad máxima por pedido
+
+                        </label>
+
+                        {{ form.cantidad_maxima_por_pedido }}
+
+                        <div class="text-danger small mt-1">
+
+                            {{ form.cantidad_maxima_por_pedido.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4">
+
+                            <i class="bi bi-save"></i>
+                            Guardar producto
+
+                        </button>
+
+                        <a
+                            href="{% url 'lista_productos' %}"
+                            class="btn btn-secondary px-4">
+
+                            Cancelar
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
