@@ -5,189 +5,342 @@
 
 {% block content %}
 <style>
-    /* ── Header de página ── */
-    .page-toolbar {
+    .page-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 16px;
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 1.75rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1.75rem;
         gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .page-toolbar-left h6 {
-        font-weight: 700; font-size: 0.9rem; color: #212529; margin: 0 0 0.15rem;
-    }
-    .page-toolbar-left p {
-        color: #6c757d; font-size: 0.82rem; margin: 0;
-    }
-    .btn-nueva {
-        background: linear-gradient(to right, #c0392b, #e74c3c);
-        border: none; border-radius: 9px; padding: 9px 18px;
-        font-weight: 700; font-size: 0.82rem; color: #fff;
-        transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
-        white-space: nowrap; text-decoration: none;
-    }
-    .btn-nueva:hover {
-        background: linear-gradient(to right, #a93226, #cb4335);
-        transform: translateY(-1px); color: #fff; box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+        position: relative;
+        overflow: hidden;
     }
 
-    /* ── Tarjeta ── */
+    .page-header::before {
+        content: '\F3A7';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 8rem;
+        color: rgba(255,255,255,0.07);
+        pointer-events: none;
+    }
+
+    .page-header-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 0.2rem;
+    }
+
+    .page-header-sub {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.83rem;
+        margin: 0;
+    }
+
+    .btn-nueva {
+        background: rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.5);
+        border-radius: 10px;
+        padding: 9px 18px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: #fff;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .btn-nueva:hover {
+        background: rgba(255,255,255,0.3);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .summary-bar {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .summary-chip {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #495057;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .summary-chip .chip-num {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #212529;
+    }
+
+    .chip-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .chip-dot.total {
+        background: #e74c3c;
+    }
+
     .cat-card {
         background: #fff;
         border: 1px solid #e9ecef;
-        border-radius: 14px;
+        border-radius: 16px;
         overflow: hidden;
         height: 100%;
-        transition: box-shadow 0.2s, transform 0.2s;
+        transition: box-shadow 0.25s, transform 0.25s;
         position: relative;
     }
+
     .cat-card:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
     }
 
-    /* Franja lateral izquierda */
     .cat-card::before {
         content: '';
         position: absolute;
-        left: 0; top: 0; bottom: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
         width: 4px;
         background: linear-gradient(to bottom, #c0392b, #e74c3c);
         border-radius: 4px 0 0 4px;
     }
+
     .cat-card.inactiva::before {
         background: #dee2e6;
     }
 
+    .cat-card-top {
+        background: linear-gradient(135deg, #fff5f5, #fff);
+        padding: 1.25rem 1.25rem 1rem 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .cat-icon-wrap {
+        width: 48px;
+        height: 48px;
+        background: rgba(231,76,60,0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e74c3c;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .cat-icon-wrap.inactiva {
+        background: #f1f3f5;
+        color: #adb5bd;
+    }
+
+    .cat-name {
+        font-weight: 800;
+        font-size: 1rem;
+        color: #212529;
+        margin: 0;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 100px;
+        flex-shrink: 0;
+    }
+
+    .status-pill.activa {
+        background: rgba(25,135,84,0.1);
+        color: #146c43;
+    }
+
+    .status-pill.inactiva {
+        background: rgba(108,117,125,0.1);
+        color: #6c757d;
+    }
+
+    .status-pill i {
+        font-size: 0.55rem;
+    }
+
     .cat-card-body {
-        padding: 1rem 1.1rem 1rem 1.3rem;
+        padding: 1rem 1.25rem 1rem 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 0.85rem;
     }
 
-    /* Fila superior: ícono + nombre + badge */
-    .cat-top {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    .cat-icon-wrap {
-        width: 42px; height: 42px;
-        background: rgba(231,76,60,0.09);
-        border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        color: #e74c3c; font-size: 1.15rem;
-        flex-shrink: 0;
-    }
-    .cat-icon-wrap.inactiva {
-        background: #f1f3f5; color: #adb5bd;
-    }
-    .cat-name {
-        font-weight: 700; font-size: 0.95rem;
-        color: #212529; margin: 0; flex: 1;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .status-pill {
-        display: inline-flex; align-items: center; gap: 0.28rem;
-        font-size: 0.7rem; font-weight: 700;
-        padding: 3px 8px; border-radius: 100px;
-        letter-spacing: 0.2px; flex-shrink: 0;
-    }
-    .status-pill.activa  { background: rgba(25,135,84,0.1);  color: #146c43; }
-    .status-pill.inactiva{ background: rgba(108,117,125,0.1); color: #6c757d; }
-    .status-pill i { font-size: 0.55rem; }
-
-    /* Fila de métricas */
     .cat-meta {
         display: flex;
-        gap: 0.6rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-    .meta-chip {
-        display: inline-flex; align-items: center; gap: 0.3rem;
-        background: #f8f9fa; border: 1px solid #e9ecef;
-        border-radius: 7px; padding: 4px 10px;
-        font-size: 0.75rem; color: #495057; font-weight: 600;
-    }
-    .meta-chip i { font-size: 0.75rem; color: #e74c3c; }
-    .meta-chip.inactiva i { color: #adb5bd; }
 
-    /* Acciones */
+    .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 5px 11px;
+        font-size: 0.75rem;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .meta-chip i {
+        font-size: 0.75rem;
+        color: #e74c3c;
+    }
+
+    .meta-chip.inactiva i {
+        color: #adb5bd;
+    }
+
     .cat-actions {
         display: flex;
         gap: 0.5rem;
-        padding-top: 0.6rem;
+        padding-top: 0.75rem;
         border-top: 1px solid #f0f0f0;
     }
+
     .btn-editar {
-        flex: 1; border-radius: 7px; padding: 6px 10px;
-        font-weight: 600; font-size: 0.78rem;
-        border: 1px solid #dee2e6; background: #fff;
-        color: #343a40; transition: all 0.18s;
-        display: inline-flex; align-items: center;
-        justify-content: center; gap: 0.3rem; text-decoration: none;
+        flex: 1;
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-weight: 600;
+        font-size: 0.78rem;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        color: #343a40;
+        transition: all 0.18s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        text-decoration: none;
     }
-    .btn-editar:hover { background: #f8f9fa; border-color: #adb5bd; color: #212529; }
+
+    .btn-editar:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+        color: #212529;
+    }
 
     .btn-toggle {
-        width: 32px; height: 32px; flex-shrink: 0;
-        border-radius: 7px; border: none;
-        display: inline-flex; align-items: center; justify-content: center;
-        font-size: 0.85rem; transition: all 0.18s; text-decoration: none;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        transition: all 0.18s;
+        text-decoration: none;
     }
-    .btn-toggle.desactivar { background: rgba(231,76,60,0.1); color: #e74c3c; }
-    .btn-toggle.desactivar:hover { background: #e74c3c; color: #fff; }
-    .btn-toggle.activar { background: rgba(25,135,84,0.1); color: #198754; }
-    .btn-toggle.activar:hover { background: #198754; color: #fff; }
 
-    /* ── Contador resumen ── */
-    .summary-bar {
-        display: flex;
-        gap: 0.6rem;
-        margin-bottom: 1.25rem;
-        flex-wrap: wrap;
+    .btn-toggle.desactivar {
+        background: rgba(231,76,60,0.1);
+        color: #e74c3c;
     }
-    .summary-chip {
-        background: #fff;
-        border: 1px solid #e9ecef;
-        border-radius: 9px;
-        padding: 7px 14px;
-        display: flex; align-items: center; gap: 0.5rem;
-        font-size: 0.8rem; color: #495057; font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .summary-chip .chip-num {
-        font-size: 1rem; font-weight: 800; color: #212529;
-    }
-    .summary-chip .chip-dot {
-        width: 8px; height: 8px; border-radius: 50%;
-    }
-    .chip-dot.total   { background: #e74c3c; }
-    .chip-dot.activas { background: #198754; }
-    .chip-dot.inact   { background: #adb5bd; }
 
-    /* ── Estado vacío ── */
+    .btn-toggle.desactivar:hover {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+    .btn-toggle.activar {
+        background: rgba(25,135,84,0.1);
+        color: #198754;
+    }
+
+    .btn-toggle.activar:hover {
+        background: #198754;
+        color: #fff;
+    }
+
     .empty-state {
-        background: #fff; border: 1px solid #e9ecef;
-        border-radius: 16px; padding: 3.5rem 2rem; text-align: center;
+        background: #fff;
+        border: 2px dashed #dee2e6;
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
     }
+
     .empty-icon-wrap {
-        width: 72px; height: 72px;
-        background: rgba(231,76,60,0.08); border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 1.25rem; font-size: 1.9rem; color: #e74c3c;
+        width: 80px;
+        height: 80px;
+        background: rgba(231,76,60,0.08);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+        font-size: 2rem;
+        color: #e74c3c;
     }
-    .empty-state h5 { font-weight: 700; font-size: 1rem; color: #212529; margin-bottom: 0.4rem; }
-    .empty-state p  { font-size: 0.85rem; color: #6c757d; margin-bottom: 1.25rem; }
+
+    .empty-state h5 {
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
 </style>
 
-<!-- TOOLBAR -->
-<div class="page-toolbar">
-    <div class="page-toolbar-left">
-        <h6>Gestión de categorías</h6>
-        <p>Organiza los productos de tu restaurante por secciones del menú.</p>
+<!-- HEADER -->
+<div class="page-header">
+    <div>
+        <p class="page-header-title">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i>Organización del menú
+        </p>
+
+        <p class="page-header-sub">
+            Administra las secciones y agrupaciones de productos del restaurante.
+        </p>
     </div>
+
     <a href="{% url 'crear_categoria' %}" class="btn-nueva">
         <i class="bi bi-plus-circle-fill"></i> Nueva categoría
     </a>
@@ -195,92 +348,121 @@
 
 {% if categorias %}
 
-    <!-- RESUMEN -->
-    {% with total=categorias|length %}
-    <div class="summary-bar">
-        <div class="summary-chip">
-            <span class="chip-dot total"></span>
-            <span class="chip-num">{{ total }}</span>
-            categoría{{ total|pluralize:"s" }} en total
-        </div>
-        <div class="summary-chip">
-            <span class="chip-dot activas"></span>
-            <span class="chip-num">
-                {% with count=0 %}
-                    {% for c in categorias %}{% if c.activa %}{% with count=count|add:1 %}{% endwith %}{% endif %}{% endfor %}
-                    {{ categorias|dictsort:"activa"|last }}
-                {% endwith %}
-            </span>
-            activas
-        </div>
+<!-- RESUMEN -->
+<div class="summary-bar">
+    <div class="summary-chip">
+        <span class="chip-dot total"></span>
+        <span class="chip-num">{{ categorias|length }}</span>
+        categoría{{ categorias|length|pluralize:"s" }} en total
     </div>
-    {% endwith %}
+</div>
 
-    <!-- GRID -->
-    <div class="row g-3">
-        {% for categoria in categorias %}
-            <div class="col-md-6 col-xl-4">
-                <div class="cat-card shadow-sm {% if not categoria.activa %}inactiva{% endif %}">
-                    <div class="cat-card-body">
+<!-- GRID -->
+<div class="row g-3">
+    {% for categoria in categorias %}
+    <div class="col-md-6 col-xl-4">
 
-                        <!-- Nombre + estado -->
-                        <div class="cat-top">
-                            <div class="cat-icon-wrap {% if not categoria.activa %}inactiva{% endif %}">
-                                <i class="bi bi-tag-fill"></i>
-                            </div>
-                            <span class="cat-name" title="{{ categoria.nombre }}">{{ categoria.nombre }}</span>
-                            {% if categoria.activa %}
-                                <span class="status-pill activa"><i class="bi bi-circle-fill"></i> Activa</span>
-                            {% else %}
-                                <span class="status-pill inactiva"><i class="bi bi-circle-fill"></i> Inactiva</span>
-                            {% endif %}
-                        </div>
+        <div class="cat-card shadow-sm {% if not categoria.activa %}inactiva{% endif %}">
 
-                        <!-- Chips de info -->
-                        <div class="cat-meta">
-                            <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
-                                <i class="bi bi-box-seam"></i>
-                                {{ categoria.productos.count }} producto{{ categoria.productos.count|pluralize:"s" }}
-                            </span>
-                            <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
-                                <i class="bi bi-calendar3"></i>
-                                {% if categoria.activa %}Visible en menú{% else %}Oculta en menú{% endif %}
-                            </span>
-                        </div>
+            <!-- TOP -->
+            <div class="cat-card-top">
 
-                        <!-- Acciones -->
-                        <div class="cat-actions">
-                            <a href="{% url 'editar_categoria' categoria.id %}" class="btn-editar">
-                                <i class="bi bi-pencil-fill"></i> Editar
-                            </a>
-                            {% if categoria.activa %}
-                                <a href="{% url 'toggle_categoria' categoria.id %}"
-                                   class="btn-toggle desactivar" title="Desactivar">
-                                    <i class="bi bi-x-lg"></i>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'toggle_categoria' categoria.id %}"
-                                   class="btn-toggle activar" title="Activar">
-                                    <i class="bi bi-check-lg"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-
-                    </div>
+                <div class="cat-icon-wrap {% if not categoria.activa %}inactiva{% endif %}">
+                    <i class="bi bi-tag-fill"></i>
                 </div>
+
+                <span class="cat-name" title="{{ categoria.nombre }}">
+                    {{ categoria.nombre }}
+                </span>
+
+                {% if categoria.activa %}
+                    <span class="status-pill activa">
+                        <i class="bi bi-circle-fill"></i> Activa
+                    </span>
+                {% else %}
+                    <span class="status-pill inactiva">
+                        <i class="bi bi-circle-fill"></i> Inactiva
+                    </span>
+                {% endif %}
+
             </div>
-        {% endfor %}
+
+            <!-- BODY -->
+            <div class="cat-card-body">
+
+                <div class="cat-meta">
+
+                    <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
+                        <i class="bi bi-box-seam"></i>
+                        {{ categoria.productos.count }}
+                        producto{{ categoria.productos.count|pluralize:"s" }}
+                    </span>
+
+                    <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
+                        <i class="bi bi-eye{% if not categoria.activa %}-slash{% endif %}"></i>
+
+                        {% if categoria.activa %}
+                            Visible en menú
+                        {% else %}
+                            Oculta en menú
+                        {% endif %}
+                    </span>
+
+                </div>
+
+                <div class="cat-actions">
+
+                    <a href="{% url 'editar_categoria' categoria.id %}" class="btn-editar">
+                        <i class="bi bi-pencil-fill"></i> Editar
+                    </a>
+
+                    {% if categoria.activa %}
+                        <a href="{% url 'toggle_categoria' categoria.id %}"
+                           class="btn-toggle desactivar"
+                           title="Desactivar">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'toggle_categoria' categoria.id %}"
+                           class="btn-toggle activar"
+                           title="Activar">
+                            <i class="bi bi-check-lg"></i>
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+    {% endfor %}
+</div>
 
 {% else %}
-    <div class="empty-state">
-        <div class="empty-icon-wrap"><i class="bi bi-tags"></i></div>
-        <h5>Sin categorías registradas</h5>
-        <p>Crea tu primera categoría para empezar a organizar el menú.</p>
-        <a href="{% url 'crear_categoria' %}" class="btn-nueva" style="margin: 0 auto;">
-            <i class="bi bi-plus-circle-fill"></i> Crear categoría
-        </a>
+
+<div class="empty-state">
+
+    <div class="empty-icon-wrap">
+        <i class="bi bi-tags"></i>
     </div>
+
+    <h5>Sin categorías registradas</h5>
+
+    <p>
+        Crea tu primera categoría para empezar a organizar el menú.
+    </p>
+
+    <a href="{% url 'crear_categoria' %}"
+       class="btn btn-danger rounded-pill px-4 fw-bold">
+
+        <i class="bi bi-plus-circle-fill me-2"></i>
+        Crear categoría
+    </a>
+
+</div>
+
 {% endif %}
 
 {% endblock %}

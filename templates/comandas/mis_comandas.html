@@ -1,0 +1,393 @@
+{% extends 'dashboard/base_mesero.html' %}
+
+{% block title %}Mis Comandas{% endblock %}
+{% block page_title %}Mis Comandas{% endblock %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.75rem;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .page-header::before {
+        content: '\F3C3';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: -1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10rem;
+        color: rgba(255,255,255,0.08);
+        pointer-events: none;
+    }
+
+    .page-header-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 0.3rem;
+    }
+
+    .page-header-sub {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .stat-pill {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 50px;
+        padding: 0.5rem 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .stat-pill i {
+        color: #fff;
+    }
+
+    .cmd-card {
+        border-radius: 18px;
+        border: none;
+        overflow: hidden;
+        height: 100%;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .cmd-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .cmd-top {
+        padding: 1.1rem 1.25rem 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .cmd-top.pendiente {
+        background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+    }
+
+    .cmd-top.preparacion {
+        background: linear-gradient(135deg, #f1948a, #e74c3c);
+    }
+
+    .cmd-top.listo {
+        background: linear-gradient(135deg, #c0392b, #e74c3c);
+    }
+
+    .cmd-top.entregado {
+        background: linear-gradient(135deg, #922b21, #c0392b);
+    }
+
+    .cmd-mesa-num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: rgba(255,255,255,0.95);
+        line-height: 1;
+    }
+
+    .cmd-mesa-label {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    .cmd-estado-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #fff;
+    }
+
+    .cmd-body {
+        background: #fff;
+        padding: 1rem 1.25rem;
+    }
+
+    .cmd-time {
+        font-size: 0.75rem;
+        color: #adb5bd;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .cmd-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .cmd-items li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+        border-bottom: 1px dashed #f0f0f0;
+        font-size: 0.84rem;
+        color: #333;
+    }
+
+    .cmd-items li:last-child {
+        border-bottom: none;
+    }
+
+    .cmd-qty {
+        background: #fff3f3;
+        color: #e74c3c;
+        font-weight: 800;
+        font-size: 0.72rem;
+        padding: 0.1rem 0.45rem;
+        border-radius: 20px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 2px;
+        border: 1px solid rgba(231,76,60,0.2);
+    }
+
+    .cmd-nota {
+        font-size: 0.73rem;
+        color: #adb5bd;
+        font-style: italic;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-top: 2px;
+    }
+
+    .cmd-footer-listo {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        padding: 0.65rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.82rem;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.85;
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: #fff;
+        border-radius: 20px;
+        border: 2px dashed #dee2e6;
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        background: #fff3f3;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #e74c3c;
+        margin: 0 auto 1.25rem;
+    }
+
+    .empty-state h5 {
+        font-weight: 700;
+        color: #495057;
+        margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+        color: #adb5bd;
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-header-title">
+            <i class="bi bi-clock-history me-2"></i>
+            Mis comandas de hoy
+        </h2>
+        <p class="page-header-sub">
+            Revisa en tiempo real el estado de tus pedidos
+        </p>
+    </div>
+
+    <div class="stat-pill">
+        <i class="bi bi-receipt"></i>
+        {{ comandas|length }} comanda{% if comandas|length != 1 %}s{% endif %}
+    </div>
+</div>
+
+{% if comandas %}
+<div class="row g-3">
+
+    {% for comanda in comandas %}
+    <div class="col-sm-6 col-xl-4">
+
+        <div class="cmd-card">
+
+            <div class="cmd-top {% if comanda.estado == 'pendiente' %}pendiente{% elif comanda.estado == 'en_preparacion' %}preparacion{% elif comanda.estado == 'listo' %}listo{% else %}entregado{% endif %}">
+                
+                <div>
+                    <div class="cmd-mesa-label">Mesa</div>
+                    <div class="cmd-mesa-num">
+                        {{ comanda.numero_mesa }}
+                    </div>
+                </div>
+
+                <div class="text-end">
+
+                    <div class="cmd-estado-icon ms-auto mb-1">
+
+                        {% if comanda.estado == 'pendiente' %}
+                            <i class="bi bi-hourglass-split"></i>
+
+                        {% elif comanda.estado == 'en_preparacion' %}
+                            <i class="bi bi-fire"></i>
+
+                        {% elif comanda.estado == 'listo' %}
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        {% else %}
+                            <i class="bi bi-bag-check-fill"></i>
+                        {% endif %}
+
+                    </div>
+
+                    <div style="font-size:0.72rem; color:rgba(255,255,255,0.85); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">
+
+                        {% if comanda.estado == 'pendiente' %}
+                            Pendiente
+
+                        {% elif comanda.estado == 'en_preparacion' %}
+                            En preparación
+
+                        {% elif comanda.estado == 'listo' %}
+                            Listo
+
+                        {% else %}
+                            Entregado
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="cmd-body">
+
+                <p class="cmd-time">
+                    <i class="bi bi-clock"></i>
+                    {{ comanda.fecha_creacion|timesince }} atrás
+                </p>
+
+                <ul class="cmd-items">
+
+                    {% for item in comanda.items.all %}
+                    <li>
+
+                        <span class="cmd-qty">
+                            ×{{ item.cantidad }}
+                        </span>
+
+                        <div>
+
+                            {{ item.producto.nombre }}
+
+                            {% if item.nota %}
+                            <div class="cmd-nota">
+                                <i class="bi bi-chat-left-text"></i>
+                                {{ item.nota }}
+                            </div>
+                            {% endif %}
+
+                        </div>
+
+                    </li>
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+            {% if comanda.estado == 'listo' %}
+            <div class="cmd-footer-listo">
+                <i class="bi bi-bell-fill"></i>
+                ¡Listo para llevar a la mesa!
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-state-icon">
+        <i class="bi bi-clipboard-x"></i>
+    </div>
+
+    <h5>Sin comandas hoy</h5>
+
+    <p>
+        Aún no has registrado ningún pedido.
+        ¡Comienza tomando una orden!
+    </p>
+
+    <a href="{% url 'registrar_comanda' %}"
+       class="btn btn-danger rounded-pill px-4 fw-bold">
+
+        <i class="bi bi-plus-circle me-2"></i>
+        Nueva comanda
+
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

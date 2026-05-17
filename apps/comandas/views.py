@@ -75,3 +75,16 @@ def cambiar_estado_comanda(request, comanda_id):
         comanda.save()
 
     return redirect('panel_pedidos')
+
+
+@login_required
+@rol_requerido([Usuario.Roles.MESERO])
+def mis_comandas(request):
+    from django.utils import timezone
+    hoy = timezone.now().date()
+    comandas = Comanda.objects.filter(
+        mesero=request.user,
+        fecha_creacion__date=hoy
+    ).order_by('-fecha_creacion')
+
+    return render(request, 'comandas/mis_comandas.html', {'comandas': comandas})

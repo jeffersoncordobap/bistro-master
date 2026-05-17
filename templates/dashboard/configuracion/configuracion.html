@@ -19,7 +19,6 @@
         position: relative;
         overflow: hidden;
     }
-    /* Decoración geométrica en el header */
     .info-card-header::before {
         content: '';
         position: absolute;
@@ -44,6 +43,11 @@
         font-size: 1.4rem; font-weight: 800; color: #fff;
         margin-bottom: 0.85rem;
         border: 1.5px solid rgba(255,255,255,0.25);
+        overflow: hidden;
+    }
+    .restaurant-initial img {
+        width: 100%; height: 100%;
+        object-fit: cover;
     }
     .info-card-header h5 {
         color: #fff; font-weight: 800; font-size: 1rem;
@@ -52,10 +56,7 @@
     .info-card-header p {
         color: rgba(255,255,255,0.7); font-size: 0.78rem; margin: 0;
     }
-
-    /* Body de info card */
     .info-card-body { padding: 1.25rem 1.4rem; }
-
     .info-row {
         display: flex; flex-direction: column;
         padding: 0.75rem 0;
@@ -72,8 +73,6 @@
     .info-value {
         font-size: 0.85rem; font-weight: 700; color: #212529;
     }
-
-    /* Badge de estado */
     .status-pill {
         display: inline-flex; align-items: center; gap: 0.3rem;
         font-size: 0.75rem; font-weight: 700;
@@ -82,8 +81,6 @@
     .status-pill.abierto { background: rgba(25,135,84,0.12); color: #146c43; }
     .status-pill.cerrado { background: rgba(220,53,69,0.12); color: #b02a37; }
     .status-pill i { font-size: 0.6rem; }
-
-    /* Botones de URL */
     .url-section {
         background: #f8f9fa;
         border: 1px solid #e9ecef;
@@ -108,7 +105,6 @@
     .btn-ver-pagina:hover {
         background: linear-gradient(to right, #a93226, #cb4335);
         color: #fff; transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(192,57,43,0.25);
     }
     .btn-copiar {
         display: flex; align-items: center; justify-content: center; gap: 0.4rem;
@@ -147,7 +143,6 @@
         color: rgba(255,255,255,0.7); font-size: 0.78rem; margin: 0;
     }
     .form-card-body { padding: 1.5rem; }
-
     .form-section {
         background: #f8f9fa; border: 1px solid #eee;
         border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 0.85rem;
@@ -171,6 +166,9 @@
         font-weight: 600; font-size: 0.8rem;
         color: #343a40; margin-bottom: 0.3rem; display: block;
     }
+    .field-hint {
+        font-size: 0.73rem; color: #adb5bd; margin-top: 0.25rem;
+    }
     .form-control, .form-select {
         border-radius: 8px; padding: 8px 12px;
         border: 1px solid #dee2e6; font-size: 0.85rem;
@@ -185,7 +183,6 @@
         font-size: 0.74rem; color: #e74c3c; margin-top: 0.25rem;
         display: flex; align-items: center; gap: 0.25rem;
     }
-
     .btn-guardar {
         background: linear-gradient(to right, #c0392b, #e74c3c);
         border: none; border-radius: 9px; padding: 10px 24px;
@@ -203,6 +200,36 @@
         display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
     }
     .btn-volver:hover { background: #f8f9fa; color: #343a40; }
+
+    /* Preview de imagen */
+    .img-preview {
+        width: 80px; height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+        margin-top: 0.5rem;
+    }
+    .img-preview-portada {
+        width: 100%; height: 100px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+        margin-top: 0.5rem;
+    }
+
+    /* Color preview */
+    .color-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .color-preview-box {
+        width: 48px; height: 48px;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        flex-shrink: 0;
+        transition: background 0.2s;
+    }
 </style>
 
 <div class="row g-3 align-items-start">
@@ -213,10 +240,14 @@
 
             <div class="info-card-header">
                 <div class="restaurant-initial">
-                    {{ restaurante.nombre|first|upper }}
+                    {% if restaurante.logo %}
+                        <img src="{{ restaurante.logo.url }}" alt="logo">
+                    {% else %}
+                        {{ restaurante.nombre|first|upper }}
+                    {% endif %}
                 </div>
                 <h5>{{ restaurante.nombre }}</h5>
-                <p>Panel de configuración</p>
+                <p>{{ restaurante.slogan|default:"Panel de configuración" }}</p>
             </div>
 
             <div class="info-card-body">
@@ -238,6 +269,14 @@
                                 <i class="bi bi-circle-fill"></i> Cerrado
                             </span>
                         {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-palette-fill"></i> Color principal</span>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        <div style="width:22px;height:22px;border-radius:6px;background:{{ restaurante.color_principal }};border:1px solid #dee2e6;"></div>
+                        <span class="info-value">{{ restaurante.color_principal }}</span>
                     </div>
                 </div>
 
@@ -269,12 +308,12 @@
                 <div class="header-icon"><i class="bi bi-gear-fill"></i></div>
                 <div>
                     <h4>Editar configuración</h4>
-                    <p>Actualiza la información principal de tu restaurante</p>
+                    <p>Actualiza la información y apariencia de tu restaurante</p>
                 </div>
             </div>
 
             <div class="form-card-body">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <!-- INFORMACIÓN GENERAL -->
@@ -288,6 +327,14 @@
                             {{ form.nombre }}
                             {% if form.nombre.errors %}
                                 <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.nombre.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-0">
+                            <label class="field-label">Slogan</label>
+                            {{ form.slogan }}
+                            <p class="field-hint">Frase corta que describe tu restaurante. Se muestra en la página pública.</p>
+                            {% if form.slogan.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.slogan.errors|join:", " }}</div>
                             {% endif %}
                         </div>
                     </div>
@@ -329,6 +376,61 @@
                         {% endif %}
                     </div>
 
+                    <!-- APARIENCIA -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="bi bi-palette-fill"></i></div>
+                            <h6>Apariencia</h6>
+                        </div>
+
+                        <!-- Color principal -->
+                        <div class="mb-3">
+                            <label class="field-label">Color principal</label>
+                            <div class="color-row">
+                                {{ form.color_principal }}
+                                <div class="color-preview-box" id="colorPreview"
+                                     style="background: {{ restaurante.color_principal }};"></div>
+                                <span class="text-muted small" id="colorHex">{{ restaurante.color_principal }}</span>
+                            </div>
+                            <p class="field-hint">Este color se usará en el banner y botones de tu página pública.</p>
+                        </div>
+
+                        <!-- Logo -->
+                        <div class="mb-3">
+                            <label class="field-label">Logo del restaurante</label>
+                            {{ form.logo }}
+                            {% if restaurante.logo %}
+                                <div>
+                                    <img src="{{ restaurante.logo.url }}" class="img-preview" alt="Logo actual">
+                                    <p class="field-hint">Logo actual. Sube uno nuevo para reemplazarlo.</p>
+                                </div>
+                            {% else %}
+                                <p class="field-hint">No hay logo. Se mostrará la inicial del nombre.</p>
+                            {% endif %}
+                            {% if form.logo.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.logo.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Portada -->
+                        <div class="mb-0">
+                            <label class="field-label">Imagen de portada</label>
+                            {{ form.portada }}
+                            {% if restaurante.portada %}
+                                <div>
+                                    <img src="{{ restaurante.portada.url }}" class="img-preview-portada" alt="Portada actual">
+                                    <p class="field-hint">Portada actual. Sube una nueva para reemplazarla.</p>
+                                </div>
+                            {% else %}
+                                <p class="field-hint">No hay portada. Se mostrará un fondo de color.</p>
+                            {% endif %}
+                            {% if form.portada.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.portada.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
                     <!-- ACCIONES -->
                     <div class="d-flex gap-2 pt-1 flex-wrap">
                         <button type="submit" class="btn-guardar">
@@ -347,6 +449,19 @@
 </div>
 
 <script>
+    // Preview del color en tiempo real
+    const colorInput = document.querySelector('input[type="color"]');
+    const colorPreview = document.getElementById('colorPreview');
+    const colorHex = document.getElementById('colorHex');
+
+    if (colorInput) {
+        colorInput.addEventListener('input', function () {
+            colorPreview.style.background = this.value;
+            colorHex.textContent = this.value;
+        });
+    }
+
+    // Copiar URL
     function copiarURL() {
         const url = "{{ request.scheme }}://{{ request.get_host }}{% url 'pagina_restaurante' restaurante.slug %}";
         navigator.clipboard.writeText(url).then(() => {

@@ -17,4 +17,9 @@ urlpatterns = [
         views.cambiar_estado_comanda,
         name='cambiar_estado_comanda'
     ),
+    path(
+        'mis-comandas/',
+        views.mis_comandas,
+        name='mis_comandas'
+    ),
 ]

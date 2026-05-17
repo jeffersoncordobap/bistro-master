@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 
 {% block title %}Panel de Pedidos{% endblock %}
-{% block page_title %}Panel de Pedidos{% endblock %}
+{% block page_title %}Pedidos{% endblock %}
 
 {% block content %}
 
@@ -17,27 +17,39 @@
         justify-content: space-between;
         gap: 1rem;
     }
-    .section-header-left { display: flex; align-items: center; gap: 1rem; }
+
+    .section-header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
     .section-header-icon {
-        width: 44px; height: 44px;
+        width: 44px;
+        height: 44px;
         background: rgba(255,255,255,0.15);
         border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 1.3rem;
         color: #fff;
         flex-shrink: 0;
     }
+
     .section-header h4 {
         color: #fff;
         font-weight: 700;
         font-size: 1.1rem;
         margin: 0 0 0.15rem;
     }
+
     .section-header p {
         color: rgba(255,255,255,0.75);
         font-size: 0.83rem;
         margin: 0;
     }
+
     .total-badge {
         background: rgba(255,255,255,0.2);
         color: #fff;
@@ -48,13 +60,14 @@
         white-space: nowrap;
     }
 
-    /* ── Tabs de filtro ──────────────────────────────────── */
+    /* ── Tabs ───────────────────────────────────────────── */
     .filtro-tabs {
         display: flex;
         gap: 0.5rem;
         margin-bottom: 1.5rem;
         flex-wrap: wrap;
     }
+
     .filtro-tab {
         padding: 0.45rem 1.1rem;
         border-radius: 20px;
@@ -69,8 +82,18 @@
         align-items: center;
         gap: 0.4rem;
     }
-    .filtro-tab:hover { border-color: #e74c3c; color: #e74c3c; }
-    .filtro-tab.activo { background: #e74c3c; border-color: #e74c3c; color: #fff; }
+
+    .filtro-tab:hover {
+        border-color: #e74c3c;
+        color: #e74c3c;
+    }
+
+    .filtro-tab.activo {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        color: #fff;
+    }
+
     .filtro-tab .n {
         background: rgba(0,0,0,0.1);
         border-radius: 10px;
@@ -79,9 +102,12 @@
         min-width: 18px;
         text-align: center;
     }
-    .filtro-tab.activo .n { background: rgba(255,255,255,0.25); }
 
-    /* ── Tarjeta de comanda ──────────────────────────────── */
+    .filtro-tab.activo .n {
+        background: rgba(255,255,255,0.25);
+    }
+
+    /* ── Cards ─────────────────────────────────────────── */
     .comanda-card {
         background: #fff;
         border-radius: 14px;
@@ -90,7 +116,10 @@
         height: 100%;
         transition: box-shadow 0.2s;
     }
-    .comanda-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+
+    .comanda-card:hover {
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
 
     .comanda-header {
         padding: 0.85rem 1.25rem;
@@ -100,11 +129,22 @@
         border-bottom: 1px solid #dee2e6;
         border-left: 4px solid transparent;
     }
-    /* Colores de borde por estado */
-    .comanda-card.estado-pendiente .comanda-header   { border-left-color: #f39c12; }
-    .comanda-card.estado-preparacion .comanda-header { border-left-color: #2980b9; }
-    .comanda-card.estado-listo .comanda-header       { border-left-color: #27ae60; }
-    .comanda-card.estado-entregado .comanda-header   { border-left-color: #95a5a6; }
+
+    .comanda-card.estado-pendiente .comanda-header {
+        border-left-color: #f39c12;
+    }
+
+    .comanda-card.estado-preparacion .comanda-header {
+        border-left-color: #2980b9;
+    }
+
+    .comanda-card.estado-listo .comanda-header {
+        border-left-color: #27ae60;
+    }
+
+    .comanda-card.estado-entregado .comanda-header {
+        border-left-color: #95a5a6;
+    }
 
     .comanda-mesa {
         font-weight: 700;
@@ -114,9 +154,11 @@
         align-items: center;
         gap: 0.4rem;
     }
-    .comanda-mesa i { color: #e74c3c; }
 
-    /* Badges de estado */
+    .comanda-mesa i {
+        color: #e74c3c;
+    }
+
     .estado-badge {
         display: inline-flex;
         align-items: center;
@@ -126,22 +168,53 @@
         font-size: 0.75rem;
         font-weight: 700;
     }
+
     .estado-badge .dot {
-        width: 6px; height: 6px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         flex-shrink: 0;
     }
-    .badge-pendiente   { background: rgba(243,156,18,0.12); color: #b7770d; }
-    .badge-pendiente .dot   { background: #f39c12; }
-    .badge-preparacion { background: rgba(41,128,185,0.12); color: #1f618d; }
-    .badge-preparacion .dot { background: #2980b9; }
-    .badge-listo       { background: rgba(39,174,96,0.12); color: #1e8449; }
-    .badge-listo .dot       { background: #27ae60; }
-    .badge-entregado   { background: rgba(149,165,166,0.15); color: #616a6b; }
-    .badge-entregado .dot   { background: #95a5a6; }
 
-    /* Body tarjeta */
-    .comanda-body { padding: 1rem 1.25rem; }
+    .badge-pendiente {
+        background: rgba(243,156,18,0.12);
+        color: #b7770d;
+    }
+
+    .badge-pendiente .dot {
+        background: #f39c12;
+    }
+
+    .badge-preparacion {
+        background: rgba(41,128,185,0.12);
+        color: #1f618d;
+    }
+
+    .badge-preparacion .dot {
+        background: #2980b9;
+    }
+
+    .badge-listo {
+        background: rgba(39,174,96,0.12);
+        color: #1e8449;
+    }
+
+    .badge-listo .dot {
+        background: #27ae60;
+    }
+
+    .badge-entregado {
+        background: rgba(149,165,166,0.15);
+        color: #616a6b;
+    }
+
+    .badge-entregado .dot {
+        background: #95a5a6;
+    }
+
+    .comanda-body {
+        padding: 1rem 1.25rem;
+    }
 
     .comanda-meta {
         font-size: 0.78rem;
@@ -151,9 +224,19 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
-    .comanda-meta span { display: flex; align-items: center; gap: 0.3rem; }
 
-    .item-lista { list-style: none; padding: 0; margin: 0 0 1rem; }
+    .comanda-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .item-lista {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem;
+    }
+
     .item-lista li {
         display: flex;
         align-items: flex-start;
@@ -163,7 +246,11 @@
         font-size: 0.85rem;
         color: #212529;
     }
-    .item-lista li:last-child { border-bottom: none; }
+
+    .item-lista li:last-child {
+        border-bottom: none;
+    }
+
     .item-cant {
         background: rgba(231,76,60,0.1);
         color: #e74c3c;
@@ -175,17 +262,18 @@
         flex-shrink: 0;
         margin-top: 2px;
     }
+
     .item-nota {
         color: #6c757d;
         font-size: 0.75rem;
         font-style: italic;
     }
 
-    /* Formulario de estado */
     .estado-form-wrap {
         border-top: 1px solid #f0f0f0;
         padding-top: 0.85rem;
     }
+
     .estado-select {
         border-radius: 8px;
         border: 1px solid #dee2e6;
@@ -193,13 +281,8 @@
         font-size: 0.83rem;
         width: 100%;
         margin-bottom: 0.6rem;
-        transition: border-color 0.2s;
     }
-    .estado-select:focus {
-        border-color: #e74c3c;
-        box-shadow: 0 0 0 2px rgba(192,57,43,0.1);
-        outline: none;
-    }
+
     .btn-actualizar {
         width: 100%;
         background: linear-gradient(to right, #c0392b, #e74c3c);
@@ -209,22 +292,14 @@
         color: #fff;
         font-weight: 700;
         font-size: 0.82rem;
-        transition: all 0.2s;
         cursor: pointer;
     }
-    .btn-actualizar:hover {
-        background: linear-gradient(to right, #a93226, #cb4335);
-        transform: translateY(-1px);
-    }
 
-    /* Estado vacío global */
     .sin-pedidos {
         text-align: center;
         padding: 4rem 2rem;
         color: #adb5bd;
     }
-    .sin-pedidos i { font-size: 3rem; display: block; margin-bottom: 1rem; }
-    .sin-pedidos p { font-size: 0.9rem; margin: 0; }
 </style>
 
 <!-- Encabezado -->
@@ -233,11 +308,13 @@
         <div class="section-header-icon">
             <i class="bi bi-kanban-fill"></i>
         </div>
+
         <div>
-            <h4>Panel de Pedidos</h4>
-            <p>Supervisa y actualiza el estado de las comandas en tiempo real</p>
+            <h4>Gestión de pedidos</h4>
+            <p>Supervisa y actualiza el estado de los pedidos en tiempo real</p>
         </div>
     </div>
+
     <span class="total-badge">
         <i class="bi bi-receipt me-1"></i>
         {{ comandas|length }} pedido{% if comandas|length != 1 %}s{% endif %}
@@ -246,142 +323,196 @@
 
 {% if comandas %}
 
-<!-- Tabs de filtro -->
+<!-- Tabs -->
 <div class="filtro-tabs" id="filtroTabs">
     <button class="filtro-tab activo" onclick="filtrar('todos', this)">
-        <i class="bi bi-grid-3x3-gap"></i> Todos
+        <i class="bi bi-grid-3x3-gap"></i>
+        Todos
         <span class="n" id="n-todos">{{ comandas|length }}</span>
     </button>
+
     <button class="filtro-tab" onclick="filtrar('pendiente', this)">
-        <i class="bi bi-clock"></i> Pendientes
+        <i class="bi bi-clock"></i>
+        Pendientes
         <span class="n" id="n-pendiente">0</span>
     </button>
+
     <button class="filtro-tab" onclick="filtrar('en_preparacion', this)">
-        <i class="bi bi-fire"></i> En preparación
+        <i class="bi bi-fire"></i>
+        En preparación
         <span class="n" id="n-preparacion">0</span>
     </button>
+
     <button class="filtro-tab" onclick="filtrar('listo', this)">
-        <i class="bi bi-check-circle"></i> Listos
+        <i class="bi bi-check-circle"></i>
+        Listos
         <span class="n" id="n-listo">0</span>
     </button>
+
     <button class="filtro-tab" onclick="filtrar('entregado', this)">
-        <i class="bi bi-bag-check"></i> Entregados
+        <i class="bi bi-bag-check"></i>
+        Entregados
         <span class="n" id="n-entregado">0</span>
     </button>
 </div>
 
-<!-- Grid de comandas -->
+<!-- Grid -->
 <div class="row g-3" id="gridComandas">
+
     {% for comanda in comandas %}
-    <div class="col-md-6 col-xl-4 comanda-item"
-         data-estado="{{ comanda.estado }}">
+    <div class="col-md-6 col-xl-4 comanda-item" data-estado="{{ comanda.estado }}">
+
         <div class="comanda-card estado-{% if comanda.estado == 'en_preparacion' %}preparacion{% else %}{{ comanda.estado }}{% endif %}">
 
-            <!-- Header -->
             <div class="comanda-header">
+
                 <span class="comanda-mesa">
                     <i class="bi bi-grid-3x3-gap-fill"></i>
                     Mesa {{ comanda.numero_mesa }}
                 </span>
+
                 {% if comanda.estado == 'pendiente' %}
                     <span class="estado-badge badge-pendiente">
                         <span class="dot"></span> Pendiente
                     </span>
+
                 {% elif comanda.estado == 'en_preparacion' %}
                     <span class="estado-badge badge-preparacion">
                         <span class="dot"></span> En preparación
                     </span>
+
                 {% elif comanda.estado == 'listo' %}
                     <span class="estado-badge badge-listo">
                         <span class="dot"></span> Listo
                     </span>
+
                 {% else %}
                     <span class="estado-badge badge-entregado">
                         <span class="dot"></span> Entregado
                     </span>
                 {% endif %}
+
             </div>
 
-            <!-- Body -->
             <div class="comanda-body">
 
                 <div class="comanda-meta">
+
                     <span>
                         <i class="bi bi-person"></i>
                         {{ comanda.mesero.username }}
                     </span>
+
                     <span>
                         <i class="bi bi-clock-history"></i>
                         {{ comanda.fecha_creacion|timesince }} atrás
                     </span>
+
                 </div>
 
                 <ul class="item-lista">
+
                     {% for item in comanda.items.all %}
                     <li>
+
                         <span class="item-cant">×{{ item.cantidad }}</span>
+
                         <div>
                             {{ item.producto.nombre }}
+
                             {% if item.nota %}
-                            <div class="item-nota"><i class="bi bi-chat-left-text me-1"></i>{{ item.nota }}</div>
+                            <div class="item-nota">
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                {{ item.nota }}
+                            </div>
                             {% endif %}
                         </div>
+
                     </li>
                     {% endfor %}
+
                 </ul>
 
-                <form method="POST" action="{% url 'cambiar_estado_comanda' comanda.id %}" class="estado-form-wrap">
+                <form method="POST"
+                      action="{% url 'cambiar_estado_comanda' comanda.id %}"
+                      class="estado-form-wrap">
+
                     {% csrf_token %}
+
                     <select name="estado" class="estado-select">
+
                         {% for valor, etiqueta in comanda.Estados.choices %}
-                        <option value="{{ valor }}" {% if comanda.estado == valor %}selected{% endif %}>
+                        <option value="{{ valor }}"
+                                {% if comanda.estado == valor %}selected{% endif %}>
                             {{ etiqueta }}
                         </option>
                         {% endfor %}
+
                     </select>
+
                     <button type="submit" class="btn-actualizar">
-                        <i class="bi bi-arrow-repeat me-1"></i>Actualizar estado
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        Actualizar estado
                     </button>
+
                 </form>
 
             </div>
+
         </div>
     </div>
     {% endfor %}
+
 </div>
 
 {% else %}
+
 <div class="sin-pedidos">
     <i class="bi bi-inbox"></i>
     <p>No hay pedidos registrados en este momento.</p>
 </div>
+
 {% endif %}
 
 <script>
-    // Contar pedidos por estado y llenar los badges
     const items = document.querySelectorAll('.comanda-item');
-    const contadores = { pendiente: 0, en_preparacion: 0, listo: 0, entregado: 0 };
+
+    const contadores = {
+        pendiente: 0,
+        en_preparacion: 0,
+        listo: 0,
+        entregado: 0
+    };
+
     items.forEach(i => {
         const e = i.dataset.estado;
-        if (contadores[e] !== undefined) contadores[e]++;
+
+        if (contadores[e] !== undefined) {
+            contadores[e]++;
+        }
     });
-    document.getElementById('n-pendiente').textContent  = contadores.pendiente;
+
+    document.getElementById('n-pendiente').textContent = contadores.pendiente;
     document.getElementById('n-preparacion').textContent = contadores.en_preparacion;
-    document.getElementById('n-listo').textContent      = contadores.listo;
-    document.getElementById('n-entregado').textContent  = contadores.entregado;
+    document.getElementById('n-listo').textContent = contadores.listo;
+    document.getElementById('n-entregado').textContent = contadores.entregado;
 
     function filtrar(estado, tab) {
-        // Activar tab
-        document.querySelectorAll('.filtro-tab').forEach(t => t.classList.remove('activo'));
+
+        document.querySelectorAll('.filtro-tab').forEach(t => {
+            t.classList.remove('activo');
+        });
+
         tab.classList.add('activo');
 
-        // Mostrar/ocultar cards
         items.forEach(item => {
+
             if (estado === 'todos' || item.dataset.estado === estado) {
                 item.style.display = '';
             } else {
                 item.style.display = 'none';
             }
+
         });
     }
 </script>
