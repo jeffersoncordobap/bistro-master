@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 
+from apps.productos.models import CategoriaProducto
 from apps.usuarios.models import Usuario
 from apps.restaurantes.models import Restaurante
 
@@ -49,8 +50,7 @@ def configuracion_restaurante(request):
         'dashboard/configuracion/configuracion.html',
         context
     )
-    
-
+        
 def pagina_restaurante(request, slug):
 
     restaurante = get_object_or_404(
@@ -58,8 +58,14 @@ def pagina_restaurante(request, slug):
         slug=slug
     )
 
+    categorias = CategoriaProducto.objects.filter(
+        restaurante=restaurante,
+        activa=True
+    ).prefetch_related('productos')
+
     context = {
-        'restaurante': restaurante
+        'restaurante': restaurante,
+        'categorias': categorias
     }
 
     return render(
