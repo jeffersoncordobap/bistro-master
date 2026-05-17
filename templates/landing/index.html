@@ -3,162 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>POS Restaurante</title>
-
-    <!-- Bootstrap -->
+    <title>Bistro Master · Gestión de Restaurantes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #e74c3c !important;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(to right, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+        .btn-outline-custom {
+            border: 2px solid white;
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-outline-custom:hover {
+            background: white;
+            color: #1c1c1c;
+            transform: translateY(-2px);
+        }
+        .feature-card {
+            border: none;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        }
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1rem;
+        }
+        .footer-custom {
+            background: #1c1c1c;
+        }
+        .hero-icon {
+            font-size: 18rem;
+            opacity: 0.4;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
         <div class="container">
-
             <a class="navbar-brand" href="#">
-                POS Restaurante
+                <i class="bi bi-shop me-2"></i>Bistro Master
             </a>
-
-            <div>
-                <a href="{% url 'login' %}" class="btn btn-outline-light me-2">
+            <div class="ms-auto d-flex gap-2">
+                <a href="{% url 'login' %}" class="btn btn-outline-dark rounded-pill px-4">
                     Iniciar sesión
                 </a>
-
-                <a href="{% url 'registro' %}" class="btn btn-warning">
+                <a href="{% url 'registro' %}" class="btn rounded-pill px-4 text-white" style="background: linear-gradient(to right, #c0392b, #e74c3c);">
                     Registrarse
                 </a>
             </div>
-
         </div>
     </nav>
+
     {% if messages %}
-
     <div class="container mt-4">
-
         {% for message in messages %}
-
-            <div class="alert alert-success alert-dismissible fade show">
-
+            <div class="alert alert-success alert-dismissible fade show rounded-3">
+                <i class="bi bi-check-circle-fill me-2"></i>
                 {{ message }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
-
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
         {% endfor %}
-
     </div>
-
     {% endif %}
+
     <!-- Hero -->
-    <section class="py-5 bg-light">
-        <div class="container text-center">
-
-            <h1 class="display-4 fw-bold">
-                Administra tu restaurante de forma fácil
-            </h1>
-
-            <p class="lead mt-3">
-                Gestiona pedidos, usuarios, domicilios y ventas
-                desde una sola plataforma.
-            </p>
-
-            <div class="mt-4">
-                <a href="{% url 'registro' %}" class="btn btn-primary btn-lg me-2">
-                    Comenzar
-                </a>
-
-                <a href="{% url 'login' %}" class="btn btn-outline-dark btn-lg">
-                    Iniciar sesión
-                </a>
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-white">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Administra tu restaurante de forma <span style="color: #e74c3c;">fácil</span>
+                    </h1>
+                    <p class="lead text-white-50 mb-5">
+                        Gestiona pedidos, usuarios, domicilios y ventas desde una sola plataforma.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'registro' %}" class="btn btn-primary-custom btn-lg">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Comenzar
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-custom btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                    <i class="bi bi-shop hero-icon"></i>
+                </div>
             </div>
-
         </div>
     </section>
 
     <!-- Beneficios -->
-    <section class="py-5">
+    <section class="py-5 bg-light">
         <div class="container">
-
-            <h2 class="text-center mb-5">
-                Beneficios
-            </h2>
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Beneficios</h2>
+            </div>
 
             <div class="row g-4">
 
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-
-                        <div class="card-body text-center">
-
-                            <h4>
-                                Gestión de pedidos
-                            </h4>
-
-                            <p>
-                                Controla pedidos en mesa y domicilios.
-                            </p>
-
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-danger bg-opacity-10">
+                                <i class="bi bi-bag-check-fill text-danger"></i>
+                            </div>
+                            <h5 class="fw-bold">Gestión de pedidos</h5>
+                            <p class="text-muted">Pedidos en mesa y domicilios en tiempo real.</p>
                         </div>
-
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-
-                        <div class="card-body text-center">
-
-                            <h4>
-                                Usuarios y roles
-                            </h4>
-
-                            <p>
-                                Administra meseros y domiciliarios.
-                            </p>
-
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-primary bg-opacity-10">
+                                <i class="bi bi-people-fill text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold">Usuarios y roles</h5>
+                            <p class="text-muted">Meseros y domiciliarios con acceso controlado.</p>
                         </div>
-
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-
-                        <div class="card-body text-center">
-
-                            <h4>
-                                Página pública
-                            </h4>
-
-                            <p>
-                                Gestiona la página pública para tus clientes.
-                            </p>
-
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-success bg-opacity-10">
+                                <i class="bi bi-globe2 text-success"></i>
+                            </div>
+                            <h5 class="fw-bold">Página pública</h5>
+                            <p class="text-muted">URL única para que tus clientes vean el menú.</p>
                         </div>
+                    </div>
+                </div>
 
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-warning bg-opacity-10">
+                                <i class="bi bi-ticket-perforated-fill text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold">Tiqueteras</h5>
+                            <p class="text-muted">Control digital de consumo para clientes habituales.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-info bg-opacity-10">
+                                <i class="bi bi-scooter text-info"></i>
+                            </div>
+                            <h5 class="fw-bold">Domicilios</h5>
+                            <p class="text-muted">Pedidos sin registro y seguimiento por token.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-secondary bg-opacity-10">
+                                <i class="bi bi-box-seam-fill text-secondary"></i>
+                            </div>
+                            <h5 class="fw-bold">Inventario</h5>
+                            <p class="text-muted">Stock actualizado automáticamente con cada pedido.</p>
+                        </div>
                     </div>
                 </div>
 
             </div>
-
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
+    <footer class="footer-custom text-light py-4">
         <div class="container text-center">
-
-            <p class="mb-0">
-                © 2026 POS BISTRO MASTER
+            <p class="mb-0 text-white-50">
+                <i class="bi bi-shop text-danger me-2"></i>
+                © 2026 POS Bistro Master
             </p>
-
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

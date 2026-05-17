@@ -1,189 +1,238 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        {% block title %}
-            Dashboard
-        {% endblock %}
-
-    </title>
+    <title>{% block title %}Dashboard{% endblock %} · Bistro Master</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
+    <style>
+        :root {
+            --rojo:      #e74c3c;
+            --rojo-dark: #c0392b;
+            --sidebar-w: 230px;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .bm-sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(to bottom, #c0392b, #e74c3c);
+            display: flex;
+            flex-direction: column;
+            padding: 1.75rem 1rem;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .bm-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .bm-brand i { font-size: 1.4rem; }
+
+        .bm-nav {
+            list-style: none;
+            padding: 0; margin: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .bm-nav .nav-section-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.5);
+            padding: 0.9rem 0.6rem 0.3rem;
+            font-weight: 600;
+        }
+
+        .bm-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.6rem 0.85rem;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.15s, color 0.15s;
+        }
+        .bm-nav a:hover,
+        .bm-nav a.active {
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+        }
+        .bm-nav a i {
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+            opacity: 0.85;
+        }
+
+        .bm-nav .logout-item {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .bm-nav .logout-item a {
+            color: rgba(255,255,255,0.7);
+        }
+        .bm-nav .logout-item a:hover {
+            background: rgba(0,0,0,0.15);
+            color: #fff;
+        }
+
+        /* ── MAIN ── */
+        .bm-main {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOPBAR */
+        .bm-topbar {
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 1.75rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .bm-topbar h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0;
+            color: #212529;
+        }
+        .bm-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 100px;
+            padding: 0.3rem 0.9rem 0.3rem 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+        }
+        .bm-user-avatar {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, var(--rojo-dark), var(--rojo));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* CONTENT */
+        .bm-content {
+            padding: 1.75rem;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .bm-sidebar { display: none; }
+            .bm-main { margin-left: 0; }
+        }
+    </style>
 </head>
+<body>
 
-<body class="bg-light">
+    <!-- SIDEBAR -->
+    <aside class="bm-sidebar">
+        <a href="{% url 'panel_admin' %}" class="bm-brand">
+            <i class="bi bi-cup-hot-fill"></i> Bistro Master
+        </a>
 
-    <div class="container-fluid">
+        <ul class="bm-nav">
+            <li class="nav-section-label">Principal</li>
+            <li><a href="{% url 'panel_admin' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li><a href="{% url 'lista_usuarios' %}"><i class="bi bi-people"></i> Usuarios</a></li>
+            <li><a href="{% url 'panel_pedidos' %}"><i class="bi bi-bag"></i> Pedidos</a></li>
 
-        <div class="row min-vh-100">
+            <li class="nav-section-label">Operaciones</li>
+            <li><a href="#"><i class="bi bi-scooter"></i> Domicilios</a></li>
+            <li><a href="#"><i class="bi bi-ticket-perforated"></i> Tiqueteras</a></li>
 
-            <!-- SIDEBAR -->
+            <li class="nav-section-label">Catálogo</li>
+            <li><a href="{% url 'lista_productos' %}"><i class="bi bi-box-seam"></i> Productos</a></li>
+            <li><a href="{% url 'lista_categorias' %}"><i class="bi bi-tags"></i> Categorías</a></li>
 
-            <aside class="col-md-3 col-lg-2 bg-white border-end p-4">
+            <li class="nav-section-label">Sistema</li>
+            <li><a href="{% url 'configuracion_restaurante' %}"><i class="bi bi-gear"></i> Configuración</a></li>
 
-                <h4 class="fw-bold mb-4 text-danger">
+            <li class="logout-item">
+                <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+            </li>
+        </ul>
+    </aside>
 
-                    Bistro Master
+    <!-- MAIN -->
+    <div class="bm-main">
 
-                </h4>
-
-                <ul class="nav flex-column gap-2">
-
-                    <li class="nav-item">
-
-                        <a href="{% url 'panel_admin' %}" class="nav-link text-dark">
-
-                            <i class="bi bi-speedometer2"></i>
-                            Dashboard
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="{% url 'lista_usuarios' %}" class="nav-link text-dark">
-
-                            <i class="bi bi-people"></i>
-                            Usuarios
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="{% url 'panel_pedidos' %}" class="nav-link text-dark">
-
-                            <i class="bi bi-bag"></i>
-                            Pedidos
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="#" class="nav-link text-dark">
-
-                            <i class="bi bi-scooter"></i>
-                            Domicilios
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="#" class="nav-link text-dark">
-
-                            <i class="bi bi-ticket-perforated"></i>
-                            Tiqueteras
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="{% url 'lista_productos' %}" class="nav-link text-dark">
-
-                            <i class="bi bi-box-seam"></i>
-                            Productos
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a
-                            href="{% url 'lista_categorias' %}"
-                            class="nav-link text-dark">
-
-                            <i class="bi bi-tags"></i>
-                            Categorías
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a href="{% url 'configuracion_restaurante' %}" class="nav-link text-dark">
-
-                            <i class="bi bi-gear"></i>
-                            Configuración
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item mt-4">
-
-                        <a href="{% url 'logout' %}" class="nav-link text-danger">
-
-                            <i class="bi bi-box-arrow-right"></i>
-                            Cerrar sesión
-
-                        </a>
-
-                    </li>
-
-                </ul>
-
-            </aside>
-
-            <!-- CONTENIDO -->
-
-            <main class="col-md-9 col-lg-10 p-4">
-
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-
-                    <div>
-                        <h2 class="fw-bold">
-                            {% block page_title %}
-                                Panel
-                            {% endblock %}
-                        </h2>
-                    </div>
-
-                    <div>
-                        <span class="fw-semibold">
-                            {{ request.user.username }}
-                        </span>
-                    </div>
-
+        <!-- TOPBAR -->
+        <header class="bm-topbar">
+            <h2>{% block page_title %}Panel{% endblock %}</h2>
+            <div class="bm-user-badge">
+                <div class="bm-user-avatar">
+                    {{ request.user.username|slice:":1"|upper }}
                 </div>
+                {{ request.user.username }}
+            </div>
+        </header>
 
-                {% block content %}
-                {% endblock %}
+        <!-- CONTENT -->
+        <main class="bm-content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i> {{ message }}
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-            </main>
-
-        </div>
-
+            {% block content %}{% endblock %}
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script>
+        const path = window.location.pathname;
+        document.querySelectorAll('.bm-nav a').forEach(a => {
+            const href = a.getAttribute('href');
+            if (href && href !== '#' && path.startsWith(href)) {
+                a.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>

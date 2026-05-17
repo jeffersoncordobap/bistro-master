@@ -1,159 +1,286 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}
-    Categorías
-{% endblock %}
-
-{% block page_title %}
-    Categorías
-{% endblock %}
+{% block title %}Categorías{% endblock %}
+{% block page_title %}Categorías{% endblock %}
 
 {% block content %}
+<style>
+    /* ── Header de página ── */
+    .page-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.75rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .page-toolbar-left h6 {
+        font-weight: 700; font-size: 0.9rem; color: #212529; margin: 0 0 0.15rem;
+    }
+    .page-toolbar-left p {
+        color: #6c757d; font-size: 0.82rem; margin: 0;
+    }
+    .btn-nueva {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border: none; border-radius: 9px; padding: 9px 18px;
+        font-weight: 700; font-size: 0.82rem; color: #fff;
+        transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+        white-space: nowrap; text-decoration: none;
+    }
+    .btn-nueva:hover {
+        background: linear-gradient(to right, #a93226, #cb4335);
+        transform: translateY(-1px); color: #fff; box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+    }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+    /* ── Tarjeta ── */
+    .cat-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        overflow: hidden;
+        height: 100%;
+        transition: box-shadow 0.2s, transform 0.2s;
+        position: relative;
+    }
+    .cat-card:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+        transform: translateY(-3px);
+    }
 
-    <div>
+    /* Franja lateral izquierda */
+    .cat-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: linear-gradient(to bottom, #c0392b, #e74c3c);
+        border-radius: 4px 0 0 4px;
+    }
+    .cat-card.inactiva::before {
+        background: #dee2e6;
+    }
 
-        <p class="text-muted mb-0">
+    .cat-card-body {
+        padding: 1rem 1.1rem 1rem 1.3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
 
-            Organiza los productos de tu restaurante.
+    /* Fila superior: ícono + nombre + badge */
+    .cat-top {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .cat-icon-wrap {
+        width: 42px; height: 42px;
+        background: rgba(231,76,60,0.09);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: #e74c3c; font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+    .cat-icon-wrap.inactiva {
+        background: #f1f3f5; color: #adb5bd;
+    }
+    .cat-name {
+        font-weight: 700; font-size: 0.95rem;
+        color: #212529; margin: 0; flex: 1;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 0.28rem;
+        font-size: 0.7rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 100px;
+        letter-spacing: 0.2px; flex-shrink: 0;
+    }
+    .status-pill.activa  { background: rgba(25,135,84,0.1);  color: #146c43; }
+    .status-pill.inactiva{ background: rgba(108,117,125,0.1); color: #6c757d; }
+    .status-pill i { font-size: 0.55rem; }
 
-        </p>
+    /* Fila de métricas */
+    .cat-meta {
+        display: flex;
+        gap: 0.6rem;
+    }
+    .meta-chip {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+        background: #f8f9fa; border: 1px solid #e9ecef;
+        border-radius: 7px; padding: 4px 10px;
+        font-size: 0.75rem; color: #495057; font-weight: 600;
+    }
+    .meta-chip i { font-size: 0.75rem; color: #e74c3c; }
+    .meta-chip.inactiva i { color: #adb5bd; }
 
+    /* Acciones */
+    .cat-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid #f0f0f0;
+    }
+    .btn-editar {
+        flex: 1; border-radius: 7px; padding: 6px 10px;
+        font-weight: 600; font-size: 0.78rem;
+        border: 1px solid #dee2e6; background: #fff;
+        color: #343a40; transition: all 0.18s;
+        display: inline-flex; align-items: center;
+        justify-content: center; gap: 0.3rem; text-decoration: none;
+    }
+    .btn-editar:hover { background: #f8f9fa; border-color: #adb5bd; color: #212529; }
+
+    .btn-toggle {
+        width: 32px; height: 32px; flex-shrink: 0;
+        border-radius: 7px; border: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; transition: all 0.18s; text-decoration: none;
+    }
+    .btn-toggle.desactivar { background: rgba(231,76,60,0.1); color: #e74c3c; }
+    .btn-toggle.desactivar:hover { background: #e74c3c; color: #fff; }
+    .btn-toggle.activar { background: rgba(25,135,84,0.1); color: #198754; }
+    .btn-toggle.activar:hover { background: #198754; color: #fff; }
+
+    /* ── Contador resumen ── */
+    .summary-bar {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+    }
+    .summary-chip {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 9px;
+        padding: 7px 14px;
+        display: flex; align-items: center; gap: 0.5rem;
+        font-size: 0.8rem; color: #495057; font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .summary-chip .chip-num {
+        font-size: 1rem; font-weight: 800; color: #212529;
+    }
+    .summary-chip .chip-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+    }
+    .chip-dot.total   { background: #e74c3c; }
+    .chip-dot.activas { background: #198754; }
+    .chip-dot.inact   { background: #adb5bd; }
+
+    /* ── Estado vacío ── */
+    .empty-state {
+        background: #fff; border: 1px solid #e9ecef;
+        border-radius: 16px; padding: 3.5rem 2rem; text-align: center;
+    }
+    .empty-icon-wrap {
+        width: 72px; height: 72px;
+        background: rgba(231,76,60,0.08); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.25rem; font-size: 1.9rem; color: #e74c3c;
+    }
+    .empty-state h5 { font-weight: 700; font-size: 1rem; color: #212529; margin-bottom: 0.4rem; }
+    .empty-state p  { font-size: 0.85rem; color: #6c757d; margin-bottom: 1.25rem; }
+</style>
+
+<!-- TOOLBAR -->
+<div class="page-toolbar">
+    <div class="page-toolbar-left">
+        <h6>Gestión de categorías</h6>
+        <p>Organiza los productos de tu restaurante por secciones del menú.</p>
     </div>
-
-    <a
-        href="{% url 'crear_categoria' %}"
-        class="btn btn-primary">
-
-        <i class="bi bi-plus-circle"></i>
-        Nueva categoría
-
+    <a href="{% url 'crear_categoria' %}" class="btn-nueva">
+        <i class="bi bi-plus-circle-fill"></i> Nueva categoría
     </a>
-
 </div>
 
 {% if categorias %}
 
-    <div class="row g-4">
+    <!-- RESUMEN -->
+    {% with total=categorias|length %}
+    <div class="summary-bar">
+        <div class="summary-chip">
+            <span class="chip-dot total"></span>
+            <span class="chip-num">{{ total }}</span>
+            categoría{{ total|pluralize:"s" }} en total
+        </div>
+        <div class="summary-chip">
+            <span class="chip-dot activas"></span>
+            <span class="chip-num">
+                {% with count=0 %}
+                    {% for c in categorias %}{% if c.activa %}{% with count=count|add:1 %}{% endwith %}{% endif %}{% endfor %}
+                    {{ categorias|dictsort:"activa"|last }}
+                {% endwith %}
+            </span>
+            activas
+        </div>
+    </div>
+    {% endwith %}
 
+    <!-- GRID -->
+    <div class="row g-3">
         {% for categoria in categorias %}
-
             <div class="col-md-6 col-xl-4">
+                <div class="cat-card shadow-sm {% if not categoria.activa %}inactiva{% endif %}">
+                    <div class="cat-card-body">
 
-                <div class="card border-0 shadow-sm rounded-4 h-100">
-
-                    <div class="card-body d-flex flex-column">
-
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-
-                            <div>
-
-                                <h5 class="fw-bold mb-1">
-
-                                    {{ categoria.nombre }}
-
-                                </h5>
-
+                        <!-- Nombre + estado -->
+                        <div class="cat-top">
+                            <div class="cat-icon-wrap {% if not categoria.activa %}inactiva{% endif %}">
+                                <i class="bi bi-tag-fill"></i>
                             </div>
-
+                            <span class="cat-name" title="{{ categoria.nombre }}">{{ categoria.nombre }}</span>
                             {% if categoria.activa %}
-
-                                <span class="badge bg-success">
-
-                                    Activa
-
-                                </span>
-
+                                <span class="status-pill activa"><i class="bi bi-circle-fill"></i> Activa</span>
                             {% else %}
-
-                                <span class="badge bg-danger">
-
-                                    Inactiva
-
-                                </span>
-
+                                <span class="status-pill inactiva"><i class="bi bi-circle-fill"></i> Inactiva</span>
                             {% endif %}
-
                         </div>
 
-                        <div class="mt-auto d-flex gap-2">
+                        <!-- Chips de info -->
+                        <div class="cat-meta">
+                            <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
+                                <i class="bi bi-box-seam"></i>
+                                {{ categoria.productos.count }} producto{{ categoria.productos.count|pluralize:"s" }}
+                            </span>
+                            <span class="meta-chip {% if not categoria.activa %}inactiva{% endif %}">
+                                <i class="bi bi-calendar3"></i>
+                                {% if categoria.activa %}Visible en menú{% else %}Oculta en menú{% endif %}
+                            </span>
+                        </div>
 
-                            <a
-                                href="{% url 'editar_categoria' categoria.id %}"
-                                class="btn btn-outline-primary w-100">
-
-                                <i class="bi bi-pencil-square"></i>
-                                Editar
-
+                        <!-- Acciones -->
+                        <div class="cat-actions">
+                            <a href="{% url 'editar_categoria' categoria.id %}" class="btn-editar">
+                                <i class="bi bi-pencil-fill"></i> Editar
                             </a>
-
                             {% if categoria.activa %}
-
-                                <a
-                                    href="{% url 'toggle_categoria' categoria.id %}"
-                                    class="btn btn-outline-danger">
-
-                                    <i class="bi bi-x-circle"></i>
-
+                                <a href="{% url 'toggle_categoria' categoria.id %}"
+                                   class="btn-toggle desactivar" title="Desactivar">
+                                    <i class="bi bi-x-lg"></i>
                                 </a>
-
                             {% else %}
-
-                                <a
-                                    href="{% url 'toggle_categoria' categoria.id %}"
-                                    class="btn btn-outline-success">
-
-                                    <i class="bi bi-check-circle"></i>
-
+                                <a href="{% url 'toggle_categoria' categoria.id %}"
+                                   class="btn-toggle activar" title="Activar">
+                                    <i class="bi bi-check-lg"></i>
                                 </a>
-
                             {% endif %}
-
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
         {% endfor %}
-
     </div>
 
 {% else %}
-
-    <div class="card border-0 shadow-sm rounded-4">
-
-        <div class="card-body text-center py-5">
-
-            <i class="bi bi-tags display-3 text-secondary"></i>
-
-            <h3 class="mt-4">
-
-                No tienes categorías registradas
-
-            </h3>
-
-            <p class="text-muted">
-
-                Comienza creando una categoría.
-
-            </p>
-
-            <a
-                href="{% url 'crear_categoria' %}"
-                class="btn btn-primary mt-3">
-
-                Crear categoría
-
-            </a>
-
-        </div>
-
+    <div class="empty-state">
+        <div class="empty-icon-wrap"><i class="bi bi-tags"></i></div>
+        <h5>Sin categorías registradas</h5>
+        <p>Crea tu primera categoría para empezar a organizar el menú.</p>
+        <a href="{% url 'crear_categoria' %}" class="btn-nueva" style="margin: 0 auto;">
+            <i class="bi bi-plus-circle-fill"></i> Crear categoría
+        </a>
     </div>
-
 {% endif %}
 
 {% endblock %}

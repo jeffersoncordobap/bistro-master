@@ -1,196 +1,284 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}
-    Usuarios
-{% endblock %}
-
-{% block page_title %}
-    Gestión de Usuarios
-{% endblock %}
+{% block title %}Usuarios{% endblock %}
+{% block page_title %}Gestión de Usuarios{% endblock %}
 
 {% block content %}
 
-<div class="card border-0 shadow-sm">
+<style>
+    /* ── Encabezado ───────────────────────────────────── */
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .section-header-left { display: flex; align-items: center; gap: 1rem; }
+    .section-header-icon {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .section-header h4 {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0 0 0.15rem;
+    }
+    .section-header p {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.83rem;
+        margin: 0;
+    }
+    .btn-agregar {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.55rem 1.2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+    .btn-agregar:hover {
+        background: rgba(255,255,255,0.28);
+        color: #fff;
+        transform: translateY(-1px);
+    }
 
-    <div class="card-body">
+    /* ── Tabla ────────────────────────────────────────── */
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .bm-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+    .bm-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .bm-table thead th {
+        padding: 0.85rem 1.25rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+    .bm-table tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.15s;
+    }
+    .bm-table tbody tr:last-child { border-bottom: none; }
+    .bm-table tbody tr:hover { background: #fafafa; }
+    .bm-table tbody td {
+        padding: 1rem 1.25rem;
+        font-size: 0.88rem;
+        color: #212529;
+        vertical-align: middle;
+    }
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    /* Avatar de usuario */
+    .user-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .user-avatar {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: rgba(231,76,60,0.1);
+        color: #e74c3c;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    .user-name { font-weight: 600; color: #212529; }
 
-            <div>
+    /* Badges de rol */
+    .rol-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .rol-mesero     { background: rgba(41,128,185,0.1);  color: #1f618d; }
+    .rol-domiciliario { background: rgba(39,174,96,0.1); color: #1e8449; }
+    .rol-otro       { background: rgba(108,117,125,0.1); color: #495057; }
 
-                <h4 class="fw-bold mb-1">
+    /* Badges de estado */
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+    .estado-badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-activo   { background: rgba(39,174,96,0.12);  color: #1e8449; }
+    .badge-activo .dot   { background: #27ae60; }
+    .badge-inactivo { background: rgba(231,76,60,0.1);   color: #c0392b; }
+    .badge-inactivo .dot { background: #e74c3c; }
 
-                    Empleados
+    /* Botones de acción */
+    .btn-accion {
+        padding: 0.3rem 0.85rem;
+        border-radius: 7px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .btn-editar {
+        background: rgba(243,156,18,0.12);
+        color: #b7770d;
+    }
+    .btn-editar:hover { background: rgba(243,156,18,0.22); color: #9a6510; }
+    .btn-desactivar {
+        background: rgba(231,76,60,0.1);
+        color: #c0392b;
+    }
+    .btn-desactivar:hover { background: rgba(231,76,60,0.2); color: #922b21; }
+    .btn-activar {
+        background: rgba(39,174,96,0.1);
+        color: #1e8449;
+    }
+    .btn-activar:hover { background: rgba(39,174,96,0.2); color: #186a3b; }
 
-                </h4>
+    /* Vacío */
+    .tabla-vacia {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #adb5bd;
+    }
+    .tabla-vacia i { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+    .tabla-vacia p { font-size: 0.88rem; margin: 0; }
+</style>
 
-                <p class="text-muted mb-0">
-
-                    Lista de usuarios del restaurante.
-
-                </p>
-
-            </div>
-
-            <div>
-
-                <a href="{% url 'crear_usuario' %}" class="btn btn-danger">
-
-                    <i class="bi bi-plus-lg"></i>
-                    Agregar usuario
-
-                </a>
-
-            </div>
-
+<!-- Encabezado -->
+<div class="section-header">
+    <div class="section-header-left">
+        <div class="section-header-icon">
+            <i class="bi bi-people-fill"></i>
         </div>
-
-        <div class="table-responsive">
-
-            <table class="table align-middle">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th>
-                            Usuario
-                        </th>
-
-                        <th>
-                            Rol
-                        </th>
-
-                        <th>
-                            Cédula
-                        </th>
-
-                        <th>
-                            Teléfono
-                        </th>
-
-                        <th>
-                            Estado
-                        </th>
-
-                        <th>
-                            Acciones
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for usuario in usuarios %}
-
-                    <tr>
-
-                        <td>
-
-                            {{ usuario.username }}
-
-                        </td>
-
-                        <td>
-
-                            {{ usuario.get_rol_display }}
-
-                        </td>
-
-                        <td>
-
-                            {{ usuario.cedula }}
-
-                        </td>
-
-                        <td>
-
-                            {{ usuario.telefono }}
-
-                        </td>
-
-                        <td>
-
-                            {% if usuario.is_active %}
-
-                                <span class="badge bg-success">
-
-                                    Activo
-
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-danger">
-
-                                    Inactivo
-
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                       <td class="d-flex gap-2">
-
-                            <a
-                                href="{% url 'editar_usuario' usuario.id %}"
-                                class="btn btn-sm btn-warning">
-
-                                Editar
-
-                            </a>
-
-                            {% if usuario.is_active %}
-
-                                <a
-                                    href="{% url 'toggle_usuario' usuario.id %}"
-                                    class="btn btn-sm btn-danger">
-
-                                    Desactivar
-
-                                </a>
-
-                            {% else %}
-
-                                <a
-                                    href="{% url 'toggle_usuario' usuario.id %}"
-                                    class="btn btn-sm btn-success">
-
-                                    Activar
-
-                                </a>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-
-                        <td colspan="6" class="text-center text-muted py-4">
-
-                            No hay usuarios registrados.
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
+        <div>
+            <h4>Gestión de Usuarios</h4>
+            <p>Administra los meseros y domiciliarios del restaurante</p>
         </div>
-
     </div>
+    <a href="{% url 'crear_usuario' %}" class="btn-agregar">
+        <i class="bi bi-plus-lg"></i> Agregar usuario
+    </a>
+</div>
 
+<!-- Tabla -->
+<div class="bm-card">
+    <div class="table-responsive">
+        <table class="bm-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Cédula</th>
+                    <th>Teléfono</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar">
+                                {{ usuario.username|first|upper }}
+                            </div>
+                            <span class="user-name">{{ usuario.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if usuario.rol == 'mesero' %}
+                            <span class="rol-badge rol-mesero">
+                                <i class="bi bi-person-badge"></i> {{ usuario.get_rol_display }}
+                            </span>
+                        {% elif usuario.rol == 'domiciliario' %}
+                            <span class="rol-badge rol-domiciliario">
+                                <i class="bi bi-bicycle"></i> {{ usuario.get_rol_display }}
+                            </span>
+                        {% else %}
+                            <span class="rol-badge rol-otro">{{ usuario.get_rol_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ usuario.cedula }}</td>
+                    <td>{{ usuario.telefono }}</td>
+                    <td>
+                        {% if usuario.is_active %}
+                            <span class="estado-badge badge-activo">
+                                <span class="dot"></span> Activo
+                            </span>
+                        {% else %}
+                            <span class="estado-badge badge-inactivo">
+                                <span class="dot"></span> Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn-accion btn-editar">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            {% if usuario.is_active %}
+                                <a href="{% url 'toggle_usuario' usuario.id %}" class="btn-accion btn-desactivar">
+                                    <i class="bi bi-slash-circle"></i> Desactivar
+                                </a>
+                            {% else %}
+                                <a href="{% url 'toggle_usuario' usuario.id %}" class="btn-accion btn-activar">
+                                    <i class="bi bi-check-circle"></i> Activar
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="tabla-vacia">
+                            <i class="bi bi-people"></i>
+                            <p>No hay usuarios registrados aún.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}
