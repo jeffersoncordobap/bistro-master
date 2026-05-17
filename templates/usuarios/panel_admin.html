@@ -1,176 +1,223 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}
-    Dashboard Admin
-{% endblock %}
+{% block title %}Dashboard Admin{% endblock %}
 
-{% block page_title %}
-    Dashboard
-{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 
+<style>
+    .welcome-card {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 16px;
+        border: none;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .welcome-card::after {
+        content: '\F1A3';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 2rem; top: 50%;
+        transform: translateY(-50%);
+        font-size: 5rem;
+        color: rgba(255,255,255,0.1);
+        pointer-events: none;
+    }
+    .welcome-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.3rem;
+    }
+    .welcome-card p {
+        color: rgba(255,255,255,0.75);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Info restaurante */
+    .info-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        height: 100%;
+    }
+    .info-card .card-header-custom {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #212529;
+    }
+    .info-card .card-header-custom i { color: #e74c3c; }
+    .info-card .card-body-custom { padding: 0.25rem 1.5rem 1.25rem; }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f8f9fa;
+        font-size: 0.9rem;
+        gap: 1rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row-label {
+        color: #6c757d;
+        font-weight: 500;
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+    .info-row-value { color: #212529; font-weight: 600; }
+
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.85rem;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+    .estado-abierto { background: rgba(39,174,96,0.12); color: #1e8449; }
+    .estado-cerrado { background: rgba(231,76,60,0.12); color: #c0392b; }
+    .estado-badge .dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+    }
+    .estado-abierto .dot { background: #27ae60; }
+    .estado-cerrado .dot { background: #e74c3c; }
+
+    .url-publica {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        background: #fff5f5;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        text-decoration: none;
+        word-break: break-all;
+    }
+    .url-publica:hover { background: #fde8e6; color: #c0392b; }
+
+    /* Métricas */
+    .metrics-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        height: 100%;
+    }
+    .metrics-card .card-header-custom {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #212529;
+    }
+    .metrics-card .card-header-custom i { color: #e74c3c; }
+    .metrics-card .card-body-custom { padding: 1.25rem 1.5rem; }
+
+    .metric-box {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 1.1rem 0.5rem;
+        text-align: center;
+    }
+    .metric-box h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0 0 0.2rem;
+        line-height: 1;
+    }
+    .metric-box small {
+        color: #6c757d;
+        font-size: 0.78rem;
+    }
+</style>
+
 <!-- BIENVENIDA -->
-
-<div class="card border-0 shadow-sm mb-4">
-
-    <div class="card-body">
-
-        <h3 class="fw-bold">
-
-            Bienvenido {{ request.user.username }}
-
-        </h3>
-
-        <p class="text-muted mb-0">
-
-            Administra tu restaurante desde este panel.
-
-        </p>
-
-    </div>
-
+<div class="welcome-card">
+    <h3>Bienvenido, {{ request.user.username }} 👋</h3>
+    <p>Administra tu restaurante desde este panel.</p>
 </div>
 
-<!-- INFORMACIÓN RESTAURANTE -->
+<!-- INFO RESTAURANTE + MÉTRICAS -->
+<div class="row g-4">
 
-<div class="row g-4 mb-4">
-
+    <!-- Info restaurante -->
     <div class="col-md-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body">
-
-                <h5 class="fw-bold mb-3">
-
-                    Restaurante
-
-                </h5>
-
-                <p>
-
-                    <strong>Nombre:</strong>
-                    {{ restaurante.nombre }}
-
-                </p>
-
-                <p>
-
-                    <strong>Estado:</strong>
-
-                    {% if restaurante.estado == 'abierto' %}
-
-                        <span class="badge bg-success">
-                            Abierto
-                        </span>
-
-                    {% else %}
-
-                        <span class="badge bg-danger">
-                            Cerrado
-                        </span>
-
-                    {% endif %}
-
-                </p>
-
-                <p class="mb-0">
-
-                    <strong>URL pública:</strong>
-
-                    <br>
-
-                    <a href="#">
-
-                        /restaurantes/{{ restaurante.slug }}/
-
-                    </a>
-
-                </p>
-
+        <div class="info-card">
+            <div class="card-header-custom">
+                <i class="bi bi-shop"></i> Restaurante
             </div>
-
+            <div class="card-body-custom">
+                <div class="info-row">
+                    <span class="info-row-label">Nombre</span>
+                    <span class="info-row-value">{{ restaurante.nombre }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-row-label">Estado</span>
+                    <span class="info-row-value">
+                        {% if restaurante.estado == 'abierto' %}
+                            <span class="estado-badge estado-abierto">
+                                <span class="dot"></span> Abierto
+                            </span>
+                        {% else %}
+                            <span class="estado-badge estado-cerrado">
+                                <span class="dot"></span> Cerrado
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-row-label">URL pública</span>
+                    <span class="info-row-value">
+                        <a href="{% url 'pagina_restaurante' restaurante.slug %}" class="url-publica" target="_blank">
+                            /restaurante/{{ restaurante.slug }}/
+                        </a>
+                    </span>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <!-- MÉTRICAS -->
-
+    <!-- Métricas -->
     <div class="col-md-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body">
-
-                <h5 class="fw-bold mb-4">
-
-                    Métricas rápidas
-
-                </h5>
-
-                <div class="row text-center g-3">
-
-                    <div class="col-4">
-
-                        <div class="border rounded p-3">
-
-                            <h3 class="fw-bold text-primary">
-
-                                {{ empleados }}
-
-                            </h3>
-
-                            <small>
-                                Empleados
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-4">
-
-                        <div class="border rounded p-3">
-
-                            <h3 class="fw-bold text-success">
-
-                                {{ meseros }}
-
-                            </h3>
-
-                            <small>
-                                Meseros
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-4">
-
-                        <div class="border rounded p-3">
-
-                            <h3 class="fw-bold text-danger">
-
-                                {{ domiciliarios }}
-
-                            </h3>
-
-                            <small>
-                                Domiciliarios
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+        <div class="metrics-card">
+            <div class="card-header-custom">
+                <i class="bi bi-bar-chart-fill"></i> Métricas rápidas
             </div>
-
+            <div class="card-body-custom">
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="metric-box">
+                            <h4 class="text-danger">{{ empleados }}</h4>
+                            <small>Empleados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="metric-box">
+                            <h4 class="text-primary">{{ meseros }}</h4>
+                            <small>Meseros</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="metric-box">
+                            <h4 class="text-success">{{ domiciliarios }}</h4>
+                            <small>Domiciliarios</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 
 </div>

@@ -1,297 +1,600 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        {{ restaurante.nombre }}
-
-    </title>
-
-    <!-- Bootstrap -->
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurante.nombre }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        .producto-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+        :root {
+            --brand:    {{ restaurante.color_principal|default:"#e74c3c" }};
+            --brand-dk: color-mix(in srgb, var(--brand) 75%, #000);
+            --brand-lt: color-mix(in srgb, var(--brand) 10%, #fff);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f5f4f2;
+            color: #111;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ══════════════════════════════
+           HERO — centrado, lleno, denso
+        ══════════════════════════════ */
+        .hero {
+            position: relative;
+            min-height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--brand-dk);
+        }
+
+        /* Imagen de portada */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: .38;
+        }
+
+        /* Sin portada: fondo sólido con textura sutil */
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background: var(--brand-dk);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% 0%,   color-mix(in srgb, var(--brand) 90%, #fff) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 100% 100%, color-mix(in srgb, var(--brand) 50%, #000) 0%, transparent 60%);
+        }
+
+        /* Overlay oscuro uniforme para contraste */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.42);
+        }
+
+        /* Contenido centrado */
+        .hero-body {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 3.5rem 1.5rem;
+            width: 100%;
+        }
+
+        .hero-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,.4);
+            background: var(--brand);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 1.25rem;
+        }
+        .hero-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .hero-name {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.02;
+            letter-spacing: -1px;
+            margin-bottom: .55rem;
+        }
+
+        .hero-slogan {
+            font-size: .95rem;
+            color: rgba(255,255,255,.62);
+            font-weight: 400;
+            margin-bottom: 1.75rem;
+        }
+
+        /* Barra de info en línea — dirección · teléfono · estado */
+        .hero-info-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: .8rem;
+            font-weight: 600;
+            background: rgba(255,255,255,.13);
+            color: rgba(255,255,255,.88);
+            border: 1px solid rgba(255,255,255,.15);
+        }
+        .info-pill i { font-size: .85rem; }
+
+        .pill-open {
+            background: rgba(22,163,74,.24);
+            color: #bbf7d0;
+            border-color: rgba(22,163,74,.3);
+        }
+        .pill-open .dot { width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block; }
+        .pill-closed {
+            background: rgba(220,38,38,.24);
+            color: #fecaca;
+            border-color: rgba(220,38,38,.3);
+        }
+        .pill-closed .dot { width:7px;height:7px;background:#f87171;border-radius:50%;display:inline-block; }
+
+        /* CTA principal */
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            padding: 13px 28px;
+            border-radius: 100px;
+            background: #fff;
+            color: var(--brand-dk);
+            font-size: .9rem;
+            font-weight: 800;
+            text-decoration: none;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,.18);
+            transition: transform .15s, opacity .15s;
+        }
+        .btn-hero:hover { transform: translateY(-2px); opacity: .9; color: var(--brand-dk); }
+
+        /* ══════════════════════════════
+           TOPBAR STICKY — mínima
+        ══════════════════════════════ */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e4e2dd;
+        }
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+            gap: 1rem;
+        }
+        .topbar-name {
+            font-weight: 800;
+            font-size: .9rem;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+        }
+        .topbar-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--brand);
+            flex-shrink: 0;
+        }
+        .btn-topbar {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: 7px 16px;
+            border-radius: 100px;
+            background: var(--brand);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            transition: filter .14s;
+            white-space: nowrap;
+        }
+        .btn-topbar:hover { filter: brightness(.87); color: #fff; }
+
+        /* ══════════════════════════════
+           SECCIÓN MENÚ
+        ══════════════════════════════ */
+        .menu-wrap {
+            padding: 2.5rem 0 4.5rem;
+        }
+
+        /* Cabecera con número de productos */
+        .menu-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border-bottom: 2px solid #e4e2dd;
+            padding-bottom: 1.25rem;
+            margin-bottom: 2.25rem;
+        }
+        .menu-hdr-left h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            color: #111;
+            margin: 0;
+        }
+        .menu-hdr-left .accent {
+            display: inline-block;
+            width: 30px; height: 4px;
+            background: var(--brand);
+            border-radius: 2px;
+            margin-top: .45rem;
+        }
+        .menu-hdr-right {
+            font-size: .78rem;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        /* Aviso cerrado */
+        .notice {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: .9rem 1.1rem;
+            color: #78350f;
+            font-weight: 600;
+            font-size: .85rem;
+            margin-bottom: 2rem;
+        }
+        .notice i { font-size: 1.2rem; color: #d97706; flex-shrink: 0; }
+
+        /* Categorías */
+        .cat-block { margin-bottom: 2.5rem; }
+        .cat-hdr {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            margin-bottom: 1.1rem;
+        }
+        .cat-pip {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--brand);
+            flex-shrink: 0;
+        }
+        .cat-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #777;
+        }
+        .cat-line { flex:1; height:1px; background:#e4e2dd; }
+
+        /* Grid 4 columnas en desktop, responsive */
+        .pgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px;
+        }
+
+        /* Card de producto */
+        .pcard {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #eae8e4;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform .18s, box-shadow .18s;
+        }
+        .pcard:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0,0,0,.08);
+        }
+
+        .pcard-img-wrap { position: relative; flex-shrink: 0; }
+        .pcard-img {
+            width: 100%; height: 160px;
+            object-fit: cover; display: block;
+        }
+        .pcard-placeholder {
+            width: 100%; height: 160px;
+            background: var(--brand-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: color-mix(in srgb, var(--brand) 20%, #ccc);
+        }
+
+        /* Precio flotante */
+        .pprice-float {
+            position: absolute;
+            bottom: 9px; right: 9px;
+            background: #fff;
+            color: var(--brand-dk);
+            font-size: .78rem;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 100px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.12);
+        }
+
+        .pcard-body {
+            padding: .85rem 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .pcard-name {
+            font-weight: 700;
+            font-size: .9rem;
+            color: #111;
+            margin-bottom: .25rem;
+            line-height: 1.3;
+        }
+        .pcard-desc {
+            font-size: .77rem;
+            color: #999;
+            line-height: 1.5;
+            flex: 1;
+            margin-bottom: .85rem;
+        }
+        .pcard-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pcard-price {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--brand);
+        }
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: .28rem;
+            padding: 6px 14px;
+            border-radius: 100px;
+            background: var(--brand);
+            color: #fff;
+            border: none;
+            font-size: .74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter .14s, transform .12s;
+        }
+        .btn-add:hover { filter: brightness(.87); transform: scale(.97); }
+
+        /* Sin productos */
+        .empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ccc;
+        }
+        .empty i { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
+
+        /* Footer */
+        .footer {
+            background: #111;
+            padding: 1.75rem 0;
+            text-align: center;
+        }
+        .footer p { color: rgba(255,255,255,.32); font-size: .78rem; margin:0; }
+        .footer strong { color: rgba(255,255,255,.58); }
+
+        /* FAB carrito */
+        .fab {
+            position: fixed;
+            right: 20px; bottom: 22px;
+            width: 54px; height: 54px;
+            border-radius: 15px;
+            background: var(--brand);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            text-decoration: none;
+            box-shadow: 0 6px 24px color-mix(in srgb, var(--brand) 50%, transparent);
+            z-index: 200;
+            transition: transform .14s;
+        }
+        .fab:hover { transform: translateY(-3px); color: #fff; }
+        .fab-n {
+            position: absolute;
+            top: -5px; right: -5px;
+            width: 19px; height: 19px;
+            background: #111;
+            color: #fff;
+            border-radius: 50%;
+            font-size: .63rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 576px) {
+            .hero { min-height: 380px; }
+            .hero-logo { width: 76px; height: 76px; font-size: 1.8rem; }
+            .hero-name { font-size: 2rem; }
+            .pgrid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .pcard-img, .pcard-placeholder { height: 120px; }
+        }
+        @media (max-width: 380px) {
+            .pgrid { grid-template-columns: 1fr; }
         }
     </style>
-
 </head>
+<body>
 
-<body class="bg-light">
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
 
-    <!-- NAVBAR -->
+    {% if restaurante.portada %}
+        <div class="hero-bg" style="background-image:url('{{ restaurante.portada.url }}');"></div>
+        <div class="hero-overlay"></div>
+    {% else %}
+        <div class="hero-pattern"></div>
+        <div class="hero-overlay"></div>
+    {% endif %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="hero-body">
 
-        <div class="container">
+        <!-- Logo centrado -->
+        <div class="hero-logo">
+            {% if restaurante.logo %}
+                <img src="{{ restaurante.logo.url }}" alt="{{ restaurante.nombre }}">
+            {% else %}
+                {{ restaurante.nombre|first|upper }}
+            {% endif %}
+        </div>
 
-            <a class="navbar-brand fw-bold" href="#">
+        <!-- Nombre -->
+        <h1 class="hero-name">{{ restaurante.nombre }}</h1>
 
-                Bistro Master
+        <!-- Slogan -->
+        <p class="hero-slogan">
+            {% if restaurante.slogan %}{{ restaurante.slogan }}{% else %}Bienvenido — haz tu pedido fácilmente.{% endif %}
+        </p>
 
+        <!-- Fila de info -->
+        <div class="hero-info-row">
+            {% if restaurante.direccion %}
+                <span class="info-pill"><i class="bi bi-geo-alt-fill"></i>{{ restaurante.direccion }}</span>
+            {% endif %}
+            {% if restaurante.telefono %}
+                <span class="info-pill"><i class="bi bi-telephone-fill"></i>{{ restaurante.telefono }}</span>
+            {% endif %}
+            {% if restaurante.estado == 'abierto' %}
+                <span class="info-pill pill-open"><span class="dot"></span>Abierto ahora</span>
+            {% else %}
+                <span class="info-pill pill-closed"><span class="dot"></span>Cerrado</span>
+            {% endif %}
+        </div>
+
+        <!-- CTA -->
+        <a href="#menu" class="btn-hero">
+            <i class="bi bi-bicycle"></i> Ver menú y pedir
+        </a>
+
+    </div>
+</section>
+
+<!-- ══════════ TOPBAR STICKY ══════════ -->
+<div class="topbar">
+    <div class="container">
+        <div class="topbar-inner">
+            <a href="#" class="topbar-name">
+                <span class="topbar-dot"></span>
+                {{ restaurante.nombre }}
             </a>
-
+            <a href="#menu" class="btn-topbar">
+                <i class="bi bi-cart-fill"></i> Ordenar
+            </a>
         </div>
+    </div>
+</div>
 
-    </nav>
+<!-- ══════════ MENÚ ══════════ -->
+<section class="menu-wrap" id="menu">
+    <div class="container">
 
-    <!-- HERO / BANNER -->
-
-    <section
-        class="text-white py-5"
-        style="background: linear-gradient(to right, #141e30, #243b55);">
-
-        <div class="container">
-
-            <div class="row align-items-center">
-
-                <div class="col-lg-8">
-
-                    <h1 class="display-4 fw-bold mb-3">
-
-                        {{ restaurante.nombre }}
-
-                    </h1>
-
-                    <p class="lead mb-4">
-
-                        Bienvenido a nuestro restaurante.
-                        Realiza tus domicilios fácilmente.
-
-                    </p>
-
-                    {% if restaurante.estado == 'abierto' %}
-
-                        <span class="badge bg-success fs-6 px-3 py-2">
-
-                            <i class="bi bi-check-circle-fill"></i>
-                            Restaurante Abierto
-
-                        </span>
-
-                    {% else %}
-
-                        <span class="badge bg-danger fs-6 px-3 py-2">
-
-                            <i class="bi bi-x-circle-fill"></i>
-                            Restaurante Cerrado
-
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-                <div class="col-lg-4 text-center mt-4 mt-lg-0">
-
-                    <div
-                        class="bg-white text-dark rounded-4 shadow p-4">
-
-                        <h4 class="fw-bold mb-4">
-
-                            Información
-
-                        </h4>
-
-                        <p class="mb-3">
-
-                            <i class="bi bi-geo-alt-fill text-primary"></i>
-
-                            {{ restaurante.direccion }}
-
-                        </p>
-
-                        <p class="mb-4">
-
-                            <i class="bi bi-telephone-fill text-primary"></i>
-
-                            {{ restaurante.telefono }}
-
-                        </p>
-
-                        <button
-                            class="btn btn-warning btn-lg w-100 fw-bold">
-
-                            <i class="bi bi-bicycle"></i>
-                            Pedir domicilio
-
-                        </button>
-
-                    </div>
-
-                </div>
-
+        <div class="menu-hdr">
+            <div class="menu-hdr-left">
+                <h2>Nuestro menú</h2>
+                <div class="accent"></div>
             </div>
-
+            <span class="menu-hdr-right">Productos disponibles hoy</span>
         </div>
 
-    </section>
-
-    <!-- MENÚ -->
-
-    <div class="container-fluid px-4 px-lg-5 py-5">
-
-        <div class="text-center mb-5">
-
-            <h2 class="fw-bold">
-
-                Nuestro menú
-
-            </h2>
-
-            <p class="text-muted">
-
-                Descubre nuestros productos disponibles.
-
-            </p>
-
+        {% if restaurante.estado != 'abierto' %}
+        <div class="notice">
+            <i class="bi bi-moon-stars-fill"></i>
+            Estamos cerrados en este momento. Vuelve pronto para hacer tu pedido.
         </div>
+        {% endif %}
 
         {% if categorias %}
-
             {% for categoria in categorias %}
-
                 {% with productos=categoria.productos.all %}
-
                     {% if productos %}
-
-                        <div class="mb-5">
-
-                            <h3 class="fw-bold mb-4">
-
-                                {{ categoria.nombre }}
-
-                            </h3>
-
-                            <div class="row g-4">
-
-                                {% for producto in productos %}
-
-                                    {% if producto.disponible %}
-
-                                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-
-                                            <div
-                                                class="card producto-card border-0 shadow-sm rounded-4 h-100 overflow-hidden"
-                                                style="transition: 0.3s;">
-
-                                                {% if producto.imagen %}
-
-                                                    <img
-                                                        src="{{ producto.imagen.url }}"
-                                                        class="card-img-top"
-                                                        style="height: 220px; object-fit: cover;">
-
-                                                {% endif %}
-
-                                                <div class="card-body d-flex flex-column">
-
-                                                    <div class="d-flex justify-content-between align-items-start mb-2">
-
-                                                        <h5 class="fw-bold">
-
-                                                            {{ producto.nombre }}
-
-                                                        </h5>
-
-                                                        <span class="badge bg-success">
-
-                                                            Disponible
-
-                                                        </span>
-
-                                                    </div>
-
-                                                    <p class="text-muted small flex-grow-1">
-
-                                                        {{ producto.descripcion }}
-
-                                                    </p>
-
-                                                    <div class="d-flex justify-content-between align-items-center mt-3">
-
-                                                        <h4 class="fw-bold text-primary mb-0">
-
-                                                            ${{ producto.precio }}
-
-                                                        </h4>
-
-                                                        <button
-                                                            class="btn btn-dark rounded-pill">
-
-                                                            Pedir
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    {% endif %}
-
-                                {% endfor %}
-
-                            </div>
-
+                    <div class="cat-block">
+                        <div class="cat-hdr">
+                            <span class="cat-pip"></span>
+                            <span class="cat-label">{{ categoria.nombre }}</span>
+                            <span class="cat-line"></span>
                         </div>
-
+                        <div class="pgrid">
+                            {% for producto in productos %}
+                                {% if producto.disponible %}
+                                <div class="pcard">
+                                    <div class="pcard-img-wrap">
+                                        {% if producto.imagen %}
+                                            <img src="{{ producto.imagen.url }}" class="pcard-img" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                            <div class="pcard-placeholder"><i class="bi bi-image"></i></div>
+                                        {% endif %}
+                                        {% if producto.precio %}<div class="pprice-float">${{ producto.precio }}</div>{% endif %}
+                                    </div>
+                                    <div class="pcard-body">
+                                        <p class="pcard-name">{{ producto.nombre }}</p>
+                                        <p class="pcard-desc">{{ producto.descripcion }}</p>
+                                        <div class="pcard-foot">
+                                            <span class="pcard-price">${{ producto.precio }}</span>
+                                            <button class="btn-add"><i class="bi bi-plus-lg"></i> Pedir</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                     {% endif %}
-
                 {% endwith %}
-
             {% endfor %}
-
         {% else %}
-
-            <div class="text-center py-5">
-
-                <h3>
-
-                    Este restaurante aún no tiene menú disponible.
-
-                </h3>
-
-            </div>
-
+        <div class="empty">
+            <i class="bi bi-journal-x"></i>
+            <p>Este restaurante aún no tiene productos disponibles.</p>
+        </div>
         {% endif %}
 
     </div>
+</section>
 
-    <!-- FOOTER -->
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 <strong>{{ restaurante.nombre }}</strong> · Con tecnología de Bistro Master</p>
+    </div>
+</footer>
 
-    <footer class="bg-dark text-light py-4 mt-5">
+<!-- FAB carrito -->
+<a href="#" class="fab" title="Ver carrito">
+    <i class="bi bi-cart-fill"></i>
+    <span class="fab-n">0</span>
+</a>
 
-        <div class="container text-center">
-
-            <p class="mb-0">
-
-                © 2026 Bistro Master ·
-                Plataforma Multi-Restaurante
-
-            </p>
-
-        </div>
-
-    </footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

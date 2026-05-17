@@ -323,10 +323,4 @@ def toggle_usuario(request, usuario_id):
 def logout_usuario(request):
 
     logout(request)
-
-    messages.success(
-        request,
-        'Sesión cerrada correctamente.'
-    )
-
     return redirect('inicio')

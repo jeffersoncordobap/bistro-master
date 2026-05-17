@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from apps.usuarios.decorators import rol_requerido
 
-# Create your views here.
+
 @login_required
 @rol_requerido([Usuario.Roles.ADMIN])
 def configuracion_restaurante(request):
@@ -20,25 +20,17 @@ def configuracion_restaurante(request):
 
         form = RestauranteUpdateForm(
             request.POST,
+            request.FILES,      # ← necesario para recibir imágenes
             instance=restaurante
         )
 
         if form.is_valid():
-
             form.save()
-
-            messages.success(
-                request,
-                'Configuración actualizada correctamente.'
-            )
-
+            messages.success(request, 'Configuración actualizada correctamente.')
             return redirect('configuracion_restaurante')
 
     else:
-
-        form = RestauranteUpdateForm(
-            instance=restaurante
-        )
+        form = RestauranteUpdateForm(instance=restaurante)
 
     context = {
         'form': form,
@@ -50,13 +42,11 @@ def configuracion_restaurante(request):
         'dashboard/configuracion/configuracion.html',
         context
     )
-        
+
+
 def pagina_restaurante(request, slug):
 
-    restaurante = get_object_or_404(
-        Restaurante,
-        slug=slug
-    )
+    restaurante = get_object_or_404(Restaurante, slug=slug)
 
     categorias = CategoriaProducto.objects.filter(
         restaurante=restaurante,
