@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Registrar Comanda{% endblock %}
+
+{% block page_title %}Registrar Comanda{% endblock %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" id="formComanda">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Número de mesa</label>
+                <input type="number" name="numero_mesa" class="form-control" min="1" required>
+            </div>
+
+            <h5 class="fw-bold mb-3">Productos disponibles</h5>
+
+            <div class="row g-3 mb-4">
+                {% for producto in productos %}
+                <div class="col-md-4">
+                    <div class="card border shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="form-check mb-2">
+                                <input
+                                    class="form-check-input producto-check"
+                                    type="checkbox"
+                                    name="productos"
+                                    value="{{ producto.id }}"
+                                    id="producto_{{ producto.id }}">
+                                <label class="form-check-label fw-bold" for="producto_{{ producto.id }}">
+                                    {{ producto.nombre }}
+                                </label>
+                            </div>
+                            <p class="text-muted small mb-2">{{ producto.descripcion }}</p>
+                            <p class="fw-bold text-primary">${{ producto.precio }}</p>
+                            <input type="number" name="cantidades" value="1" min="1" class="form-control form-control-sm mb-2">
+                            <input type="text" name="notas" placeholder="Nota especial (ej: sin cebolla)" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-muted">No hay productos disponibles.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                    <i class="bi bi-send"></i> Enviar pedido
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

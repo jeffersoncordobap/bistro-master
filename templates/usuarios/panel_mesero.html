@@ -1,11 +1,19 @@
-<h1>
-    Panel Mesero
-</h1>
+{% extends 'dashboard/base.html' %}
 
-<p>
-    Bienvenido {{ request.user.username }}
-</p>
+{% block title %}Panel Mesero{% endblock %}
 
-<p>
-    Tipo de usuario {{ request.user.rol }}
-</p>
+{% block page_title %}Panel Mesero{% endblock %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h3 class="fw-bold">Bienvenido {{ request.user.username }}</h3>
+        <p class="text-muted">Registra los pedidos de las mesas desde aquí.</p>
+        <a href="{% url 'registrar_comanda' %}" class="btn btn-danger btn-lg fw-bold">
+            <i class="bi bi-plus-circle"></i> Nueva comanda
+        </a>
+    </div>
+</div>
+
+{% endblock %}
