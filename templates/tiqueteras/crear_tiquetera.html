@@ -1,0 +1,262 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Nueva Tiquetera{% endblock %}
+{% block page_title %}Nueva Tiquetera{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .form-card{
+        background:#fff;
+        border-radius:14px;
+        border:1px solid #dee2e6;
+        overflow:hidden;
+    }
+
+    .form-header{
+        background:linear-gradient(to right, #c0392b, #e74c3c);
+        padding:1.2rem 1.5rem;
+        color:#fff;
+    }
+
+    .form-header h4{
+        margin:0;
+        font-weight:700;
+    }
+
+    .form-header p{
+        margin:0.25rem 0 0;
+        opacity:0.85;
+        font-size:0.85rem;
+    }
+
+    .form-body{
+        padding:1.5rem;
+    }
+
+    .form-label{
+        font-weight:700;
+        font-size:0.85rem;
+        color:#495057;
+        margin-bottom:0.45rem;
+    }
+
+    .form-control,
+    .form-select{
+        border-radius:10px;
+        padding:0.75rem 0.9rem;
+        border:1.5px solid #dee2e6;
+        transition:all 0.2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+        border-color:#e74c3c;
+        box-shadow:0 0 0 3px rgba(231,76,60,0.12);
+    }
+
+    .is-invalid{
+        border-color:#dc3545!important;
+    }
+
+    .invalid-feedback{
+        display:block;
+        font-size:0.8rem;
+        margin-top:0.35rem;
+    }
+
+    .help-text{
+        font-size:0.75rem;
+        color:#6c757d;
+        margin-top:0.35rem;
+    }
+
+    .btn-guardar{
+        background:linear-gradient(to right, #c0392b, #e74c3c);
+        border:none;
+        color:#fff;
+        padding:0.8rem 1.2rem;
+        border-radius:10px;
+        font-weight:700;
+        transition:all 0.2s;
+    }
+
+    .btn-guardar:hover{
+        opacity:0.95;
+        transform:translateY(-1px);
+    }
+
+    .error-box{
+        background:#fff5f5;
+        border:1px solid #f5c2c7;
+        color:#842029;
+        border-radius:10px;
+        padding:1rem;
+        margin-bottom:1.25rem;
+    }
+
+    .error-box ul{
+        margin:0;
+        padding-left:1.2rem;
+    }
+
+</style>
+
+<div class="form-card">
+
+    <div class="form-header">
+
+        <h4>
+            <i class="bi bi-ticket-perforated-fill me-2"></i>
+            Registrar Tiquetera
+        </h4>
+
+        <p>
+            Crea una nueva tiquetera para un cliente
+        </p>
+
+    </div>
+
+    <div class="form-body">
+
+        <form method="POST" novalidate>
+
+            {% csrf_token %}
+
+            <!-- ERRORES GENERALES -->
+            {% if form.non_field_errors %}
+
+                <div class="error-box">
+
+                    <strong>
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Se encontraron errores:
+                    </strong>
+
+                    <ul class="mt-2">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+
+            {% endif %}
+
+            <div class="row g-4">
+
+                <!-- CLIENTE -->
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Cliente
+                    </label>
+
+                    {{ form.cliente_nombre }}
+
+                    {% if form.cliente_nombre.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.cliente_nombre.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- TELÉFONO -->
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Teléfono
+                    </label>
+
+                    {{ form.cliente_telefono }}
+
+                    {% if form.cliente_telefono.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.cliente_telefono.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <div class="help-text">
+                        Opcional
+                    </div>
+
+                </div>
+
+                <!-- PLAN -->
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Plan de tiquetera
+                    </label>
+
+                    {{ form.plan }}
+
+                    {% if form.plan.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.plan.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- FECHA INICIO -->
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Fecha inicio
+                    </label>
+
+                    {{ form.fecha_inicio }}
+
+                    {% if form.fecha_inicio.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.fecha_inicio.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- FECHA VENCIMIENTO -->
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Fecha vencimiento
+                    </label>
+
+                    {{ form.fecha_vencimiento }}
+
+                    {% if form.fecha_vencimiento.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.fecha_vencimiento.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+
+                <button type="submit" class="btn-guardar">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Guardar tiquetera
+                </button>
+
+                <a href="{% url 'listar_tiqueteras' %}"
+                   class="btn btn-light border rounded-3 px-4">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

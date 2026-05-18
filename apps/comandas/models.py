@@ -3,6 +3,10 @@ from apps.restaurantes.models import Restaurante
 from apps.usuarios.models import Usuario
 from apps.productos.models import Producto
 
+class TipoConsumo(models.TextChoices):
+
+    NORMAL = 'normal', 'Normal'
+    TIQUETERA = 'tiquetera', 'Tiquetera'
 
 class Comanda(models.Model):
 
@@ -29,6 +33,12 @@ class Comanda(models.Model):
         default=Estados.PENDIENTE
     )
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    
+    tipo_consumo = models.CharField(
+        max_length=20,
+        choices=TipoConsumo.choices,
+        default=TipoConsumo.NORMAL
+    )
 
     def __str__(self):
         return f'Mesa {self.numero_mesa} - {self.estado}'
@@ -49,3 +59,5 @@ class ItemComanda(models.Model):
 
     def __str__(self):
         return f'{self.cantidad}x {self.producto.nombre}'
+    
+    
