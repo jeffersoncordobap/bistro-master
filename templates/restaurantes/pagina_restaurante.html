@@ -215,38 +215,64 @@
            SECCIÓN MENÚ
         ══════════════════════════════ */
         .menu-wrap {
-            padding: 2.5rem 0 4.5rem;
+            padding: 0 0 4.5rem;
         }
 
-        /* Cabecera con número de productos */
+        /* Cabecera menú */
+        .menu-hdr-section {
+            background: #fff;
+            border-bottom: 1px solid #e4e2dd;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+        }
         .menu-hdr {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            border-bottom: 2px solid #e4e2dd;
-            padding-bottom: 1.25rem;
-            margin-bottom: 2.25rem;
+            flex-wrap: wrap;
         }
-        .menu-hdr-left h2 {
-            font-size: 1.5rem;
+        .menu-hdr-left {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+        }
+        .menu-hdr-icon {
+            width: 46px; height: 46px;
+            border-radius: 13px;
+            background: var(--brand-lt);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .menu-hdr-icon i { color: var(--brand); font-size: 1.3rem; }
+        .menu-hdr-texts h2 {
+            font-size: 1.45rem;
             font-weight: 900;
             letter-spacing: -.5px;
             color: #111;
             margin: 0;
+            line-height: 1.1;
         }
-        .menu-hdr-left .accent {
-            display: inline-block;
-            width: 30px; height: 4px;
-            background: var(--brand);
-            border-radius: 2px;
-            margin-top: .45rem;
-        }
-        .menu-hdr-right {
+        .menu-hdr-texts p {
             font-size: .78rem;
-            color: #aaa;
+            color: #999;
+            margin: .15rem 0 0;
             font-weight: 500;
         }
+        .menu-hdr-left .accent { display: none; }
+        .menu-hdr-right {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--brand-lt);
+            color: var(--brand-dk);
+            font-size: .76rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 100px;
+            border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
+        }
+        .menu-hdr-right i { font-size: .85rem; }
 
         /* Aviso cerrado */
         .notice {
@@ -262,30 +288,49 @@
             font-size: .85rem;
             margin-bottom: 2rem;
         }
-        .notice i { font-size: 1.2rem; color: #d97706; flex-shrink: 0; }
+        .notice i { font-size: 1.3rem; color: #d97706; flex-shrink: 0; }
+        .notice { box-shadow: 0 2px 8px rgba(251,191,36,.1); border-radius: 14px; }
 
         /* Categorías */
-        .cat-block { margin-bottom: 2.5rem; }
+        .cat-block {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #eae8e4;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 14px rgba(0,0,0,.045);
+        }
         .cat-hdr {
             display: flex;
             align-items: center;
-            gap: .55rem;
-            margin-bottom: 1.1rem;
+            gap: .6rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: .9rem;
+            border-bottom: 1px solid #f0ede8;
         }
-        .cat-pip {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--brand);
+        .cat-icon-wrap {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: var(--brand-lt);
+            display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
+        .cat-icon-wrap i { color: var(--brand); font-size: .9rem; }
         .cat-label {
-            font-size: .72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #777;
+            font-size: .9rem;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: -.2px;
         }
-        .cat-line { flex:1; height:1px; background:#e4e2dd; }
+        .cat-count {
+            margin-left: auto;
+            font-size: .71rem;
+            font-weight: 600;
+            color: #aaa;
+            background: #f5f4f2;
+            padding: 2px 9px;
+            border-radius: 100px;
+        }
 
         /* Grid 4 columnas en desktop, responsive */
         .pgrid {
@@ -296,18 +341,19 @@
 
         /* Card de producto */
         .pcard {
-            background: #fff;
-            border-radius: 16px;
+            background: #fafaf8;
+            border-radius: 14px;
             border: 1px solid #eae8e4;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
-            transition: transform .18s, box-shadow .18s;
+            transition: transform .18s, box-shadow .18s, border-color .18s;
         }
         .pcard:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 16px 40px rgba(0,0,0,.08);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 48px rgba(0,0,0,.10);
+            border-color: color-mix(in srgb, var(--brand) 35%, #eae8e4);
         }
 
         .pcard-img-wrap { position: relative; flex-shrink: 0; }
@@ -517,15 +563,27 @@
 
 <!-- ══════════ MENÚ ══════════ -->
 <section class="menu-wrap" id="menu">
-    <div class="container">
 
-        <div class="menu-hdr">
-            <div class="menu-hdr-left">
-                <h2>Nuestro menú</h2>
-                <div class="accent"></div>
+    <div class="menu-hdr-section">
+        <div class="container">
+            <div class="menu-hdr">
+                <div class="menu-hdr-left">
+                    <div class="menu-hdr-icon">
+                        <i class="bi bi-grid-fill"></i>
+                    </div>
+                    <div class="menu-hdr-texts">
+                        <h2>Nuestro menú</h2>
+                        <p>Descubre lo que tenemos para ti hoy</p>
+                    </div>
+                </div>
+                <div class="menu-hdr-right">
+                    <i class="bi bi-bag-check-fill"></i> Productos disponibles
+                </div>
             </div>
-            <span class="menu-hdr-right">Productos disponibles hoy</span>
         </div>
+    </div>
+
+    <div class="container">
 
         {% if restaurante.estado != 'abierto' %}
         <div class="notice">
@@ -540,9 +598,8 @@
                     {% if productos %}
                     <div class="cat-block">
                         <div class="cat-hdr">
-                            <span class="cat-pip"></span>
+                            <div class="cat-icon-wrap"><i class="bi bi-tag-fill"></i></div>
                             <span class="cat-label">{{ categoria.nombre }}</span>
-                            <span class="cat-line"></span>
                         </div>
                         <div class="pgrid">
                             {% for producto in productos %}
