@@ -9,10 +9,21 @@ def lista_productos(request):
 
     productos = Producto.objects.filter(
         restaurante=request.user.restaurante
-    ).order_by('-creado')
+    ).select_related('categoria').order_by('categoria__nombre', 'nombre')
+
+    productos_por_categoria = {}
+    for producto in productos:
+        nombre_categoria = producto.categoria.nombre if producto.categoria else 'Sin categoría'
+        productos_por_categoria.setdefault(nombre_categoria, []).append(producto)
+
+    productos_disponibles = productos.filter(disponible=True).count()
+    productos_no_disponibles = productos.filter(disponible=False).count()
 
     context = {
-        'productos': productos
+        'productos': productos,
+        'productos_por_categoria': productos_por_categoria,
+        'productos_disponibles': productos_disponibles,
+        'productos_no_disponibles': productos_no_disponibles
     }
 
     return render(

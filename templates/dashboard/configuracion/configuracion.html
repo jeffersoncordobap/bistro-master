@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 
 {% block title %}Configuración{% endblock %}
-{% block page_title %}Configuración Restaurante{% endblock %}
+{% block page_title %}Configuración{% endblock %}
 
 {% block content %}
 <style>
@@ -230,6 +230,84 @@
         flex-shrink: 0;
         transition: background 0.2s;
     }
+
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .row.g-3.align-items-start {
+            gap: 1rem;
+        }
+        .col-lg-4,
+        .col-lg-8 {
+            max-width: 100% !important;
+        }
+        .form-card-header {
+            padding: 1rem 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-card-header .header-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        .form-card-header h4 {
+            font-size: 0.95rem;
+        }
+        .form-card-header p {
+            font-size: 0.74rem;
+        }
+        .form-card-body {
+            padding: 1rem;
+        }
+        .form-section {
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .field-label {
+            font-size: 0.78rem;
+        }
+        .form-control,
+        .form-select {
+            font-size: 0.82rem;
+            padding: 6px 10px;
+        }
+        .d-flex.gap-2.pt-1.flex-wrap {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn-guardar,
+        .btn-volver {
+            width: 100% !important;
+            justify-content: center;
+            padding: 8px 1rem;
+            font-size: 0.82rem;
+        }
+        .info-card-body {
+            padding: 1rem 1rem;
+        }
+        .info-card-header {
+            padding: 1rem 1rem;
+        }
+        .restaurant-initial {
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+        }
+    }
+    
+    /* Responsive: tablet */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .d-flex.gap-2.pt-1.flex-wrap {
+            flex-direction: row;
+            gap: 0.75rem;
+            flex-wrap: nowrap;
+        }
+        .btn-guardar,
+        .btn-volver {
+            width: auto;
+            flex: 1;
+        }
+    }
 </style>
 
 <div class="row g-3 align-items-start">
@@ -275,8 +353,8 @@
                 <div class="info-row">
                     <span class="info-label"><i class="bi bi-palette-fill"></i> Color principal</span>
                     <div class="d-flex align-items-center gap-2 mt-1">
-                        <div style="width:22px;height:22px;border-radius:6px;background:{{ restaurante.color_principal }};border:1px solid #dee2e6;"></div>
-                        <span class="info-value">{{ restaurante.color_principal }}</span>
+                        <div style="width:22px;height:22px;border-radius:6px;background:{{ restaurante.color_principal|default:'#e74c3c' }};border:1px solid #dee2e6;"></div>
+                        <span class="info-value">{{ restaurante.color_principal|default:'#e74c3c' }}</span>
                     </div>
                 </div>
 
@@ -315,6 +393,14 @@
             <div class="form-card-body">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 py-2 px-3 mb-3" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <div class="small mb-0"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
                     <!-- FILA 1: Dos columnas lado a lado -->
                     <div class="row g-3 mb-3">
@@ -398,8 +484,8 @@
                             <div class="color-row">
                                 {{ form.color_principal }}
                                 <div class="color-preview-box" id="colorPreview"
-                                     style="background: {{ restaurante.color_principal }};"></div>
-                                <span class="text-muted small" id="colorHex">{{ restaurante.color_principal }}</span>
+                                     style="background: {{ restaurante.color_principal|default:'#e74c3c' }};"></div>
+                                <span class="text-muted small" id="colorHex">{{ restaurante.color_principal|default:'#e74c3c' }}</span>
                             </div>
                             <p class="field-hint">Este color se usará en el banner y botones de tu página pública.</p>
                         </div>
@@ -471,17 +557,37 @@
     }
 
     // Copiar URL
+    function marcarCopiado() {
+        const btn = document.getElementById('btnCopiar');
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡URL copiada!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-copy"></i> Copiar URL';
+            btn.classList.remove('copied');
+        }, 2000);
+    }
+
     function copiarURL() {
         const url = "{{ request.scheme }}://{{ request.get_host }}{% url 'pagina_restaurante' restaurante.slug %}";
-        navigator.clipboard.writeText(url).then(() => {
-            const btn = document.getElementById('btnCopiar');
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡URL copiada!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.innerHTML = '<i class="bi bi-copy"></i> Copiar URL';
-                btn.classList.remove('copied');
-            }, 2000);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(marcarCopiado).catch(() => copiarURLFallback(url));
+        } else {
+            copiarURLFallback(url);
+        }
+    }
+
+    function copiarURLFallback(url) {
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        try {
+            document.execCommand('copy');
+            marcarCopiado();
+        } catch (e) {
+            window.prompt('Copia este enlace:', url);
+        }
+        document.body.removeChild(input);
     }
 </script>
 

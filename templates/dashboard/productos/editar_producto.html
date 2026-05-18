@@ -181,6 +181,71 @@
         font-size: 0.74rem; color: #e74c3c; margin-top: 0.25rem;
         display: flex; align-items: center; gap: 0.25rem;
     }
+    
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .form-card-header {
+            padding: 1rem 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .form-card-header .header-icon,
+        .header-img-preview {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        .form-card-header h4 {
+            font-size: 0.95rem;
+        }
+        .form-card-header p {
+            font-size: 0.74rem;
+        }
+        .form-card-body {
+            padding: 1rem;
+        }
+        .form-section {
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .field-label {
+            font-size: 0.78rem;
+        }
+        .form-control,
+        .form-select {
+            font-size: 0.82rem;
+            padding: 6px 10px;
+        }
+        .d-flex.gap-2.pt-1 {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn-guardar,
+        .btn-cancelar {
+            width: 100%;
+            justify-content: center;
+            padding: 8px 1rem;
+            font-size: 0.82rem;
+        }
+        .row.justify-content-center > .col-lg-8 {
+            max-width: 100% !important;
+            padding: 0 0.5rem;
+        }
+    }
+    
+    /* Responsive: tablet */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .d-flex.gap-2.pt-1 {
+            flex-direction: row;
+            gap: 0.75rem;
+        }
+        .btn-guardar,
+        .btn-cancelar {
+            width: auto;
+            flex: 1;
+        }
+    }
 </style>
 
 <div class="row justify-content-center">

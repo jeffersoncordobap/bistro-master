@@ -141,6 +141,50 @@
         color: #6c757d;
         font-size: 0.78rem;
     }
+
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .welcome-card {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .welcome-card::after { display: none; }
+        .welcome-card h3 {
+            font-size: 1.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .welcome-card p { font-size: 0.8rem; }
+        .info-card .card-header-custom,
+        .metrics-card .card-header-custom {
+            padding: 0.9rem 1rem;
+            font-size: 0.85rem;
+        }
+        .info-card .card-body-custom,
+        .metrics-card .card-body-custom {
+            padding: 0.8rem 1rem;
+        }
+        .info-row { padding: 0.6rem 0; font-size: 0.85rem; }
+        .info-row-label { min-width: 80px; font-size: 0.8rem; }
+        .metric-box { padding: 0.8rem 0.35rem; }
+        .metric-box h4 { font-size: 1.4rem; }
+        .metric-box small { font-size: 0.72rem; }
+        .url-publica { font-size: 0.75rem; padding: 0.2rem 0.5rem; }
+    }
+
+    /* Responsive: tablet */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .welcome-card {
+            padding: 1.5rem 1.5rem;
+            border-radius: 14px;
+            margin-bottom: 1.25rem;
+        }
+        .welcome-card::after { font-size: 4.5rem; right: 1.5rem; }
+        .welcome-card h3 { font-size: 1.25rem; }
+        .welcome-card p { font-size: 0.85rem; }
+    }
 </style>
 
 <!-- BIENVENIDA -->
