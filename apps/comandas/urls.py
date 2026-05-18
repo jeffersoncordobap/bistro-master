@@ -28,4 +28,10 @@ urlpatterns = [
         views.mis_comandas,
         name='mis_comandas'
     ),
+    # Endpoint para que el mesero marque como entregado
+    path(
+        'comanda/<int:comanda_id>/marcar-entregado/',
+        views.marcar_comanda_entregada,
+        name='marcar_comanda_entregada'
+    ),
 ]

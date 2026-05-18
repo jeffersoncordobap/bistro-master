@@ -95,6 +95,43 @@
     }
     .tip-item p { margin: 0; color: #212529; line-height: 1.5; }
     .tip-item span { font-weight: 600; }
+
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .welcome-card {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .welcome-card::after { display: none; }
+        .welcome-card h3 {
+            font-size: 1.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .welcome-card p { font-size: 0.8rem; }
+        .rol-badge { padding: 0.4rem 0.9rem; font-size: 0.78rem; }
+    }
+
+    /* Responsive: tablet (keep desktop-like size but stacked slightly) */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .welcome-card {
+            padding: 1.6rem 1.6rem;
+            border-radius: 16px;
+            margin-bottom: 1.25rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .welcome-card::after { font-size: 5.5rem; right: 1.2rem; }
+        .welcome-card h3 { font-size: 1.35rem; }
+        .welcome-card p { font-size: 0.86rem; }
+        .rol-badge { padding: 0.45rem 1rem; }
+    }
 </style>
 
 <div class="welcome-card">

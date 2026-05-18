@@ -82,19 +82,19 @@
     }
 
     .cmd-top.pendiente {
-        background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+        background: #ffa500;
     }
 
     .cmd-top.preparacion {
-        background: linear-gradient(135deg, #f1948a, #e74c3c);
+        background: #2196f3;
     }
 
     .cmd-top.listo {
-        background: linear-gradient(135deg, #c0392b, #e74c3c);
+        background: #4caf50;
     }
 
     .cmd-top.entregado {
-        background: linear-gradient(135deg, #922b21, #c0392b);
+        background: #757575;
     }
 
     .cmd-mesa-num {
@@ -106,21 +106,62 @@
 
     .cmd-mesa-label {
         font-size: 0.72rem;
-        color: rgba(255,255,255,0.7);
+        color: rgba(255,255,255,0.8);
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-weight: 600;
     }
 
+    .cmd-mesa-num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: rgba(255,255,255,0.95);
+        line-height: 1;
+    }
+
     .cmd-estado-icon {
         width: 48px;
         height: 48px;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.25);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.4rem;
+        color: #fff;
+    }
+
+    .cmd-top.pendiente .cmd-estado-icon {
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+    }
+
+    .cmd-top.listo .cmd-estado-icon {
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+    }
+
+    .cmd-estado-texto {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #fff;
+    }
+
+    .cmd-estado-texto.pendiente {
+        color: #fff;
+    }
+
+    .cmd-estado-texto.preparacion {
+        color: #fff;
+    }
+
+    .cmd-estado-texto.listo {
+        color: #fff;
+    }
+
+    .cmd-estado-texto.entregado {
         color: #fff;
     }
 
@@ -236,6 +277,159 @@
         font-size: 0.88rem;
         margin-bottom: 1.5rem;
     }
+
+    /* ── Secciones por estado ── */
+    .estado-section {
+        margin-bottom: 2rem;
+    }
+
+    .estado-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #fff;
+    }
+
+    .estado-header.listo {
+        background: linear-gradient(to right, #4caf50, #66bb6a);
+    }
+
+    .estado-header.preparacion {
+        background: linear-gradient(to right, #2196f3, #42a5f5);
+    }
+
+    .estado-header.pendiente {
+        background: linear-gradient(to right, #ffa500, #ffb74d);
+    }
+
+    .estado-header.entregado {
+        background: linear-gradient(to right, #757575, #9e9e9e);
+    }
+
+    .estado-header-icon {
+        font-size: 1.1rem;
+    }
+
+    .estado-header-count {
+        background: rgba(255,255,255,0.25);
+        padding: 0.15rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    /* Botón marcar entregado */
+    .btn-marcar-entregado {
+        background: linear-gradient(to right, #757575, #9e9e9e);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+        justify-content: center;
+    }
+    .btn-marcar-entregado:hover {
+        background: linear-gradient(to right, #616161, #8d8d8d);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(117,117,117,0.3);
+    }
+    .btn-marcar-entregado:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* ── MÓVIL ── */
+    @media (max-width: 768px) {
+        .page-header {
+            border-radius: 0;
+            margin: -1rem -1rem 1.25rem;
+            padding: 1.1rem 1rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-header::before { display: none; }
+        .page-header-title {
+            font-size: clamp(0.85rem, 4.2vw, 1.05rem);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .stat-pill {
+            font-size: clamp(0.62rem,2.2vw,0.78rem);
+            padding: 0.24rem 0.6rem;
+            flex-shrink: 0;
+        }
+
+        /* Cards: compact tiles (restored) */
+        .cmd-card {
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+        }
+        .cmd-top { padding: 1rem 1.1rem 0.85rem; }
+        .cmd-mesa-num { font-size: clamp(1.2rem, 6vw, 1.8rem); }
+        .cmd-body {
+            padding: 0.85rem 1rem;
+            overflow: auto;
+            font-size: clamp(0.75rem,2.5vw,0.95rem);
+            line-height: 1.15;
+            word-break: break-word;
+        }
+        .cmd-time { font-size: clamp(0.62rem,2vw,0.78rem); margin-bottom: 0.5rem; }
+        .cmd-items li { font-size: clamp(0.68rem,2.2vw,0.84rem); }
+        .cmd-items li > div {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmd-qty { font-size: clamp(0.64rem,1.8vw,0.78rem); padding: 0.08rem 0.32rem; }
+        .cmd-footer-listo { padding: 0.6rem 1rem; font-size: clamp(0.72rem,2.2vw,0.86rem); }
+
+        .empty-state { padding: 3rem 1.5rem; }
+    }
+
+    /* ── TABLET: mostrar header como en escritorio (bordes redondeados) ── */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .page-header {
+            border-radius: 20px !important;
+            /* full width within content area so edges align with cards */
+            margin: 1.25rem 0 1.75rem;
+            padding: 2rem 2rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: none;
+        }
+        .page-header::before {
+            display: block;
+            right: -1rem;
+            font-size: 8rem;
+            color: rgba(255,255,255,0.08);
+        }
+        /* keep the title visually same as desktop */
+        .page-header-title { font-size: 1.6rem; }
+        .page-header-sub { font-size: 0.85rem; }
+        .stat-pill { font-size: 0.82rem; padding: 0.5rem 1.1rem; }
+    }
 </style>
 
 <!-- Header -->
@@ -256,112 +450,240 @@
     </div>
 </div>
 
+{% if messages %}
+    <div class="mb-3">
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show rounded-3 d-flex align-items-center gap-2 bm-flash-alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span class="bm-alert-msg">{{ message }}</span>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 {% if comandas %}
-<div class="row g-3">
 
-    {% for comanda in comandas %}
-    <div class="col-sm-6 col-xl-4">
-
-        <div class="cmd-card">
-
-            <div class="cmd-top {% if comanda.estado == 'pendiente' %}pendiente{% elif comanda.estado == 'en_preparacion' %}preparacion{% elif comanda.estado == 'listo' %}listo{% else %}entregado{% endif %}">
-                
-                <div>
-                    <div class="cmd-mesa-label">Mesa</div>
-                    <div class="cmd-mesa-num">
-                        {{ comanda.numero_mesa }}
-                    </div>
-                </div>
-
-                <div class="text-end">
-
-                    <div class="cmd-estado-icon ms-auto mb-1">
-
-                        {% if comanda.estado == 'pendiente' %}
-                            <i class="bi bi-hourglass-split"></i>
-
-                        {% elif comanda.estado == 'en_preparacion' %}
-                            <i class="bi bi-fire"></i>
-
-                        {% elif comanda.estado == 'listo' %}
-                            <i class="bi bi-check-circle-fill"></i>
-
-                        {% else %}
-                            <i class="bi bi-bag-check-fill"></i>
-                        {% endif %}
-
-                    </div>
-
-                    <div style="font-size:0.72rem; color:rgba(255,255,255,0.85); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">
-
-                        {% if comanda.estado == 'pendiente' %}
-                            Pendiente
-
-                        {% elif comanda.estado == 'en_preparacion' %}
-                            En preparación
-
-                        {% elif comanda.estado == 'listo' %}
-                            Listo
-
-                        {% else %}
-                            Entregado
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="cmd-body">
-
-                <p class="cmd-time">
-                    <i class="bi bi-clock"></i>
-                    {{ comanda.fecha_creacion|timesince }} atrás
-                </p>
-
-                <ul class="cmd-items">
-
-                    {% for item in comanda.items.all %}
-                    <li>
-
-                        <span class="cmd-qty">
-                            ×{{ item.cantidad }}
-                        </span>
-
-                        <div>
-
-                            {{ item.producto.nombre }}
-
-                            {% if item.nota %}
-                            <div class="cmd-nota">
-                                <i class="bi bi-chat-left-text"></i>
-                                {{ item.nota }}
-                            </div>
-                            {% endif %}
-
-                        </div>
-
-                    </li>
-                    {% endfor %}
-
-                </ul>
-
-            </div>
-
+    {# Sección: Listos para entregar #}
+    <div class="estado-section">
+        <div class="estado-header listo">
+            <i class="bi bi-check-circle-fill estado-header-icon"></i>
+            <span>Listos para entregar</span>
+            <span class="estado-header-count ms-auto" id="count-listo">0</span>
+        </div>
+        <div class="row g-3" id="section-listo">
+            {% for comanda in comandas %}
             {% if comanda.estado == 'listo' %}
-            <div class="cmd-footer-listo">
-                <i class="bi bi-bell-fill"></i>
-                ¡Listo para llevar a la mesa!
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="cmd-card">
+                    <div class="cmd-top listo">
+                        <div>
+                            <div class="cmd-mesa-label">Mesa</div>
+                            <div class="cmd-mesa-num">{{ comanda.numero_mesa }}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="cmd-estado-icon ms-auto mb-1">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cmd-body">
+                        <p class="cmd-time">
+                            <i class="bi bi-clock"></i>
+                            {{ comanda.fecha_creacion|timesince }} atrás
+                        </p>
+                        <ul class="cmd-items">
+                            {% for item in comanda.items.all %}
+                            <li>
+                                <span class="cmd-qty">×{{ item.cantidad }}</span>
+                                <div>
+                                    {{ item.producto.nombre }}
+                                    {% if item.nota %}
+                                    <div class="cmd-nota">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        {{ item.nota }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="cmd-footer-listo">
+                        <i class="bi bi-bell-fill"></i>
+                        ¡Listo para llevar a la mesa!
+                    </div>
+                    <div class="p-2">
+                        <button type="button" class="btn-marcar-entregado" data-comanda-id="{{ comanda.id }}" onclick="marcarEntregado(this)">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Marcar como entregado
+                        </button>
+                    </div>
+                </div>
             </div>
             {% endif %}
-
+            {% endfor %}
         </div>
-
     </div>
-    {% endfor %}
 
-</div>
+    {# Sección: En preparación #}
+    <div class="estado-section">
+        <div class="estado-header preparacion">
+            <i class="bi bi-fire estado-header-icon"></i>
+            <span>En preparación</span>
+            <span class="estado-header-count ms-auto" id="count-preparacion">0</span>
+        </div>
+        <div class="row g-3" id="section-preparacion">
+            {% for comanda in comandas %}
+            {% if comanda.estado == 'en_preparacion' %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="cmd-card">
+                    <div class="cmd-top preparacion">
+                        <div>
+                            <div class="cmd-mesa-label">Mesa</div>
+                            <div class="cmd-mesa-num">{{ comanda.numero_mesa }}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="cmd-estado-icon ms-auto mb-1">
+                                <i class="bi bi-fire"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cmd-body">
+                        <p class="cmd-time">
+                            <i class="bi bi-clock"></i>
+                            {{ comanda.fecha_creacion|timesince }} atrás
+                        </p>
+                        <ul class="cmd-items">
+                            {% for item in comanda.items.all %}
+                            <li>
+                                <span class="cmd-qty">×{{ item.cantidad }}</span>
+                                <div>
+                                    {{ item.producto.nombre }}
+                                    {% if item.nota %}
+                                    <div class="cmd-nota">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        {{ item.nota }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Sección: Pendientes #}
+    <div class="estado-section">
+        <div class="estado-header pendiente">
+            <i class="bi bi-hourglass-split estado-header-icon"></i>
+            <span>Pendientes</span>
+            <span class="estado-header-count ms-auto" id="count-pendiente">0</span>
+        </div>
+        <div class="row g-3" id="section-pendiente">
+            {% for comanda in comandas %}
+            {% if comanda.estado == 'pendiente' %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="cmd-card">
+                    <div class="cmd-top pendiente">
+                        <div>
+                            <div class="cmd-mesa-label">Mesa</div>
+                            <div class="cmd-mesa-num">{{ comanda.numero_mesa }}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="cmd-estado-icon ms-auto mb-1">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cmd-body">
+                        <p class="cmd-time">
+                            <i class="bi bi-clock"></i>
+                            {{ comanda.fecha_creacion|timesince }} atrás
+                        </p>
+                        <ul class="cmd-items">
+                            {% for item in comanda.items.all %}
+                            <li>
+                                <span class="cmd-qty">×{{ item.cantidad }}</span>
+                                <div>
+                                    {{ item.producto.nombre }}
+                                    {% if item.nota %}
+                                    <div class="cmd-nota">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        {{ item.nota }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Sección: Entregados #}
+    <div class="estado-section">
+        <div class="estado-header entregado">
+            <i class="bi bi-bag-check-fill estado-header-icon"></i>
+            <span>Entregados</span>
+            <span class="estado-header-count ms-auto" id="count-entregado">0</span>
+        </div>
+        <div class="row g-3" id="section-entregado">
+            {% for comanda in comandas %}
+            {% if comanda.estado == 'entregado' %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="cmd-card">
+                    <div class="cmd-top entregado">
+                        <div>
+                            <div class="cmd-mesa-label">Mesa</div>
+                            <div class="cmd-mesa-num">{{ comanda.numero_mesa }}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="cmd-estado-icon ms-auto mb-1">
+                                <i class="bi bi-bag-check-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cmd-body">
+                        <p class="cmd-time">
+                            <i class="bi bi-clock"></i>
+                            {{ comanda.fecha_creacion|timesince }} atrás
+                        </p>
+                        <ul class="cmd-items">
+                            {% for item in comanda.items.all %}
+                            <li>
+                                <span class="cmd-qty">×{{ item.cantidad }}</span>
+                                <div>
+                                    {{ item.producto.nombre }}
+                                    {% if item.nota %}
+                                    <div class="cmd-nota">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        {{ item.nota }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
 
 {% else %}
 
@@ -389,5 +711,57 @@
 </div>
 
 {% endif %}
+
+<script>
+    // Actualizar contadores de cada sección
+    document.addEventListener('DOMContentLoaded', function() {
+        const secciones = ['listo', 'preparacion', 'pendiente', 'entregado'];
+        secciones.forEach(estado => {
+            const section = document.getElementById('section-' + estado);
+            const countEl = document.getElementById('count-' + estado);
+            if (section && countEl) {
+                const count = section.children.length;
+                countEl.textContent = count;
+            }
+        });
+    });
+
+    // Marcar comanda como entregado (mesero)
+    async function marcarEntregado(btn) {
+        const comandaId = btn.dataset.comandaId;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                         document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:14px;height:14px;border-width:2px"></span> Procesando...';
+
+        try {
+            const response = await fetch(`/comanda/${comandaId}/marcar-entregado/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: ''
+            });
+
+            const data = await response.json();
+
+            if (data.ok) {
+                // Recargar la página para mostrar el estado actualizado
+                window.location.reload();
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar como entregado';
+                alert('Error al marcar como entregado: ' + (data.error || 'Error desconocido'));
+            }
+        } catch (error) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar como entregado';
+            alert('Error de conexión. Por favor intenta nuevamente.');
+        }
+    }
+</script>
 
 {% endblock %}

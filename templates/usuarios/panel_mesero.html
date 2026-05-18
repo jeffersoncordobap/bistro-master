@@ -102,6 +102,27 @@
     }
     .tip-item p { margin: 0; color: #212529; line-height: 1.5; }
     .tip-item span { font-weight: 600; }
+
+    /* ── MÓVIL: bienvenida ── */
+    @media (max-width: 768px) {
+        .welcome-card {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .welcome-card::after { display: none; }
+        .welcome-card h3 {
+            font-size: 1.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .welcome-card p { font-size: 0.8rem; }
+        .btn-nueva-comanda { padding: 0.5rem 1rem; font-size: 0.86rem; }
+    }
 </style>
 
 <div class="welcome-card">

@@ -76,6 +76,33 @@
             color: white;
         }
     </style>
+    <style>
+        /* Móvil / Tablet: ocultar botones de navbar y hacer hero más compacto */
+        @media (max-width: 768px) {
+            .navbar .ms-auto a { display: none !important; }
+            .hero { min-height: auto !important; padding: 2rem 0 !important; }
+            .hero .container { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+            .hero .display-4 { font-size: clamp(1.6rem,6.5vw,2.2rem); line-height:1.05; }
+            .hero .lead { font-size: 0.95rem; }
+            .hero-icon { display: none !important; }
+            .btn-primary-custom, .btn-outline-custom { padding: 10px 20px; font-size: 0.95rem; }
+        }
+        /* Sección de beneficios más compacta en móvil */
+        @media (max-width: 768px) {
+            .py-5 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+            .row.g-4 { gap: 0.8rem; }
+        }
+        /* Tablet+: hacer navbar más grande y tarjetas 3x3 */
+        @media (min-width: 768px) {
+            .navbar-brand i.bi-shop { font-size: 1.8rem; }
+            .navbar-brand { font-size: 1.3rem; }
+            .row.g-4 .col-md-4 { flex: 0 0 calc(33.3333% - 0.8rem); }
+        }
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .feature-card .card-body { padding: 1.5rem; }
+            .feature-icon { width: 80px; height: 80px; font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
 

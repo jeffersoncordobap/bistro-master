@@ -15,6 +15,9 @@ from apps.usuarios.decorators import rol_requerido
 def configuracion_restaurante(request):
 
     restaurante = request.user.restaurante
+    if not restaurante:
+        messages.error(request, 'Tu cuenta no tiene un restaurante asociado.')
+        return redirect('panel_admin')
 
     if request.method == 'POST':
 
