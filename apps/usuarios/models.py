@@ -15,7 +15,6 @@ class Usuario(AbstractUser):
     class Roles(models.TextChoices):
         ADMIN = 'admin', 'Administrador'
         MESERO = 'mesero', 'Mesero'
-        CAJERO = 'cajero', 'Cajero'
         DOMICILIARIO = 'domiciliario', 'Domiciliario'
 
     restaurante = models.ForeignKey(

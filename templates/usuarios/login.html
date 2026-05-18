@@ -48,8 +48,39 @@
             border-right: none;
         }
     </style>
+    <style>
+        /* Ajustes móviles: hacer la tarjeta más compacta */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 0rem;
+                padding-bottom: 0.5rem;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+           .container.py-5 { 
+                padding-top: 0 !important; 
+                padding-bottom: 0 !important; 
+                width: 100%;
+            }
+            .card {
+                border-radius: 14px;
+                margin: 0.25rem;
+            }
+            .card-header-custom {
+                padding: 1rem 1rem;
+            }
+            .card-header-custom .fs-1 { font-size: 2rem; }
+            .card-body { padding: 0.85rem 1rem; }
+            .btn-login { padding: 10px; font-size: 0.95rem; }
+            .form-control { padding: 10px 12px; }
+            .card .text-center { margin-top: 0.5rem; }
+        }
+    </style>
 </head>
-<body class="d-flex align-items-center">
+<body>
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">

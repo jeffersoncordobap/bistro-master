@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from .models import Restaurante
 
@@ -99,3 +101,9 @@ class RestauranteUpdateForm(forms.ModelForm):
                 'placeholder': 'Ej: La mejor cocina casera de la ciudad'
             }
         )
+
+    def clean_color_principal(self):
+        color = (self.cleaned_data.get('color_principal') or '').strip()
+        if not re.match(r'^#[0-9A-Fa-f]{6}$', color):
+            raise forms.ValidationError('Ingresa un color válido en formato HEX (ej: #e74c3c).')
+        return color.lower()

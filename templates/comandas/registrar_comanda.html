@@ -1,12 +1,10 @@
 {% extends 'dashboard/base_mesero.html' %}
-
 {% block title %}Registrar Comanda{% endblock %}
 {% block page_title %}Registrar Comanda{% endblock %}
-
 {% block content %}
 
 <style>
-    /* ── Encabezado de sección ─────────────────────────── */
+    /* ── Encabezado de página ── */
     .section-header {
         background: linear-gradient(to right, #c0392b, #e74c3c);
         border-radius: 14px;
@@ -16,288 +14,456 @@
         align-items: center;
         gap: 1rem;
     }
-
-    .section-header h4 {
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin: 0 0 0.15rem;
-    }
-
-    .section-header p {
-        color: rgba(255,255,255,0.75);
-        font-size: 0.83rem;
-        margin: 0;
-    }
-
+    .section-header h4 { color:#fff; font-weight:700; font-size:1.1rem; margin:0 0 .15rem; }
+    .section-header p  { color:rgba(255,255,255,.75); font-size:.83rem; margin:0; }
     .section-header-icon {
-        width: 44px;
-        height: 44px;
-        background: rgba(255,255,255,0.15);
-        border-radius: 10px;
+        width:44px; height:44px;
+        background:rgba(255,255,255,.15); border-radius:10px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.3rem; color:#fff; flex-shrink:0;
+    }
+
+    /* ── Card base ── */
+    .bm-card { background:#fff; border-radius:14px; border:1px solid #dee2e6; }
+    .bm-card-header {
+        padding:.95rem 1.5rem;
+        border-bottom:1px solid #dee2e6;
+        font-weight:700; font-size:.92rem;
+        display:flex; align-items:center; gap:.5rem; color:#212529;
+    }
+    .bm-card-header i { color:#e74c3c; }
+    .bm-card-body { padding:1.5rem; }
+
+    /* ── Input mesa ── */
+    .mesa-input {
+        border-radius:10px; padding:11px 14px;
+        border:1.5px solid #dee2e6; font-size:.95rem;
+        transition:border-color .2s, box-shadow .2s;
+    }
+    .mesa-input:focus {
+        border-color:#e74c3c;
+        box-shadow:0 0 0 3px rgba(192,57,43,.12); outline:none;
+    }
+
+    /* ══════════════════════════════════════
+       HEADER DE CATEGORÍA — la mejora clave
+    ══════════════════════════════════════ */
+    .cat-section { margin-bottom: 2rem; }
+
+    .cat-header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        color: #fff;
+        gap: .65rem;
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+        border-radius: 10px;
+        padding: .65rem 1.1rem;
+        margin-bottom: 1rem;
+    }
+    .cat-header-ico {
+        width: 28px; height: 28px;
+        background: rgba(255,255,255,.12);
+        border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .8rem; color: #fff;
         flex-shrink: 0;
     }
-
-    /* ── Card principal ────────────────────────────────── */
-    .bm-card {
-        background: #fff;
-        border-radius: 14px;
-        border: 1px solid #dee2e6;
+    .cat-header-name {
+        font-size: .8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #fff;
+        flex: 1;
     }
-
-    .bm-card-header {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #dee2e6;
+    .cat-header-count {
+        background: rgba(255,255,255,.15);
+        color: rgba(255,255,255,.85);
+        font-size: .7rem;
         font-weight: 700;
-        font-size: 0.92rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #212529;
+        padding: 3px 9px;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,.12);
     }
 
-    .bm-card-header i {
-        color: #e74c3c;
-    }
-
-    .bm-card-body {
-        padding: 1.5rem;
-    }
-
-    /* ── Input mesa ────────────────────────────────────── */
-    .mesa-input {
-        border-radius: 10px;
-        padding: 11px 14px;
-        border: 1.5px solid #dee2e6;
-        font-size: 0.95rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .mesa-input:focus {
-        border-color: #e74c3c;
-        box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
-        outline: none;
-    }
-
-    /* ── Tarjetas de producto ──────────────────────────── */
+    /* ── Tarjetas de producto ── */
     .producto-card {
         border: 1.5px solid #dee2e6;
         border-radius: 12px;
         padding: 1rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all .2s;
         background: #fff;
         user-select: none;
         height: 100%;
+        position: relative;
     }
-
     .producto-card:hover {
         border-color: #e74c3c;
-        box-shadow: 0 2px 12px rgba(231,76,60,0.1);
+        box-shadow: 0 2px 12px rgba(231,76,60,.1);
+        transform: translateY(-1px);
     }
-
     .producto-card.seleccionado {
         border-color: #e74c3c;
         background: #fff8f7;
-        box-shadow: 0 0 0 3px rgba(231,76,60,0.12);
+        box-shadow: 0 0 0 3px rgba(231,76,60,.12);
     }
+    .producto-check-hidden { display:none; }
 
-    .producto-check-hidden {
-        display: none;
+    /* Check circle */
+    .check-circle {
+        position: absolute;
+        top: .75rem; right: .75rem;
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        border: 2px solid #dee2e6;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .65rem; color: transparent;
+        transition: all .2s; background: #fff;
+        flex-shrink: 0;
+    }
+    .producto-card.seleccionado .check-circle {
+        background: #e74c3c; border-color: #e74c3c; color: #fff;
     }
 
     .producto-nombre {
-        font-weight: 700;
-        font-size: 0.92rem;
-        color: #212529;
-        margin-bottom: 0.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        font-weight: 700; font-size: .92rem;
+        color: #212529; margin-bottom: .2rem;
+        padding-right: 1.75rem; /* espacio para el check */
+        line-height: 1.3;
     }
-
-    .producto-nombre .check-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 2px solid #dee2e6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.65rem;
-        color: transparent;
-        flex-shrink: 0;
-        transition: all 0.2s;
-    }
-
-    .producto-card.seleccionado .check-icon {
-        background: #e74c3c;
-        border-color: #e74c3c;
-        color: #fff;
-    }
-
     .producto-desc {
-        font-size: 0.79rem;
-        color: #6c757d;
-        margin-bottom: 0.5rem;
-        line-height: 1.4;
+        font-size: .78rem; color: #6c757d;
+        margin-bottom: .5rem; line-height: 1.4;
     }
-
     .producto-precio {
-        font-weight: 700;
-        color: #e74c3c;
-        font-size: 0.9rem;
+        font-weight: 800; color: #e74c3c; font-size: .9rem;
     }
 
     /* Controles ocultos hasta seleccionar */
     .producto-controles {
         display: none;
-        margin-top: 0.75rem;
+        margin-top: .75rem;
         border-top: 1px solid #f0f0f0;
-        padding-top: 0.75rem;
+        padding-top: .75rem;
     }
-
-    .producto-card.seleccionado .producto-controles {
-        display: block;
-    }
-
+    .producto-card.seleccionado .producto-controles { display: block; }
     .control-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #6c757d;
-        margin-bottom: 0.25rem;
+        font-size: .74rem; font-weight: 600;
+        color: #6c757d; margin-bottom: .25rem;
     }
-
     .form-control-sm-bm {
-        border-radius: 8px;
-        padding: 6px 10px;
-        border: 1px solid #dee2e6;
-        font-size: 0.82rem;
-        width: 100%;
-        transition: border-color 0.2s;
+        border-radius: 8px; padding: 6px 10px;
+        border: 1px solid #dee2e6; font-size: .82rem;
+        width: 100%; transition: border-color .2s;
     }
-
     .form-control-sm-bm:focus {
         border-color: #e74c3c;
-        box-shadow: 0 0 0 2px rgba(192,57,43,0.1);
-        outline: none;
+        box-shadow: 0 0 0 2px rgba(192,57,43,.1); outline: none;
     }
 
-    /* ── Resumen del pedido (sticky) ───────────────────── */
+    /* ── Resumen sticky ── */
     .resumen-card {
-        background: #fff;
-        border-radius: 14px;
+        background: #fff; border-radius: 14px;
         border: 1px solid #dee2e6;
-        position: sticky;
-        top: 1.5rem;
+        position: sticky; top: 1.5rem;
+        overflow: hidden;
     }
-
     .resumen-header {
         background: linear-gradient(to right, #c0392b, #e74c3c);
-        border-radius: 14px 14px 0 0;
         padding: 1rem 1.25rem;
+        display: flex; align-items: center; gap: .5rem;
+        color: #fff; font-weight: 700; font-size: .92rem;
+    }
+    .resumen-body { padding: 1rem 1.25rem; }
+    .resumen-vacio {
+        text-align: center; color: #adb5bd;
+        font-size: .85rem; padding: 1.5rem 0;
+    }
+    .resumen-vacio i { font-size: 2rem; display: block; margin-bottom: .5rem; }
+    .resumen-item {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        flex-wrap: wrap;
+        padding: .6rem 0; border-bottom: 1px solid #f8f9fa;
+        font-size: .85rem; gap: .5rem;
+    }
+    .resumen-item:last-child { border-bottom: none; }
+    .resumen-item-nombre { font-weight: 600; color: #212529; flex: 1; }
+    .resumen-item-nota {
+        flex: 0 0 100%;
+        margin-top: .25rem;
+        font-size: .75rem;
+        color: #6c757d;
+        font-style: italic;
+        line-height: 1.35;
+    }
+
+    /* Controles de cantidad en resumen */
+    .resumen-item-cant-control {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.92rem;
-    }
-
-    .resumen-body {
-        padding: 1rem 1.25rem;
-    }
-
-    .resumen-vacio {
-        text-align: center;
-        color: #adb5bd;
-        font-size: 0.85rem;
-        padding: 1.5rem 0;
-    }
-
-    .resumen-vacio i {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .resumen-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 0.6rem 0;
-        border-bottom: 1px solid #f8f9fa;
-        font-size: 0.85rem;
-        gap: 0.5rem;
-    }
-
-    .resumen-item:last-child {
-        border-bottom: none;
-    }
-
-    .resumen-item-nombre {
-        font-weight: 600;
-        color: #212529;
-        flex: 1;
-    }
-
-    .resumen-item-cant {
-        background: rgba(231,76,60,0.1);
-        color: #e74c3c;
-        font-weight: 700;
-        font-size: 0.75rem;
-        padding: 0.15rem 0.5rem;
+        gap: .4rem;
+        background: rgba(231,76,60,.08);
+        padding: .2rem .5rem;
         border-radius: 20px;
-        white-space: nowrap;
     }
-
+    .resumen-cant-btn {
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        font-size: .9rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .2s;
+    }
+    .resumen-cant-btn:hover {
+        background: #c0392b;
+        transform: scale(1.1);
+    }
+    .resumen-cant-value {
+        font-weight: 700;
+        color: #e74c3c;
+        font-size: .85rem;
+        min-width: 20px;
+        text-align: center;
+    }
     .btn-enviar {
         background: linear-gradient(to right, #c0392b, #e74c3c);
-        border: none;
+        border: none; border-radius: 10px; padding: 12px;
+        font-weight: 700; font-size: .95rem; letter-spacing: .3px;
+        color: #fff; width: 100%; transition: all .2s;
+    }
+    .btn-enviar:hover:not(:disabled) {
+        background: linear-gradient(to right, #a93226, #cb4335);
+        transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,.3);
+    }
+    .btn-enviar:disabled { opacity: .45; cursor: not-allowed; }
+
+    .badge-contador {
+        background: #e74c3c; color: #fff;
+        font-size: .7rem; font-weight: 700;
+        border-radius: 20px; padding: .15rem .55rem; margin-left: .4rem;
+    }
+
+    /* Barra de categorías sticky */
+    .categoria-filtro-bar {
+        position: sticky;
+        /* sit below the topbar and page header to avoid overlapping the title when scrolling */
+        top: 130px;
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        padding: 1.2rem 0;
+        margin-bottom: 1.5rem;
+        z-index: 50;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* En pantallas pequeñas la barra debe desplazarse con la página
+       para no superponerse al título ni a los productos. */
+    @media (max-width: 768px) {
+        .categoria-filtro-bar {
+            position: static;
+            top: auto;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .categoria-filtro-scroll {
+        display: flex;
+        gap: 0.85rem;
+        overflow-x: auto;
+        padding: 0 1.5rem;
+        scroll-behavior: smooth;
+    }
+
+    .categoria-filtro-scroll::-webkit-scrollbar {
+        height: 3px;
+    }
+    .categoria-filtro-scroll::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+    }
+    .categoria-filtro-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.4);
         border-radius: 10px;
-        padding: 12px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        letter-spacing: 0.3px;
-        color: #fff;
-        width: 100%;
+    }
+
+    .btn-filtro-cat {
+        padding: 0.8rem 1.5rem;
+        border: 1.5px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.85);
+        border-radius: 100px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
         transition: all 0.2s;
     }
 
-    .btn-enviar:hover:not(:disabled) {
-        background: linear-gradient(to right, #a93226, #cb4335);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(192,57,43,0.3);
-    }
-
-    .btn-enviar:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    /* Contador flotante */
-    .badge-contador {
-        background: #e74c3c;
+    .btn-filtro-cat:hover {
+        background: rgba(255,255,255,0.2);
         color: #fff;
-        font-size: 0.7rem;
+    }
+
+    .btn-filtro-cat.activo {
+        background: #fff;
+        color: #e74c3c;
+    }
+
+    /* Secciones de categoría */
+    .cat-section {
+        display: none;
+    }
+
+    .cat-section.visible {
+        display: block;
+    }
+
+    /* Mesa display en resumen */
+    .resumen-mesa-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: .5rem 0 .75rem;
+        border-bottom: 1px solid #f0f0f0; margin-bottom: .5rem;
+        font-size: .84rem;
+    }
+    .resumen-mesa-row .label { color: #6c757d; font-weight: 500; }
+    .resumen-mesa-row .val   { font-weight: 800; color: #212529; }
+
+    /* ── Botón flotante móvil ── */
+    .fab-resumen {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 20px;
         font-weight: 700;
+        font-size: .9rem;
+        box-shadow: 0 4px 20px rgba(192,57,43,.4);
+        z-index: 1000;
+        cursor: pointer;
+        transition: all .3s;
+    }
+    .fab-resumen:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(192,57,43,.5);
+    }
+    .fab-resumen .badge {
+        background: #fff;
+        color: #e74c3c;
+        font-size: .75rem;
+        font-weight: 800;
+        padding: 2px 8px;
         border-radius: 20px;
-        padding: 0.15rem 0.55rem;
-        margin-left: 0.4rem;
+        margin-left: 8px;
+    }
+
+    /* Modal del resumen */
+    .modal-resumen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.5);
+        z-index: 1001;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .modal-resumen.active {
+        display: flex;
+    }
+    .modal-resumen-content {
+        background: #fff;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 20px 20px 0 0;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: slideUp .3s ease;
+        padding-bottom: 20px;
+    }
+
+    .modal-resumen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.5);
+        z-index: 1001;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 0;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+    .modal-resumen-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #fff;
+        font-weight: 700;
+    }
+    .modal-resumen-close {
+        background: rgba(255,255,255,.2);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-resumen-body {
+        padding: 1.25rem;
+    }
+
+    /* En móvil mostrar FAB y ocultar resumen lateral */
+    @media (max-width: 768px) {
+        .fab-resumen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            max-width: calc(100vw - 24px);
+            right: 12px;
+            bottom: 14px;
+            padding: 10px 14px;
+            font-size: .82rem;
+            line-height: 1;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .resumen-card {
+            display: none;
+        }
     }
 </style>
 
 <!-- Encabezado -->
 <div class="section-header">
-    <div class="section-header-icon">
-        <i class="bi bi-journal-plus"></i>
-    </div>
-
+    <div class="section-header-icon"><i class="bi bi-journal-plus"></i></div>
     <div>
         <h4>Nueva Comanda</h4>
         <p>Selecciona los productos y asigna el número de mesa</p>
@@ -309,158 +475,118 @@
 
     <div class="row g-4">
 
-        <!-- ── Columna izquierda: mesa + productos ── -->
+        <!-- ── Columna izquierda ── -->
         <div class="col-lg-8">
 
-            <!-- Número de mesa -->
-            <div class="bm-card mb-4">
-
-                <div class="bm-card-header">
-                    <i class="bi bi-grid-3x3-gap-fill"></i>
-                    Número de mesa
-                </div>
-
-                <div class="bm-card-body">
-
-                    <div class="row g-0 align-items-center">
-
-                        <div class="col-sm-4">
-                            <input
-                                type="number"
-                                name="numero_mesa"
-                                id="numero_mesa"
-                                class="mesa-input form-control"
-                                min="1"
-                                placeholder="Ej: 5"
-                                required>
-                        </div>
-
-                        <div class="col-sm-8 ps-3">
-                            <p class="text-muted small mb-0">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Ingresa el número de la mesa que está realizando el pedido.
-                            </p>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- Productos -->
+            <!-- Productos agrupados por categoría -->
             <div class="bm-card">
-
                 <div class="bm-card-header">
                     <i class="bi bi-bag2-fill"></i>
                     Productos disponibles
                     <span class="badge-contador d-none" id="contadorBadge">0</span>
                 </div>
-
                 <div class="bm-card-body">
 
-                    <div class="row g-3">
-
-                        {% for producto in productos %}
-                        <div class="col-md-6 col-lg-4">
-
-                            <div class="producto-card" onclick="toggleProducto({{ producto.id }})">
-
-                                <input
-                                    class="producto-check-hidden"
-                                    type="checkbox"
-                                    name="productos"
-                                    value="{{ producto.id }}"
-                                    id="producto_{{ producto.id }}">
-
-                                <div class="producto-nombre">
-                                    <span class="check-icon">
-                                        <i class="bi bi-check2"></i>
-                                    </span>
-                                    {{ producto.nombre }}
-                                </div>
-
-                                <p class="producto-desc">
-                                    {{ producto.descripcion }}
-                                </p>
-
-                                <span class="producto-precio">
-                                    ${{ producto.precio }}
-                                </span>
-
-                                <!-- Controles visibles solo al seleccionar -->
-                                <div class="producto-controles">
-
-                                    <div class="mb-2">
-
-                                        <div class="control-label">
-                                            Cantidad
-                                        </div>
-
-                                        <input
-                                            type="number"
-                                            name="cantidades"
-                                            value="1"
-                                            min="1"
-                                            max="20"
-                                            class="form-control-sm-bm"
-                                            onclick="event.stopPropagation()"
-                                            data-producto="{{ producto.id }}"
-                                            onchange="actualizarResumen()">
-
-                                    </div>
-
-                                    <div>
-
-                                        <div class="control-label">
-                                            Nota especial
-                                        </div>
-
-                                        <input
-                                            type="text"
-                                            name="notas"
-                                            placeholder="Ej: sin cebolla"
-                                            class="form-control-sm-bm"
-                                            onclick="event.stopPropagation()">
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        {% empty %}
-
-                        <div class="col-12">
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-box-seam d-block fs-2 mb-2"></i>
-                                No hay productos disponibles en este momento.
+                    {% if productos_por_categoria %}
+                        <!-- Barra de filtro de categorías -->
+                        <div class="categoria-filtro-bar">
+                            <div class="categoria-filtro-scroll">
+                                <button type="button" class="btn-filtro-cat activo" data-filtro="todas">
+                                    <i class="bi bi-grid-fill"></i> Todas
+                                </button>
+                                {% for nombre_cat in productos_por_categoria.keys %}
+                                <button type="button" class="btn-filtro-cat" data-filtro="{{ nombre_cat }}">
+                                    {{ nombre_cat }}
+                                </button>
+                                {% endfor %}
                             </div>
                         </div>
 
+                        {% for nombre_cat, prods in productos_por_categoria.items %}
+                        <div class="cat-section visible" data-categoria="{{ nombre_cat }}">
+
+                            <!-- Header de categoría -->
+                            <div class="cat-header">
+                                <div class="cat-header-ico"><i class="bi bi-tag-fill"></i></div>
+                                <span class="cat-header-name">{{ nombre_cat }}</span>
+                                <span class="cat-header-count">{{ prods|length }}</span>
+                            </div>
+
+                            <!-- Grid de productos de esta categoría -->
+                            <div class="row g-3">
+                                {% for producto in prods %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="producto-card" onclick="toggleProducto({{ producto.id }})">
+
+                                        <span class="check-circle"><i class="bi bi-check2"></i></span>
+
+                                        <input class="producto-check-hidden" type="checkbox"
+                                               name="productos" value="{{ producto.id }}"
+                                               id="producto_{{ producto.id }}">
+
+                                        <div class="producto-nombre">{{ producto.nombre }}</div>
+
+                                        {% if producto.descripcion %}
+                                        <p class="producto-desc">{{ producto.descripcion }}</p>
+                                        {% endif %}
+
+                                        <span class="producto-precio">${{ producto.precio }}</span>
+
+                                        <div class="producto-controles">
+                                            <div class="mb-2">
+                                                <div class="control-label">Cantidad</div>
+                                                <input type="number" name="cantidad_{{ producto.id }}"
+                                                          value="1" min="1" max="20"
+                                                       class="form-control-sm-bm"
+                                                       onclick="event.stopPropagation()"
+                                                       data-producto="{{ producto.id }}"
+                                                       onchange="actualizarResumen()">
+                                            </div>
+                                            <div>
+                                                <div class="control-label">Nota especial</div>
+                                                <input type="text" name="nota_{{ producto.id }}"
+                                                       placeholder="Ej: sin cebolla"
+                                                       class="form-control-sm-bm"
+                                                       onclick="event.stopPropagation()">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
                         {% endfor %}
-
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-box-seam d-block fs-2 mb-2"></i>
+                        No hay productos disponibles en este momento.
                     </div>
+                    {% endif %}
 
                 </div>
-
             </div>
 
         </div>
 
         <!-- ── Columna derecha: resumen ── -->
         <div class="col-lg-4">
-
             <div class="resumen-card">
-
                 <div class="resumen-header">
                     <i class="bi bi-receipt"></i>
                     Resumen del pedido
                 </div>
-
                 <div class="resumen-body">
+
+                    <div class="resumen-mesa-row">
+                        <span class="label"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Mesa</span>
+                        <input type="number" name="numero_mesa" id="numero_mesa"
+                               class="mesa-input form-control"
+                               min="1" placeholder="N° mesa"
+                               style="width: 100px; text-align: center;"
+                               required>
+                    </div>
 
                     <div class="resumen-vacio" id="resumenVacio">
                         <i class="bi bi-cart"></i>
@@ -469,32 +595,61 @@
 
                     <div id="resumenLista"></div>
 
-                    <div class="mt-3 pt-2 border-top" id="resumenAcciones" style="display:none!important;">
-
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="fw-semibold text-muted small">Mesa:</span>
-                            <span class="fw-bold" id="resumenMesa">—</span>
-                        </div>
-
-                    </div>
-
                     <div class="mt-3">
-
                         <button type="submit" class="btn-enviar" id="btnEnviar" disabled>
                             <i class="bi bi-send-fill me-2"></i>
                             Enviar pedido
                         </button>
-
                     </div>
 
                 </div>
-
             </div>
+        </div>
 
+        <!-- Botón flotante móvil -->
+        <button type="button" class="fab-resumen" id="fabResumen" onclick="toggleModalResumen()">
+            <i class="bi bi-cart-fill me-2"></i>
+            Ver pedido
+            <span class="badge" id="fabBadge">0</span>
+        </button>
+
+        <!-- Modal del resumen (móvil) -->
+        <div class="modal-resumen" id="modalResumen">
+            <div class="modal-resumen-content">
+                <div class="modal-resumen-header">
+                    <span><i class="bi bi-receipt me-2"></i>Resumen del pedido</span>
+                    <button type="button" class="modal-resumen-close" onclick="toggleModalResumen()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="modal-resumen-body">
+                    <div class="resumen-mesa-row">
+                        <span class="label"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Mesa</span>
+                        <input type="number" name="numero_mesa" id="numero_mesa_modal"
+                               class="mesa-input form-control"
+                               min="1" placeholder="N° mesa"
+                               style="width: 100px; text-align: center;"
+                               required>
+                    </div>
+
+                    <div class="resumen-vacio" id="modalResumenVacio">
+                        <i class="bi bi-cart"></i>
+                        Selecciona productos para verlos aquí
+                    </div>
+
+                    <div id="modalResumenLista"></div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn-enviar" id="modalBtnEnviar" disabled>
+                            <i class="bi bi-send-fill me-2"></i>
+                            Enviar pedido
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
-
 </form>
 
 <script>
@@ -504,67 +659,156 @@
         {% endfor %}
     };
 
+    // Sincronizar inputs de número de mesa
+    document.addEventListener('DOMContentLoaded', function() {
+        const mesaInput = document.getElementById('numero_mesa');
+        const mesaModalInput = document.getElementById('numero_mesa_modal');
+        const form = document.getElementById('formComanda');
+
+        if (mesaInput && mesaModalInput) {
+            mesaInput.addEventListener('input', function() {
+                mesaModalInput.value = this.value;
+            });
+            mesaModalInput.addEventListener('input', function() {
+                mesaInput.value = this.value;
+            });
+        }
+
+        // Validar número de mesa antes de enviar
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const mesaValue = mesaInput ? mesaInput.value : '';
+                if (!mesaValue || parseInt(mesaValue) < 1) {
+                    e.preventDefault();
+                    alert('Por favor ingresa el número de mesa antes de enviar el pedido.');
+                    if (mesaInput) {
+                        mesaInput.focus();
+                    } else if (mesaModalInput) {
+                        mesaModalInput.focus();
+                    }
+                    return false;
+                }
+            });
+        }
+    });
+
     function toggleProducto(id) {
         const checkbox = document.getElementById('producto_' + id);
         const card = checkbox.closest('.producto-card');
-
         checkbox.checked = !checkbox.checked;
         card.classList.toggle('seleccionado', checkbox.checked);
-
         actualizarResumen();
+    }
+
+    function toggleModalResumen() {
+        const modal = document.getElementById('modalResumen');
+        modal.classList.toggle('active');
     }
 
     function actualizarResumen() {
         const checks = document.querySelectorAll('.producto-check-hidden:checked');
-        const lista = document.getElementById('resumenLista');
-        const vacio = document.getElementById('resumenVacio');
-        const acciones = document.getElementById('resumenAcciones');
-        const btn = document.getElementById('btnEnviar');
+        const lista  = document.getElementById('resumenLista');
+        const vacio  = document.getElementById('resumenVacio');
+        const btn    = document.getElementById('btnEnviar');
         const contador = document.getElementById('contadorBadge');
-        const mesa = document.getElementById('numero_mesa').value;
-        const resumenMesa = document.getElementById('resumenMesa');
+        const mesa   = document.getElementById('numero_mesa').value;
 
-        resumenMesa.textContent = mesa ? 'Mesa ' + mesa : '—';
+        // Elementos del modal
+        const modalLista = document.getElementById('modalResumenLista');
+        const modalVacio = document.getElementById('modalResumenVacio');
+        const modalBtn = document.getElementById('modalBtnEnviar');
+        const fabBadge = document.getElementById('fabBadge');
 
         if (checks.length === 0) {
-
             lista.innerHTML = '';
             vacio.style.display = 'block';
-            acciones.style.setProperty('display', 'none', 'important');
             btn.disabled = true;
             contador.classList.add('d-none');
 
+            // Modal
+            modalLista.innerHTML = '';
+            modalVacio.style.display = 'block';
+            modalBtn.disabled = true;
+            fabBadge.textContent = '0';
         } else {
-
             vacio.style.display = 'none';
-            acciones.style.removeProperty('display');
             btn.disabled = false;
             contador.classList.remove('d-none');
             contador.textContent = checks.length;
 
+            // Modal
+            modalVacio.style.display = 'none';
+            modalBtn.disabled = false;
+            fabBadge.textContent = checks.length;
+
             let html = '';
-
             checks.forEach(chk => {
-
                 const pid = chk.value;
-                const cantInput = document.querySelector(`input[data-producto="${pid}"]`);
-                const cant = cantInput ? cantInput.value : 1;
-
+                const cantInput = document.querySelector(`input[name="cantidad_${pid}"]`);
+                const notaInput = document.querySelector(`input[name="nota_${pid}"]`);
+                const cant = cantInput ? parseInt(cantInput.value) : 1;
+                const max = cantInput ? parseInt(cantInput.max) : 20;
+                const nota = notaInput ? notaInput.value.trim() : '';
                 html += `
                     <div class="resumen-item">
                         <span class="resumen-item-nombre">${nombres[pid]}</span>
-                        <span class="resumen-item-cant">×${cant}</span>
-                    </div>
-                `;
+                        <div class="resumen-item-cant-control">
+                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${pid}, -1)">−</button>
+                            <span class="resumen-cant-value" id="resumenCant_${pid}">${cant}</span>
+                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${pid}, 1)">+</button>
+                        </div>
+                        ${nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${nota}</div>` : ''}
+                    </div>`;
             });
-
             lista.innerHTML = html;
+            modalLista.innerHTML = html;
         }
     }
 
-    // Actualizar resumen al cambiar mesa
-    document.getElementById('numero_mesa')
-        .addEventListener('input', actualizarResumen);
+    function cambiarCantidad(pid, delta) {
+        const cantInput = document.querySelector(`input[name="cantidad_${pid}"]`);
+        if (!cantInput) return;
+
+        let cant = parseInt(cantInput.value) + delta;
+        const max = parseInt(cantInput.max) || 20;
+        const min = 1;
+
+        if (cant >= min && cant <= max) {
+            cantInput.value = cant;
+            actualizarResumen();
+        }
+    }
+
+    document.getElementById('numero_mesa').addEventListener('input', actualizarResumen);
+
+    document.querySelectorAll('input[name^="nota_"]').forEach(input => {
+        input.addEventListener('input', actualizarResumen);
+        input.addEventListener('change', actualizarResumen);
+    });
+
+    // Filtrado de categorías
+    const botonesFiltr = document.querySelectorAll('.btn-filtro-cat');
+    const seccionesCateg = document.querySelectorAll('.cat-section');
+
+    botonesFiltr.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const filtro = btn.dataset.filtro;
+
+            // Actualizar botones activos
+            botonesFiltr.forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+
+            // Mostrar/ocultar secciones
+            seccionesCateg.forEach(seccion => {
+                if (filtro === 'todas' || seccion.dataset.categoria === filtro) {
+                    seccion.classList.add('visible');
+                } else {
+                    seccion.classList.remove('visible');
+                }
+            });
+        });
+    });
 </script>
 
 {% endblock %}
