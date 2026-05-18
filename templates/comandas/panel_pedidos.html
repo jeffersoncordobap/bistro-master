@@ -1,13 +1,12 @@
 {% extends 'dashboard/base.html' %}
 
 {% block title %}Panel de Pedidos{% endblock %}
-{% block page_title %}Pedidos{% endblock %}
+{% block page_title %}Panel de Pedidos{% endblock %}
 
 {% block content %}
 
 <style>
-    /* ── Encabezado ──────────────────────────────────────── */
-    .section-header {
+    .panel-header {
         background: linear-gradient(to right, #c0392b, #e74c3c);
         border-radius: 14px;
         padding: 1.25rem 1.75rem;
@@ -17,504 +16,334 @@
         justify-content: space-between;
         gap: 1rem;
     }
-
-    .section-header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .section-header-icon {
-        width: 44px;
-        height: 44px;
+    .panel-header-left { display:flex; align-items:center; gap:1rem; }
+    .panel-header-icon {
+        width: 44px; height: 44px;
         background: rgba(255,255,255,0.15);
         border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        color: #fff;
-        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: #fff; flex-shrink: 0;
     }
+    .panel-header h4 { color:#fff; font-weight:700; font-size:1.1rem; margin:0 0 0.15rem; }
+    .panel-header p  { color:rgba(255,255,255,0.75); font-size:0.83rem; margin:0; }
 
-    .section-header h4 {
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin: 0 0 0.15rem;
+    /* ── Kanban ── */
+    .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        align-items: start;
     }
+    @media(max-width:1100px){ .kanban-board{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px) { .kanban-board{ grid-template-columns:1fr; } }
 
-    .section-header p {
-        color: rgba(255,255,255,0.75);
-        font-size: 0.83rem;
-        margin: 0;
-    }
-
-    .total-badge {
-        background: rgba(255,255,255,0.2);
-        color: #fff;
-        border-radius: 20px;
-        padding: 0.35rem 1rem;
-        font-weight: 700;
-        font-size: 0.85rem;
-        white-space: nowrap;
-    }
-
-    /* ── Tabs ───────────────────────────────────────────── */
-    .filtro-tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    .filtro-tab {
-        padding: 0.45rem 1.1rem;
-        border-radius: 20px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        border: 1.5px solid #dee2e6;
-        background: #fff;
-        color: #6c757d;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    .filtro-tab:hover {
-        border-color: #e74c3c;
-        color: #e74c3c;
-    }
-
-    .filtro-tab.activo {
-        background: #e74c3c;
-        border-color: #e74c3c;
-        color: #fff;
-    }
-
-    .filtro-tab .n {
-        background: rgba(0,0,0,0.1);
-        border-radius: 10px;
-        padding: 0 5px;
-        font-size: 0.74rem;
-        min-width: 18px;
-        text-align: center;
-    }
-
-    .filtro-tab.activo .n {
-        background: rgba(255,255,255,0.25);
-    }
-
-    /* ── Cards ─────────────────────────────────────────── */
-    .comanda-card {
-        background: #fff;
+    .kanban-col {
+        background: #f8f9fa;
         border-radius: 14px;
         border: 1px solid #dee2e6;
         overflow: hidden;
-        height: 100%;
-        transition: box-shadow 0.2s;
+    }
+    .kanban-col-header {
+        padding: 0.85rem 1rem;
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 2px solid transparent;
+        font-weight: 700; font-size: 0.85rem;
+    }
+    .col-label { display:flex; align-items:center; gap:0.5rem; }
+    .col-dot   { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .col-count {
+        background: rgba(0,0,0,0.08); border-radius:20px;
+        padding: 0.1rem 0.55rem; font-size:0.72rem; font-weight:700;
     }
 
-    .comanda-card:hover {
-        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    .col-pendiente   .kanban-col-header { border-bottom-color:#ffa500; color:#e65100; }
+    .col-pendiente   .col-dot           { background:#ffa500; }
+    .col-preparacion .kanban-col-header { border-bottom-color:#2196f3; color:#1565c0; }
+    .col-preparacion .col-dot           { background:#2196f3; }
+    .col-listo       .kanban-col-header { border-bottom-color:#4caf50; color:#2e7d32; }
+    .col-listo       .col-dot           { background:#4caf50; }
+    .col-entregado   .kanban-col-header { border-bottom-color:#757575; color:#424242; }
+    .col-entregado   .col-dot           { background:#757575; }
+
+    .kanban-cards {
+        padding: 0.75rem;
+        display: flex; flex-direction: column; gap: 0.65rem;
+        min-height: 80px;
     }
 
-    .comanda-header {
-        padding: 0.85rem 1.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #dee2e6;
-        border-left: 4px solid transparent;
+    .cmd-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        transition: box-shadow 0.2s, transform 0.15s;
+        animation: cardIn 0.25s ease;
+    }
+    @keyframes cardIn {
+        from{ opacity:0; transform:translateY(6px); }
+        to  { opacity:1; transform:translateY(0); }
+    }
+    .cmd-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); transform:translateY(-1px); }
+
+    .cmd-card-inner {
+        border-left: 4px solid #dee2e6;
+        padding: 0.85rem 0.9rem 0.85rem 0.85rem;
+    }
+    .cmd-card[data-estado="pendiente"]      .cmd-card-inner { border-left-color:#ffa500; }
+    .cmd-card[data-estado="en_preparacion"] .cmd-card-inner { border-left-color:#2196f3; }
+    .cmd-card[data-estado="listo"]          .cmd-card-inner { border-left-color:#4caf50; }
+    .cmd-card[data-estado="entregado"]      .cmd-card-inner { border-left-color:#757575; }
+
+    .cmd-top {
+        display:flex; align-items:center; justify-content:space-between;
+        margin-bottom: 0.45rem;
+    }
+    .cmd-mesa {
+        font-weight:800; font-size:0.95rem; color:#212529;
+        display:flex; align-items:center; gap:0.3rem;
+    }
+    .cmd-mesa i { color:#e74c3c; font-size:0.85rem; }
+
+    .cmd-timer {
+        font-size:0.71rem; font-weight:700;
+        padding: 0.18rem 0.5rem; border-radius:20px;
+        background:#f8f9fa; color:#6c757d;
+        border: 1px solid #e9ecef;
+        font-variant-numeric: tabular-nums; white-space:nowrap;
+    }
+    .cmd-timer.warn  { background:#fff3cd; color:#7a5500;  border-color:#ffc107; }
+    .cmd-timer.alert { background:#f8d7da; color:#842029;  border-color:#f5c2c7; }
+
+    .cmd-meta {
+        font-size:0.74rem; color:#999;
+        margin-bottom: 0.55rem;
+        display:flex; align-items:center; gap:0.3rem;
     }
 
-    .comanda-card.estado-pendiente .comanda-header {
-        border-left-color: #f39c12;
+    .cmd-items { list-style:none; padding:0; margin:0 0 0.7rem; }
+    .cmd-item  {
+        display:flex; align-items:flex-start; gap:0.4rem;
+        font-size:0.79rem; color:#333;
+        padding: 0.28rem 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .cmd-item:last-child { border-bottom:none; }
+    .cmd-item-cant {
+        background:rgba(231,76,60,0.08); color:#c0392b;
+        font-weight:700; font-size:0.7rem;
+        padding:0.08rem 0.38rem; border-radius:20px;
+        white-space:nowrap; flex-shrink:0; margin-top:2px;
+    }
+    .cmd-item-nota {
+        font-size:0.68rem; color:#aaa; font-style:italic; display:block;
     }
 
-    .comanda-card.estado-preparacion .comanda-header {
-        border-left-color: #2980b9;
+    .cmd-actions { display:flex; gap:0.4rem; }
+    .btn-estado  {
+        flex:1; border:none; border-radius:8px;
+        padding:0.38rem 0.5rem; font-size:0.72rem; font-weight:700;
+        cursor:pointer; transition:all 0.2s;
+        display:flex; align-items:center; justify-content:center; gap:0.25rem;
+        white-space:nowrap;
     }
+    .btn-estado:disabled { opacity:0.4; cursor:not-allowed; }
+    .btn-prev                 { background:#f0f0f0; border:1px solid #ddd; color:#555; }
+    .btn-prev:hover:not(:disabled) { background:#e0e0e0; }
+    .btn-next-preparacion     { background:#2196f3; color:#fff; }
+    .btn-next-preparacion:hover:not(:disabled) { background:#1565c0; }
+    .btn-next-listo           { background:#4caf50; color:#fff; }
+    .btn-next-listo:hover:not(:disabled)       { background:#2e7d32; }
+    .btn-next-entregado       { background:#757575; color:#fff; }
+    .btn-next-entregado:hover:not(:disabled)   { background:#424242; }
+    .btn-done { background:#f0f0f0; color:#aaa; cursor:default; font-size:0.7rem; }
 
-    .comanda-card.estado-listo .comanda-header {
-        border-left-color: #27ae60;
+    .col-empty {
+        text-align:center; padding:1.5rem 1rem;
+        color:#ced4da; font-size:0.8rem;
     }
-
-    .comanda-card.estado-entregado .comanda-header {
-        border-left-color: #95a5a6;
-    }
-
-    .comanda-mesa {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #212529;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    .comanda-mesa i {
-        color: #e74c3c;
-    }
-
-    .estado-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
-    }
-
-    .estado-badge .dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
-    }
-
-    .badge-pendiente {
-        background: rgba(243,156,18,0.12);
-        color: #b7770d;
-    }
-
-    .badge-pendiente .dot {
-        background: #f39c12;
-    }
-
-    .badge-preparacion {
-        background: rgba(41,128,185,0.12);
-        color: #1f618d;
-    }
-
-    .badge-preparacion .dot {
-        background: #2980b9;
-    }
-
-    .badge-listo {
-        background: rgba(39,174,96,0.12);
-        color: #1e8449;
-    }
-
-    .badge-listo .dot {
-        background: #27ae60;
-    }
-
-    .badge-entregado {
-        background: rgba(149,165,166,0.15);
-        color: #616a6b;
-    }
-
-    .badge-entregado .dot {
-        background: #95a5a6;
-    }
-
-    .comanda-body {
-        padding: 1rem 1.25rem;
-    }
-
-    .comanda-meta {
-        font-size: 0.78rem;
-        color: #6c757d;
-        margin-bottom: 0.85rem;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .comanda-meta span {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    .item-lista {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 1rem;
-    }
-
-    .item-lista li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-        padding: 0.45rem 0;
-        border-bottom: 1px solid #f8f9fa;
-        font-size: 0.85rem;
-        color: #212529;
-    }
-
-    .item-lista li:last-child {
-        border-bottom: none;
-    }
-
-    .item-cant {
-        background: rgba(231,76,60,0.1);
-        color: #e74c3c;
-        font-weight: 700;
-        font-size: 0.72rem;
-        padding: 0.1rem 0.45rem;
-        border-radius: 20px;
-        white-space: nowrap;
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
-    .item-nota {
-        color: #6c757d;
-        font-size: 0.75rem;
-        font-style: italic;
-    }
-
-    .estado-form-wrap {
-        border-top: 1px solid #f0f0f0;
-        padding-top: 0.85rem;
-    }
-
-    .estado-select {
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-        padding: 7px 10px;
-        font-size: 0.83rem;
-        width: 100%;
-        margin-bottom: 0.6rem;
-    }
-
-    .btn-actualizar {
-        width: 100%;
-        background: linear-gradient(to right, #c0392b, #e74c3c);
-        border: none;
-        border-radius: 8px;
-        padding: 8px;
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.82rem;
-        cursor: pointer;
-    }
-
-    .sin-pedidos {
-        text-align: center;
-        padding: 4rem 2rem;
-        color: #adb5bd;
-    }
+    .col-empty i { font-size:1.5rem; display:block; margin-bottom:0.4rem; }
 </style>
 
 <!-- Encabezado -->
-<div class="section-header">
-    <div class="section-header-left">
-        <div class="section-header-icon">
-            <i class="bi bi-kanban-fill"></i>
-        </div>
-
+<div class="panel-header">
+    <div class="panel-header-left">
+        <div class="panel-header-icon"><i class="bi bi-kanban-fill"></i></div>
         <div>
-            <h4>Gestión de pedidos</h4>
-            <p>Supervisa y actualiza el estado de los pedidos en tiempo real</p>
+            <h4>Panel de Pedidos</h4>
+            <p>Supervisa y gestiona el flujo de trabajo del local</p>
         </div>
     </div>
-
-    <span class="total-badge">
-        <i class="bi bi-receipt me-1"></i>
-        {{ comandas|length }} pedido{% if comandas|length != 1 %}s{% endif %}
+    <span id="totalBadge" style="
+        background:rgba(255,255,255,0.18);
+        border:1.5px solid rgba(255,255,255,0.4);
+        color:#fff;
+        border-radius:20px;
+        padding:0.4rem 1rem;
+        font-size:0.82rem;
+        font-weight:700;
+        display:none;
+        align-items:center;
+        gap:0.4rem;
+        white-space:nowrap;
+        flex-shrink:0;
+    ">
+        <i class="bi bi-receipt"></i>
+        <span id="totalTexto">0 pedidos</span>
     </span>
 </div>
 
-{% if comandas %}
-
-<!-- Tabs -->
-<div class="filtro-tabs" id="filtroTabs">
-    <button class="filtro-tab activo" onclick="filtrar('todos', this)">
-        <i class="bi bi-grid-3x3-gap"></i>
-        Todos
-        <span class="n" id="n-todos">{{ comandas|length }}</span>
-    </button>
-
-    <button class="filtro-tab" onclick="filtrar('pendiente', this)">
-        <i class="bi bi-clock"></i>
-        Pendientes
-        <span class="n" id="n-pendiente">0</span>
-    </button>
-
-    <button class="filtro-tab" onclick="filtrar('en_preparacion', this)">
-        <i class="bi bi-fire"></i>
-        En preparación
-        <span class="n" id="n-preparacion">0</span>
-    </button>
-
-    <button class="filtro-tab" onclick="filtrar('listo', this)">
-        <i class="bi bi-check-circle"></i>
-        Listos
-        <span class="n" id="n-listo">0</span>
-    </button>
-
-    <button class="filtro-tab" onclick="filtrar('entregado', this)">
-        <i class="bi bi-bag-check"></i>
-        Entregados
-        <span class="n" id="n-entregado">0</span>
-    </button>
-</div>
-
-<!-- Grid -->
-<div class="row g-3" id="gridComandas">
-
-    {% for comanda in comandas %}
-    <div class="col-md-6 col-xl-4 comanda-item" data-estado="{{ comanda.estado }}">
-
-        <div class="comanda-card estado-{% if comanda.estado == 'en_preparacion' %}preparacion{% else %}{{ comanda.estado }}{% endif %}">
-
-            <div class="comanda-header">
-
-                <span class="comanda-mesa">
-                    <i class="bi bi-grid-3x3-gap-fill"></i>
-                    Mesa {{ comanda.numero_mesa }}
-                </span>
-
-                {% if comanda.estado == 'pendiente' %}
-                    <span class="estado-badge badge-pendiente">
-                        <span class="dot"></span> Pendiente
-                    </span>
-
-                {% elif comanda.estado == 'en_preparacion' %}
-                    <span class="estado-badge badge-preparacion">
-                        <span class="dot"></span> En preparación
-                    </span>
-
-                {% elif comanda.estado == 'listo' %}
-                    <span class="estado-badge badge-listo">
-                        <span class="dot"></span> Listo
-                    </span>
-
-                {% else %}
-                    <span class="estado-badge badge-entregado">
-                        <span class="dot"></span> Entregado
-                    </span>
-                {% endif %}
-
-            </div>
-
-            <div class="comanda-body">
-
-                <div class="comanda-meta">
-
-                    <span>
-                        <i class="bi bi-person"></i>
-                        {{ comanda.mesero.username }}
-                    </span>
-
-                    <span>
-                        <i class="bi bi-clock-history"></i>
-                        {{ comanda.fecha_creacion|timesince }} atrás
-                    </span>
-
-                </div>
-
-                <ul class="item-lista">
-
-                    {% for item in comanda.items.all %}
-                    <li>
-
-                        <span class="item-cant">×{{ item.cantidad }}</span>
-
-                        <div>
-                            {{ item.producto.nombre }}
-
-                            {% if item.nota %}
-                            <div class="item-nota">
-                                <i class="bi bi-chat-left-text me-1"></i>
-                                {{ item.nota }}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                    </li>
-                    {% endfor %}
-
-                </ul>
-
-                <form method="POST"
-                      action="{% url 'cambiar_estado_comanda' comanda.id %}"
-                      class="estado-form-wrap">
-
-                    {% csrf_token %}
-
-                    <select name="estado" class="estado-select">
-
-                        {% for valor, etiqueta in comanda.Estados.choices %}
-                        <option value="{{ valor }}"
-                                {% if comanda.estado == valor %}selected{% endif %}>
-                            {{ etiqueta }}
-                        </option>
-                        {% endfor %}
-
-                    </select>
-
-                    <button type="submit" class="btn-actualizar">
-                        <i class="bi bi-arrow-repeat me-1"></i>
-                        Actualizar estado
-                    </button>
-
-                </form>
-
-            </div>
-
+<!-- Board -->
+<div class="kanban-board">
+    <div class="kanban-col col-pendiente">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Pendiente</div>
+            <span class="col-count" id="cnt-pendiente">0</span>
         </div>
+        <div class="kanban-cards" id="col-pendiente"></div>
     </div>
-    {% endfor %}
-
+    <div class="kanban-col col-preparacion">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> En preparación</div>
+            <span class="col-count" id="cnt-en_preparacion">0</span>
+        </div>
+        <div class="kanban-cards" id="col-en_preparacion"></div>
+    </div>
+    <div class="kanban-col col-listo">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Listo</div>
+            <span class="col-count" id="cnt-listo">0</span>
+        </div>
+        <div class="kanban-cards" id="col-listo"></div>
+    </div>
+    <div class="kanban-col col-entregado">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Entregado</div>
+            <span class="col-count" id="cnt-entregado">0</span>
+        </div>
+        <div class="kanban-cards" id="col-entregado"></div>
+    </div>
 </div>
-
-{% else %}
-
-<div class="sin-pedidos">
-    <i class="bi bi-inbox"></i>
-    <p>No hay pedidos registrados en este momento.</p>
-</div>
-
-{% endif %}
 
 <script>
-    const items = document.querySelectorAll('.comanda-item');
+const API_URL = "{% url 'api_panel_pedidos' %}";
+const CSRF    = "{{ csrf_token }}";
+const ESTADOS = ['pendiente','en_preparacion','listo','entregado'];
+const LABEL   = { pendiente:'Pendiente', en_preparacion:'En preparación', listo:'Listo', entregado:'Entregado' };
+const BTN_CLS = { en_preparacion:'btn-next-preparacion', listo:'btn-next-listo', entregado:'btn-next-entregado' };
 
-    const contadores = {
-        pendiente: 0,
-        en_preparacion: 0,
-        listo: 0,
-        entregado: 0
-    };
+let timerData = {};
 
-    items.forEach(i => {
-        const e = i.dataset.estado;
+function fmt(seg) {
+    if (seg < 60)   return `${seg}s`;
+    if (seg < 3600) return `${Math.floor(seg/60)}m ${String(seg%60).padStart(2,'0')}s`;
+    return `${Math.floor(seg/3600)}h ${Math.floor((seg%3600)/60)}m`;
+}
+function timerCls(seg, estado) {
+    if (estado === 'entregado') return '';
+    if (seg > 1800) return 'alert';
+    if (seg > 600)  return 'warn';
+    return '';
+}
 
-        if (contadores[e] !== undefined) {
-            contadores[e]++;
-        }
+function buildCard(c) {
+    const idx  = ESTADOS.indexOf(c.estado);
+    const prev = idx > 0 ? ESTADOS[idx-1] : null;
+    const next = idx < ESTADOS.length-1 ? ESTADOS[idx+1] : null;
+    const seg  = c.segundos;
+
+    const items = c.items.map(it => `
+        <li class="cmd-item">
+            <span class="cmd-item-cant">×${it.cantidad}</span>
+            <div>${it.nombre}${it.nota ? `<span class="cmd-item-nota"><i class="bi bi-chat-left-text"></i> ${it.nota}</span>` : ''}</div>
+        </li>`).join('');
+
+    const btnPrev = prev
+        ? `<button class="btn-estado btn-prev" onclick="cambiarEstado(${c.id},'${prev}',this)"><i class="bi bi-chevron-left"></i></button>`
+        : '';
+    const btnNext = next
+        ? `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado(${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        : `<button class="btn-estado btn-done" disabled><i class="bi bi-check-all"></i> Completado</button>`;
+
+    return `<div class="cmd-card" data-id="${c.id}" data-estado="${c.estado}">
+        <div class="cmd-card-inner">
+            <div class="cmd-top">
+                <span class="cmd-mesa"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa ${c.mesa}</span>
+                <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.id}">${fmt(seg)}</span>
+            </div>
+            <div class="cmd-meta"><i class="bi bi-person"></i> ${c.mesero}</div>
+            <ul class="cmd-items">${items}</ul>
+            <div class="cmd-actions">${btnPrev}${btnNext}</div>
+        </div>
+    </div>`;
+}
+
+function renderBoard(comandas) {
+    ESTADOS.forEach(e => {
+        document.getElementById(`col-${e}`).innerHTML = '';
+        document.getElementById(`cnt-${e}`).textContent = '0';
     });
 
-    document.getElementById('n-pendiente').textContent = contadores.pendiente;
-    document.getElementById('n-preparacion').textContent = contadores.en_preparacion;
-    document.getElementById('n-listo').textContent = contadores.listo;
-    document.getElementById('n-entregado').textContent = contadores.entregado;
+    // Total badge
+    const badge = document.getElementById('totalBadge');
+    const total = comandas.length;
+    document.getElementById('totalTexto').textContent = `${total} pedido${total !== 1 ? 's' : ''}`;
+    badge.style.display = total > 0 ? 'inline-flex' : 'none';
 
-    function filtrar(estado, tab) {
+    const grupos = {};
+    ESTADOS.forEach(e => grupos[e] = []);
+    comandas.forEach(c => {
+        timerData[c.id] = c.segundos;
+        if (grupos[c.estado]) grupos[c.estado].push(c);
+    });
+    ESTADOS.forEach(estado => {
+        const col  = document.getElementById(`col-${estado}`);
+        const cnt  = document.getElementById(`cnt-${estado}`);
+        const list = grupos[estado];
+        cnt.textContent = list.length;
+        col.innerHTML   = list.length
+            ? list.map(buildCard).join('')
+            : `<div class="col-empty"><i class="bi bi-inbox"></i>Sin pedidos</div>`;
+    });
+}
 
-        document.querySelectorAll('.filtro-tab').forEach(t => {
-            t.classList.remove('activo');
+async function fetchData() {
+    try {
+        const res  = await fetch(API_URL, { headers:{'X-Requested-With':'XMLHttpRequest'} });
+        const json = await res.json();
+        renderBoard(json.comandas);
+    } catch(e) { /* silencioso */ }
+}
+
+async function cambiarEstado(id, estado, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px"></span>';
+    try {
+        await fetch(`/comanda/${id}/estado/`, {
+            method:'POST',
+            headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':CSRF, 'Content-Type':'application/x-www-form-urlencoded' },
+            body:`estado=${estado}`
         });
-
-        tab.classList.add('activo');
-
-        items.forEach(item => {
-
-            if (estado === 'todos' || item.dataset.estado === estado) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-
-        });
+        await fetchData();
+    } catch {
+        btn.disabled = false;
+        btn.innerHTML = '¡Error!';
     }
+}
+
+setInterval(() => {
+    document.querySelectorAll('.cmd-card').forEach(card => {
+        const id = parseInt(card.dataset.id);
+        const es = card.dataset.estado;
+        if (timerData[id] !== undefined) {
+            timerData[id]++;
+            const el = document.getElementById(`timer-${id}`);
+            if (el) { el.textContent = fmt(timerData[id]); el.className = `cmd-timer ${timerCls(timerData[id],es)}`; }
+        }
+    });
+}, 1000);
+
+fetchData();
+setInterval(fetchData, 15000);
 </script>
 
 {% endblock %}

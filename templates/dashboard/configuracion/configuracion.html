@@ -316,64 +316,73 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
-                    <!-- INFORMACIÓN GENERAL -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
-                            <h6>Información general</h6>
-                        </div>
-                        <div class="mb-2">
-                            <label class="field-label">Nombre del restaurante</label>
-                            {{ form.nombre }}
-                            {% if form.nombre.errors %}
-                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.nombre.errors|join:", " }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-0">
-                            <label class="field-label">Slogan</label>
-                            {{ form.slogan }}
-                            <p class="field-hint">Frase corta que describe tu restaurante. Se muestra en la página pública.</p>
-                            {% if form.slogan.errors %}
-                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.slogan.errors|join:", " }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- CONTACTO Y UBICACIÓN -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                            <h6>Contacto y ubicación</h6>
-                        </div>
-                        <div class="row g-2">
-                            <div class="col-md-7">
-                                <label class="field-label">Dirección</label>
-                                {{ form.direccion }}
-                                {% if form.direccion.errors %}
-                                    <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.direccion.errors|join:", " }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-5">
-                                <label class="field-label">Teléfono</label>
-                                {{ form.telefono }}
-                                {% if form.telefono.errors %}
-                                    <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.telefono.errors|join:", " }}</div>
-                                {% endif %}
+                    <!-- FILA 1: Dos columnas lado a lado -->
+                    <div class="row g-3 mb-3">
+                        <!-- COLUMNA IZQUIERDA: INFORMACIÓN GENERAL -->
+                        <div class="col-lg-6">
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
+                                    <h6>Información general</h6>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="field-label">Nombre del restaurante</label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.nombre.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-0">
+                                    <label class="field-label">Slogan</label>
+                                    {{ form.slogan }}
+                                    <p class="field-hint">Frase corta que describe tu restaurante. Se muestra en la página pública.</p>
+                                    {% if form.slogan.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.slogan.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- ESTADO -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="bi bi-toggle-on"></i></div>
-                            <h6>Estado del restaurante</h6>
+                        <!-- COLUMNA DERECHA: CONTACTO Y UBICACIÓN + ESTADO -->
+                        <div class="col-lg-6">
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                    <h6>Contacto y ubicación</h6>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-7">
+                                        <label class="field-label">Dirección</label>
+                                        {{ form.direccion }}
+                                        {% if form.direccion.errors %}
+                                            <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.direccion.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="field-label">Teléfono</label>
+                                        {{ form.telefono }}
+                                        {% if form.telefono.errors %}
+                                            <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.telefono.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-top">
+                                    <div style="margin-bottom: 0.9rem; padding-bottom: 0.6rem;">
+                                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.9rem;">
+                                            <div style="width:26px;height:26px; background:rgba(231,76,60,0.12);border-radius:6px; display:flex;align-items:center;justify-content:center; color:#e74c3c;font-size:0.8rem;flex-shrink:0;">
+                                                <i class="bi bi-toggle-on"></i>
+                                            </div>
+                                            <h6 style="font-weight:700; font-size:0.75rem; color:#495057; margin:0; text-transform:uppercase; letter-spacing:0.6px;">Estado del restaurante</h6>
+                                        </div>
+                                    </div>
+                                    <label class="field-label">Estado actual</label>
+                                    {{ form.estado }}
+                                    {% if form.estado.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.estado.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <label class="field-label">Estado actual</label>
-                        {{ form.estado }}
-                        {% if form.estado.errors %}
-                            <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.estado.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
 
                     <!-- APARIENCIA -->

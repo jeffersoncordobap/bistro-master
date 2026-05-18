@@ -174,30 +174,17 @@
                             <h6>Información básica</h6>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <label class="field-label">Categoría</label>
                                 {{ form.categoria }}
                                 {% if form.categoria.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.categoria.errors|join:", " }}</div>{% endif %}
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-5">
                                 <label class="field-label">Nombre del producto</label>
                                 {{ form.nombre }}
                                 {% if form.nombre.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.nombre.errors|join:", " }}</div>{% endif %}
                             </div>
-                        </div>
-                        <label class="field-label">Descripción</label>
-                        {{ form.descripcion }}
-                        {% if form.descripcion.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.descripcion.errors|join:", " }}</div>{% endif %}
-                    </div>
-
-                    <!-- PRECIO E IMAGEN -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="bi bi-currency-dollar"></i></div>
-                            <h6>Precio e imagen</h6>
-                        </div>
-                        <div class="row g-2">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <label class="field-label">Precio</label>
                                 <div class="input-prefix-group">
                                     <span class="input-prefix">$</span>
@@ -205,16 +192,24 @@
                                 </div>
                                 {% if form.precio.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.precio.errors|join:", " }}</div>{% endif %}
                             </div>
-                            <div class="col-md-7">
-                                <label class="field-label">Imagen del producto</label>
-                                <label class="img-upload-label w-100" for="{{ form.imagen.id_for_label }}">
-                                    <i class="bi bi-cloud-arrow-up" id="upload-icon"></i>
-                                    <span id="upload-text">Haz clic para subir · PNG, JPG · Máx. 5 MB</span>
-                                    {{ form.imagen }}
-                                </label>
-                                {% if form.imagen.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.imagen.errors|join:", " }}</div>{% endif %}
-                            </div>
                         </div>
+                        <label class="field-label">Descripción</label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.descripcion.errors|join:", " }}</div>{% endif %}
+                    </div>
+
+                    <!-- IMAGEN -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="bi bi-image-fill"></i></div>
+                            <h6>Imagen del producto</h6>
+                        </div>
+                        <label class="img-upload-label w-100" for="{{ form.imagen.id_for_label }}">
+                            <i class="bi bi-cloud-arrow-up" id="upload-icon"></i>
+                            <span id="upload-text">Haz clic para subir · PNG, JPG · Máx. 5 MB</span>
+                            {{ form.imagen }}
+                        </label>
+                        {% if form.imagen.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.imagen.errors|join:", " }}</div>{% endif %}
                     </div>
 
                     <!-- STOCK Y DISPONIBILIDAD -->
@@ -235,7 +230,7 @@
                                 <label class="field-label">Control stock</label>
                                 <div class="toggle-row">
                                     {{ form.control_stock }}
-                                    <span class="toggle-text"><strong>Descuenta al vender</strong></span>
+                                    <span class="toggle-text"><strong>Con stock</strong></span>
                                 </div>
                             </div>
                             <div class="col-md-3">

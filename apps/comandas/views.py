@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils import timezone
 from apps.usuarios.decorators import rol_requerido
 from apps.usuarios.models import Usuario
 from apps.productos.models import Producto
@@ -51,18 +54,52 @@ def registrar_comanda(request):
 @login_required
 @rol_requerido([Usuario.Roles.ADMIN])
 def panel_pedidos(request):
-
     comandas = Comanda.objects.filter(
         restaurante=request.user.restaurante
-    ).order_by('-fecha_creacion')
+    ).prefetch_related('items__producto').select_related('mesero').order_by('-fecha_creacion')
 
     return render(request, 'comandas/panel_pedidos.html', {'comandas': comandas})
 
 
+# ── Endpoint JSON para polling (auto-refresco del panel) ──────────────────────
 @login_required
 @rol_requerido([Usuario.Roles.ADMIN])
-def cambiar_estado_comanda(request, comanda_id):
+def api_panel_pedidos(request):
+    """Devuelve las comandas activas (no entregadas) en JSON para polling."""
+    ahora = timezone.now()
+    comandas = Comanda.objects.filter(
+        restaurante=request.user.restaurante
+    ).prefetch_related('items__producto').select_related('mesero').order_by('-fecha_creacion')
 
+    data = []
+    for c in comandas:
+        # Segundos transcurridos desde la creación
+        segundos = int((ahora - c.fecha_creacion).total_seconds())
+        items = [
+            {
+                'nombre': item.producto.nombre,
+                'cantidad': item.cantidad,
+                'nota': item.nota or '',
+            }
+            for item in c.items.all()
+        ]
+        data.append({
+            'id': c.id,
+            'mesa': c.numero_mesa,
+            'estado': c.estado,
+            'mesero': c.mesero.username,
+            'segundos': segundos,
+            'items': items,
+        })
+
+    return JsonResponse({'comandas': data})
+
+
+# ── Cambiar estado (soporta AJAX y form normal) ───────────────────────────────
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+@require_POST
+def cambiar_estado_comanda(request, comanda_id):
     comanda = get_object_or_404(
         Comanda,
         id=comanda_id,
@@ -74,13 +111,16 @@ def cambiar_estado_comanda(request, comanda_id):
         comanda.estado = nuevo_estado
         comanda.save()
 
+    # Si la petición es AJAX devuelve JSON, si no redirige
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'estado': comanda.estado})
+
     return redirect('panel_pedidos')
 
 
 @login_required
 @rol_requerido([Usuario.Roles.MESERO])
 def mis_comandas(request):
-    from django.utils import timezone
     hoy = timezone.now().date()
     comandas = Comanda.objects.filter(
         mesero=request.user,

@@ -17,6 +17,12 @@ urlpatterns = [
         views.cambiar_estado_comanda,
         name='cambiar_estado_comanda'
     ),
+    # Endpoint JSON para polling en tiempo real
+    path(
+        'api/panel-pedidos/',
+        views.api_panel_pedidos,
+        name='api_panel_pedidos'
+    ),
     path(
         'mis-comandas/',
         views.mis_comandas,
