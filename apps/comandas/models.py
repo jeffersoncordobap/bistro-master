@@ -3,6 +3,7 @@ from apps.restaurantes.models import Restaurante
 from apps.usuarios.models import Usuario
 from apps.productos.models import Producto
 
+
 class TipoConsumo(models.TextChoices):
 
     NORMAL = 'normal', 'Normal'
@@ -38,6 +39,14 @@ class Comanda(models.Model):
         max_length=20,
         choices=TipoConsumo.choices,
         default=TipoConsumo.NORMAL
+    )
+    
+    tiquetera = models.ForeignKey(
+    'tiqueteras.Tiquetera',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='comandas'
     )
 
     def __str__(self):

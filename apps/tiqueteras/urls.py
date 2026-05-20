@@ -15,4 +15,27 @@ urlpatterns = [
         name='crear_tiquetera'
     ),
 
+    path(
+    'planes/',
+    views.listar_planes,
+    name='listar_planes'
+    ),
+
+    path(
+        'planes/crear/',
+        views.crear_plan,
+        name='crear_plan'
+    ),
+
+    path(
+        'planes/<int:plan_id>/editar/',
+        views.editar_plan,
+        name='editar_plan'
+    ),
+
+    path(
+        'planes/<int:plan_id>/estado/',
+        views.cambiar_estado_plan,
+        name='cambiar_estado_plan'
+    ),
 ]

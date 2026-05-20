@@ -1,0 +1,184 @@
+<style>
+
+    .form-card{
+        background:#fff;
+        border-radius:14px;
+        border:1px solid #dee2e6;
+        overflow:hidden;
+    }
+
+    .form-header{
+        background:linear-gradient(to right, #c0392b, #e74c3c);
+        color:#fff;
+        padding:1.2rem 1.5rem;
+    }
+
+    .form-body{
+        padding:1.5rem;
+    }
+
+    .form-label{
+        font-weight:700;
+        font-size:0.85rem;
+        margin-bottom:0.45rem;
+    }
+
+    .form-control,
+    .form-select{
+        border-radius:10px;
+        padding:0.75rem 0.9rem;
+        border:1.5px solid #dee2e6;
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+        border-color:#e74c3c;
+        box-shadow:0 0 0 3px rgba(231,76,60,0.12);
+    }
+
+    .btn-save{
+        background:linear-gradient(to right, #c0392b, #e74c3c);
+        border:none;
+        color:#fff;
+        padding:0.8rem 1.2rem;
+        border-radius:10px;
+        font-weight:700;
+    }
+
+</style>
+
+<div class="form-card">
+
+    <div class="form-header">
+
+        <h4 class="mb-1 fw-bold">
+            {{ titulo }}
+        </h4>
+
+        <p class="mb-0 opacity-75 small">
+            Configura la información del plan
+        </p>
+
+    </div>
+
+    <div class="form-body">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Nombre
+                    </label>
+
+                    {{ form.nombre }}
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Tipo de servicio
+                    </label>
+
+                    {{ form.tipo_servicio }}
+
+                </div>
+
+                <div class="col-12">
+
+                    <label class="form-label">
+                        Descripción
+                    </label>
+
+                    {{ form.descripcion }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Precio
+                    </label>
+
+                    {{ form.precio }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Consumos
+                    </label>
+
+                    {{ form.cantidad_consumos }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Vigencia (días)
+                    </label>
+
+                    {{ form.dias_vigencia }}
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="form-check">
+
+                        {{ form.permite_multiples_consumos }}
+
+                        <label class="form-check-label">
+                            Permitir múltiples consumos por día
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="form-check">
+
+                        {{ form.activo }}
+
+                        <label class="form-check-label">
+                            Plan activo
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+
+                <button type="submit" class="btn-save">
+
+                    <i class="bi bi-check-circle me-1"></i>
+                    {{ boton }}
+
+                </button>
+
+                <a href="{% url 'listar_planes' %}"
+                   class="btn btn-light border rounded-3 px-4">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

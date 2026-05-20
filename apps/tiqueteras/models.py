@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from apps.comandas.models import Comanda
 from apps.restaurantes.models import Restaurante
 from apps.usuarios.models import Usuario
 
@@ -115,6 +114,21 @@ class Tiquetera(models.Model):
             self.fecha_vencimiento >= timezone.now().date()
         )
     
+    def consumir(self, cantidad=1):
+        if not self.esta_vigente:
+            raise ValidationError(
+                'La tiquetera no está vigente.'
+            )
+
+        if self.saldo_consumos < cantidad:
+            raise ValidationError(
+                'La tiquetera no tiene saldo suficiente.'
+            )
+
+        self.saldo_consumos -= cantidad
+        self.save()
+    
+    
     def __str__(self):
         return f'{self.cliente_nombre} - {self.plan.nombre}'
     
@@ -126,11 +140,12 @@ class ConsumoTiquetera(models.Model):
         related_name='consumos'
     )
 
-    comanda = models.ForeignKey(
-        Comanda,
+    comanda = models.OneToOneField(
+        'comandas.Comanda',
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='consumo_tiquetera'
     )
 
     cantidad = models.PositiveIntegerField(

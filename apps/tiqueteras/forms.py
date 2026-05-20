@@ -15,7 +15,6 @@ class TiqueteraForm(forms.ModelForm):
             'cliente_telefono',
             'fecha_inicio',
             'fecha_vencimiento',
-            'activa'
         ]
 
         widgets = {
@@ -50,12 +49,6 @@ class TiqueteraForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'type': 'date'
-                }
-            ),
-
-            'activa': forms.CheckboxInput(
-                attrs={
-                    'class': 'form-check-input'
                 }
             )
         }
@@ -95,3 +88,84 @@ class TiqueteraForm(forms.ModelForm):
             )
 
         return cleaned_data
+    
+    
+class PlanTiqueteraForm(forms.ModelForm):
+
+    class Meta:
+        model = PlanTiquetera
+
+        fields = [
+            'nombre',
+            'descripcion',
+            'precio',
+            'cantidad_consumos',
+            'dias_vigencia',
+            'tipo_servicio',
+            'permite_multiples_consumos',
+            'activo'
+        ]
+
+        widgets = {
+
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: Tiquetera Almuerzo Mensual'
+            }),
+
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Descripción del plan'
+            }),
+
+            'precio': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: 120000'
+            }),
+
+            'cantidad_consumos': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1
+            }),
+
+            'dias_vigencia': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1
+            }),
+
+            'tipo_servicio': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+
+            'permite_multiples_consumos': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+
+            'activo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+
+        }
+
+    def clean_precio(self):
+
+        precio = self.cleaned_data['precio']
+
+        if precio <= 0:
+            raise forms.ValidationError(
+                'El precio debe ser mayor a cero.'
+            )
+
+        return precio
+
+    def clean_cantidad_consumos(self):
+
+        cantidad = self.cleaned_data['cantidad_consumos']
+
+        if cantidad <= 0:
+            raise forms.ValidationError(
+                'La cantidad de consumos debe ser mayor a cero.'
+            )
+
+        return cantidad

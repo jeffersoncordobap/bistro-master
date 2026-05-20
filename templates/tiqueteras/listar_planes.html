@@ -1,0 +1,269 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Planes de Tiquetera{% endblock %}
+{% block page_title %}Planes de Tiquetera{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:1rem;
+        margin-bottom:1.5rem;
+        flex-wrap:wrap;
+    }
+
+    .btn-crear{
+        background:linear-gradient(to right, #c0392b, #e74c3c);
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        padding:0.8rem 1rem;
+        font-weight:700;
+        text-decoration:none;
+    }
+
+    .btn-crear:hover{
+        opacity:0.95;
+        color:#fff;
+    }
+
+    .table-card{
+        background:#fff;
+        border-radius:14px;
+        border:1px solid #dee2e6;
+        overflow:hidden;
+    }
+
+    .table thead{
+        background:#fff5f5;
+    }
+
+    .table th{
+        color:#c0392b;
+        font-size:0.83rem;
+        text-transform:uppercase;
+        letter-spacing:0.04em;
+        border:none;
+        padding:1rem;
+    }
+
+    .table td{
+        vertical-align:middle;
+        padding:1rem;
+    }
+
+    .badge-estado{
+        padding:0.45rem 0.7rem;
+        border-radius:50px;
+        font-size:0.75rem;
+        font-weight:700;
+    }
+
+    .badge-activo{
+        background:#d1f7df;
+        color:#146c43;
+    }
+
+    .badge-inactivo{
+        background:#f8d7da;
+        color:#842029;
+    }
+
+    .action-btn{
+        border:none;
+        border-radius:8px;
+        padding:0.45rem 0.7rem;
+        font-size:0.8rem;
+        font-weight:600;
+        text-decoration:none;
+    }
+
+    .btn-edit{
+        background:#fff3cd;
+        color:#997404;
+    }
+
+    .btn-toggle{
+        background:#f8d7da;
+        color:#842029;
+    }
+
+    .empty-box{
+        padding:3rem 1rem;
+        text-align:center;
+        color:#6c757d;
+    }
+
+    .empty-box i{
+        font-size:2.5rem;
+        margin-bottom:1rem;
+        display:block;
+        color:#adb5bd;
+    }
+
+</style>
+
+<div class="page-header">
+
+    <div>
+
+        <h4 class="fw-bold mb-1">
+            Planes de Tiquetera
+        </h4>
+
+        <p class="text-muted mb-0 small">
+            Administra los planes disponibles del restaurante
+        </p>
+
+    </div>
+
+    <a href="{% url 'crear_plan' %}" class="btn-crear">
+
+        <i class="bi bi-plus-circle me-1"></i>
+        Nuevo plan
+
+    </a>
+
+</div>
+
+<div class="table-card">
+
+    {% if planes %}
+
+    <div class="table-responsive">
+
+        <table class="table align-middle mb-0">
+
+            <thead>
+
+                <tr>
+                    <th>Nombre</th>
+                    <th>Servicio</th>
+                    <th>Consumos</th>
+                    <th>Vigencia</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for plan in planes %}
+
+                <tr>
+
+                    <td>
+
+                        <div class="fw-semibold">
+                            {{ plan.nombre }}
+                        </div>
+
+                        <div class="small text-muted">
+                            {{ plan.descripcion|truncatechars:50 }}
+                        </div>
+
+                    </td>
+
+                    <td>
+                        {{ plan.get_tipo_servicio_display }}
+                    </td>
+
+                    <td>
+                        {{ plan.cantidad_consumos }}
+                    </td>
+
+                    <td>
+                        {{ plan.dias_vigencia }} días
+                    </td>
+
+                    <td class="fw-bold text-danger">
+                        ${{ plan.precio }}
+                    </td>
+
+                    <td>
+
+                        {% if plan.activo %}
+
+                            <span class="badge-estado badge-activo">
+                                Activo
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge-estado badge-inactivo">
+                                Inactivo
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a href="{% url 'editar_plan' plan.id %}"
+                               class="action-btn btn-edit">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+                            <a href="{% url 'cambiar_estado_plan' plan.id %}"
+                               class="action-btn btn-toggle">
+
+                                {% if plan.activo %}
+                                    Desactivar
+                                {% else %}
+                                    Activar
+                                {% endif %}
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-box">
+
+        <i class="bi bi-ticket-perforated"></i>
+
+        <h5 class="fw-bold">
+            No hay planes registrados
+        </h5>
+
+        <p class="mb-3">
+            Crea el primer plan de tiquetera del restaurante.
+        </p>
+
+        <a href="{% url 'crear_plan' %}" class="btn-crear">
+
+            Crear plan
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
