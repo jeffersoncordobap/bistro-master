@@ -580,12 +580,71 @@
                 <div class="resumen-body">
 
                     <div class="resumen-mesa-row">
-                        <span class="label"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Mesa</span>
-                        <input type="number" name="numero_mesa" id="numero_mesa"
-                               class="mesa-input form-control"
-                               min="1" placeholder="N° mesa"
-                               style="width: 100px; text-align: center;"
-                               required>
+                        <span class="label">
+                            <i class="bi bi-grid-3x3-gap-fill me-1"></i>
+                            Mesa
+                        </span>
+
+                        <input type="number"
+                            name="numero_mesa"
+                            id="numero_mesa"
+                            class="mesa-input form-control"
+                            min="1"
+                            placeholder="N° mesa"
+                            style="width: 100px; text-align: center;"
+                            required>
+                    </div>
+
+                    <!-- Tipo de consumo -->
+                    <div class="mt-3">
+
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="bi bi-credit-card-2-front-fill me-1"></i>
+                            Tipo de consumo
+                        </label>
+
+                        <select name="tipo_consumo"
+                                id="tipo_consumo"
+                                class="form-control mesa-input">
+
+                            <option value="normal">
+                                Normal
+                            </option>
+
+                            <option value="tiquetera">
+                                Tiquetera
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Selector de tiquetera -->
+                    <div class="mt-3 d-none"
+                        id="contenedor_tiquetera">
+
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="bi bi-ticket-perforated-fill me-1"></i>
+                            Cliente con tiquetera
+                        </label>
+
+                        <select name="tiquetera"
+                                id="tiquetera_id"
+                                class="form-control mesa-input">
+
+                            <option value="">
+                                Selecciona una tiquetera
+                            </option>
+
+                            {% for tiquetera in tiqueteras %}
+                            <option value="{{ tiquetera.id }}">
+                                {{ tiquetera.cliente_nombre }}
+                                - {{ tiquetera.saldo_consumos }} consumos
+                            </option>
+                            {% endfor %}
+
+                        </select>
+
                     </div>
 
                     <div class="resumen-vacio" id="resumenVacio">
@@ -624,13 +683,72 @@
                 </div>
                 <div class="modal-resumen-body">
                     <div class="resumen-mesa-row">
-                        <span class="label"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Mesa</span>
-                        <input type="number" name="numero_mesa" id="numero_mesa_modal"
-                               class="mesa-input form-control"
-                               min="1" placeholder="N° mesa"
-                               style="width: 100px; text-align: center;"
-                               required>
-                    </div>
+
+    <span class="label">
+        <i class="bi bi-grid-3x3-gap-fill me-1"></i>
+        Mesa
+    </span>
+
+    <input type="number"
+           name="numero_mesa"
+           id="numero_mesa_modal"
+           class="mesa-input form-control"
+           min="1"
+           placeholder="N° mesa"
+           style="width: 100px; text-align: center;"
+           required>
+
+</div>
+
+<!-- Tipo consumo modal -->
+<div class="mt-3">
+
+    <label class="form-label fw-semibold mb-2">
+        <i class="bi bi-credit-card-2-front-fill me-1"></i>
+        Tipo de consumo
+    </label>
+
+    <select id="tipo_consumo_modal"
+            class="form-control mesa-input">
+
+        <option value="normal">
+            Normal
+        </option>
+
+        <option value="tiquetera">
+            Tiquetera
+        </option>
+
+    </select>
+
+</div>
+
+<!-- Selector tiquetera modal -->
+<div class="mt-3 d-none"
+     id="contenedor_tiquetera_modal">
+
+    <label class="form-label fw-semibold mb-2">
+        <i class="bi bi-ticket-perforated-fill me-1"></i>
+        Cliente con tiquetera
+    </label>
+
+    <select id="tiquetera_id_modal"
+            class="form-control mesa-input">
+
+        <option value="">
+            Selecciona una tiquetera
+        </option>
+
+        {% for tiquetera in tiqueteras %}
+        <option value="{{ tiquetera.id }}">
+            {{ tiquetera.cliente_nombre }}
+            - {{ tiquetera.saldo_consumos }} consumos
+        </option>
+        {% endfor %}
+
+    </select>
+
+</div>
 
                     <div class="resumen-vacio" id="modalResumenVacio">
                         <i class="bi bi-cart"></i>
@@ -663,6 +781,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const mesaInput = document.getElementById('numero_mesa');
         const mesaModalInput = document.getElementById('numero_mesa_modal');
+
+        const tipoConsumo = document.getElementById('tipo_consumo');
+        const tipoConsumoModal = document.getElementById('tipo_consumo_modal');
+
+        const contenedorTiquetera = document.getElementById('contenedor_tiquetera');
+        const contenedorTiqueteraModal = document.getElementById('contenedor_tiquetera_modal');
+
+        const tiqueteraSelect = document.getElementById('tiquetera_id');
+        const tiqueteraSelectModal = document.getElementById('tiquetera_id_modal');
+
         const form = document.getElementById('formComanda');
 
         if (mesaInput && mesaModalInput) {
@@ -671,6 +799,54 @@
             });
             mesaModalInput.addEventListener('input', function() {
                 mesaInput.value = this.value;
+            });
+
+            // Sincronizar tipo consumo
+            tipoConsumo.addEventListener('change', function() {
+
+                tipoConsumoModal.value = this.value;
+
+                if (this.value === 'tiquetera') {
+
+                    contenedorTiquetera.classList.remove('d-none');
+                    contenedorTiqueteraModal.classList.remove('d-none');
+
+                } else {
+
+                    contenedorTiquetera.classList.add('d-none');
+                    contenedorTiqueteraModal.classList.add('d-none');
+
+                    tiqueteraSelect.value = '';
+                    tiqueteraSelectModal.value = '';
+                }
+            });
+
+            tipoConsumoModal.addEventListener('change', function() {
+
+                tipoConsumo.value = this.value;
+
+                if (this.value === 'tiquetera') {
+
+                    contenedorTiquetera.classList.remove('d-none');
+                    contenedorTiqueteraModal.classList.remove('d-none');
+
+                } else {
+
+                    contenedorTiquetera.classList.add('d-none');
+                    contenedorTiqueteraModal.classList.add('d-none');
+
+                    tiqueteraSelect.value = '';
+                    tiqueteraSelectModal.value = '';
+                }
+            });
+
+            // Sincronizar tiquetera
+            tiqueteraSelect.addEventListener('change', function() {
+                tiqueteraSelectModal.value = this.value;
+            });
+
+            tiqueteraSelectModal.addEventListener('change', function() {
+                tiqueteraSelect.value = this.value;
             });
         }
 

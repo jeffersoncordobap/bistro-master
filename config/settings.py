@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.restaurantes',
     'apps.productos',
     'apps.comandas',
+    'apps.tiqueteras',
 ]
 
 MIDDLEWARE = [

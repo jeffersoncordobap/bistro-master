@@ -285,6 +285,7 @@ const ESTADOS = ['pendiente','en_preparacion','listo','entregado'];
 const LABEL   = { pendiente:'Pendiente', en_preparacion:'En preparación', listo:'Listo', entregado:'Entregado' };
 const BTN_CLS = { en_preparacion:'btn-next-preparacion', listo:'btn-next-listo', entregado:'btn-next-entregado' };
 
+// Variable para almacenar los segundos de cada comanda
 let timerData = {};
 
 function fmt(seg) {
@@ -318,10 +319,21 @@ function buildCard(c) {
         ? `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado(${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
         : `<button class="btn-estado btn-done" disabled><i class="bi bi-check-all"></i> Completado</button>`;
 
+    // Información adicional para el tipo de consumo
+    let consumoInfo = '';
+    if (c.tipo_consumo === 'tiquetera') {
+        consumoInfo = `<span class="badge bg-info text-dark ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-ticket-perforated me-1"></i>Tiquetera</span>`;
+        if (c.tiquetera_cliente) {
+            consumoInfo += `<div class="cmd-meta mt-1" style="font-size:0.7rem; color:#6c757d;"><i class="bi bi-person-badge me-1"></i>${c.tiquetera_cliente}</div>`;
+        }
+    } else {
+        consumoInfo = `<span class="badge bg-secondary ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-cash me-1"></i>Normal</span>`;
+    }
+
     return `<div class="cmd-card" data-id="${c.id}" data-estado="${c.estado}">
         <div class="cmd-card-inner">
             <div class="cmd-top">
-                <span class="cmd-mesa"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa ${c.mesa}</span>
+                <span class="cmd-mesa"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa ${c.mesa} ${consumoInfo}</span>
                 <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.id}">${fmt(seg)}</span>
             </div>
             <div class="cmd-meta"><i class="bi bi-person"></i> ${c.mesero}</div>
