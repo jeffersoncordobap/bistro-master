@@ -28,9 +28,6 @@ from .models import (
 @rol_requerido([Usuario.Roles.MESERO])
 def registrar_comanda(request):
 
-    # ─────────────────────────────────────
-    # Productos
-    # ─────────────────────────────────────
     productos = Producto.objects.filter(
         restaurante=request.user.restaurante,
         disponible=True
@@ -41,9 +38,6 @@ def registrar_comanda(request):
         'nombre'
     )
 
-    # ─────────────────────────────────────
-    # Agrupar productos por categoría
-    # ─────────────────────────────────────
     productos_por_categoria = {}
 
     for producto in productos:
@@ -59,18 +53,12 @@ def registrar_comanda(request):
             []
         ).append(producto)
 
-    # ─────────────────────────────────────
-    # Tiqueteras disponibles
-    # ─────────────────────────────────────
     tiqueteras = Tiquetera.objects.filter(
         restaurante=request.user.restaurante,
         activa=True,
         saldo_consumos__gt=0
     )
 
-    # ─────────────────────────────────────
-    # Context
-    # ─────────────────────────────────────
     context = {
 
         'productos': productos,
@@ -80,9 +68,6 @@ def registrar_comanda(request):
         'tiqueteras': tiqueteras
     }
 
-    # ─────────────────────────────────────
-    # POST
-    # ─────────────────────────────────────
     if request.method == 'POST':
 
         try:
@@ -103,10 +88,6 @@ def registrar_comanda(request):
             tiquetera_id = request.POST.get(
                 'tiquetera'
             )
-
-            # ─────────────────────────────────────
-            # Validar mesa
-            # ─────────────────────────────────────
             if numero_mesa < 1:
 
                 messages.error(
@@ -120,9 +101,6 @@ def registrar_comanda(request):
                     context
                 )
 
-            # ─────────────────────────────────────
-            # Validar productos
-            # ─────────────────────────────────────
             if not productos_ids:
 
                 messages.error(
@@ -136,9 +114,6 @@ def registrar_comanda(request):
                     context
                 )
 
-            # ─────────────────────────────────────
-            # Validar tiquetera
-            # ─────────────────────────────────────
             tiquetera = None
 
             if tipo_consumo == TipoConsumo.TIQUETERA:
@@ -176,15 +151,6 @@ def registrar_comanda(request):
                         context
                     )
 
-                # DEBUG
-                print('──────────── DEBUG TIQUETERA ────────────')
-                print('Cliente:', tiquetera.cliente_nombre)
-                print('Saldo:', tiquetera.saldo_consumos)
-                print('Activa:', tiquetera.activa)
-                print('Vencimiento:', tiquetera.fecha_vencimiento)
-                print('Vigente:', tiquetera.esta_vigente)
-                print('─────────────────────────────────────────')
-
                 if not tiquetera.esta_vigente:
 
                     messages.error(
@@ -198,9 +164,6 @@ def registrar_comanda(request):
                         context
                     )
 
-            # ─────────────────────────────────────
-            # Crear comanda
-            # ─────────────────────────────────────
             comanda = Comanda.objects.create(
 
                 restaurante=request.user.restaurante,
@@ -218,9 +181,6 @@ def registrar_comanda(request):
 
             print('COMANDA CREADA:', comanda.id)
 
-            # ─────────────────────────────────────
-            # Crear items
-            # ─────────────────────────────────────
             for producto_id in productos_ids:
 
                 cantidad = int(
@@ -246,9 +206,6 @@ def registrar_comanda(request):
                     nota=nota
                 )
 
-            # ─────────────────────────────────────
-            # Descontar consumo
-            # ─────────────────────────────────────
             if tiquetera:
 
                 tiquetera.saldo_consumos -= 1
@@ -300,9 +257,6 @@ def registrar_comanda(request):
 
             raise e
 
-    # ─────────────────────────────────────
-    # GET
-    # ─────────────────────────────────────
     return render(
         request,
         'comandas/registrar_comanda.html',
