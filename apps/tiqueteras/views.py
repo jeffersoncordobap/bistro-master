@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
+from django.http import JsonResponse
+from django.db.models import Q
 
 from apps.usuarios.decorators import rol_requerido
 from apps.usuarios.models import Usuario
 
-from .models import Tiquetera, PlanTiquetera
-from .forms import TiqueteraForm, PlanTiqueteraForm
+from .models import Tiquetera, PlanTiquetera, ConsumoTiquetera
+from .forms import TiqueteraForm, PlanTiqueteraForm, HistorialTiqueteraFiltroForm
 
 
 @login_required
@@ -24,6 +27,75 @@ def listar_tiqueteras(request):
             'tiqueteras': tiqueteras
         }
     )
+
+
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+@require_GET
+def historial_tiqueteras(request):
+
+    form = HistorialTiqueteraFiltroForm(request.GET or None)
+
+    transacciones = ConsumoTiquetera.objects.filter(
+        tiquetera__restaurante=request.user.restaurante
+    ).select_related(
+        'tiquetera',
+        'tiquetera__plan',
+        'registrado_por',
+        'comanda'
+    ).order_by('-fecha')
+
+    if form.is_valid():
+        fecha_inicio = form.cleaned_data.get('fecha_inicio')
+        fecha_fin = form.cleaned_data.get('fecha_fin')
+        cliente = form.cleaned_data.get('cliente')
+
+        if fecha_inicio:
+            transacciones = transacciones.filter(fecha__date__gte=fecha_inicio)
+
+        if fecha_fin:
+            transacciones = transacciones.filter(fecha__date__lte=fecha_fin)
+
+        if cliente:
+            transacciones = transacciones.filter(
+                tiquetera__cliente_nombre__icontains=cliente
+            )
+
+    return render(
+        request,
+        'tiqueteras/historial_tiqueteras.html',
+        {
+            'form': form,
+            'transacciones': transacciones
+        }
+    )
+
+
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN, Usuario.Roles.MESERO])
+@require_GET
+def buscar_tiquetera(request):
+
+    q = request.GET.get('q', '').strip()
+
+    restaurante = request.user.restaurante
+
+    qs = Tiquetera.objects.filter(
+        restaurante=restaurante,
+        activa=True
+    )
+
+    if q:
+        # buscar por id, nombre o codigo
+        filters = Q(cliente_nombre__icontains=q) | Q(codigo__icontains=q)
+        if q.isdigit():
+            filters |= Q(id=int(q))
+
+        qs = qs.filter(filters)
+
+    results = list(qs.values('id', 'cliente_nombre', 'cliente_telefono', 'saldo_consumos')[:20])
+
+    return JsonResponse({'results': results})
 
 
 @login_required
