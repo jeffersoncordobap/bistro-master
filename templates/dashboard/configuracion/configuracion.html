@@ -1,195 +1,594 @@
 {% extends 'dashboard/base.html' %}
-{% block title %}
-    Configuración
-{% endblock %}
 
-{% block page_title %}
-    Configuración Restaurante
-{% endblock %}
+{% block title %}Configuración{% endblock %}
+{% block page_title %}Configuración{% endblock %}
 
 {% block content %}
+<style>
+    /* ── Info card (izquierda) ── */
+    .info-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        overflow: hidden;
+        height: 100%;
+    }
+    .info-card-header {
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+        padding: 1.4rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .info-card-header::before {
+        content: '';
+        position: absolute;
+        right: -20px; top: -20px;
+        width: 100px; height: 100px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 50%;
+    }
+    .info-card-header::after {
+        content: '';
+        position: absolute;
+        right: 20px; bottom: -30px;
+        width: 70px; height: 70px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+    .restaurant-initial {
+        width: 52px; height: 52px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; font-weight: 800; color: #fff;
+        margin-bottom: 0.85rem;
+        border: 1.5px solid rgba(255,255,255,0.25);
+        overflow: hidden;
+    }
+    .restaurant-initial img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+    }
+    .info-card-header h5 {
+        color: #fff; font-weight: 800; font-size: 1rem;
+        margin: 0 0 0.15rem; line-height: 1.3;
+    }
+    .info-card-header p {
+        color: rgba(255,255,255,0.7); font-size: 0.78rem; margin: 0;
+    }
+    .info-card-body { padding: 1.25rem 1.4rem; }
+    .info-row {
+        display: flex; flex-direction: column;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+        font-size: 0.7rem; font-weight: 700; color: #adb5bd;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        margin-bottom: 0.2rem;
+        display: flex; align-items: center; gap: 0.3rem;
+    }
+    .info-label i { font-size: 0.7rem; }
+    .info-value {
+        font-size: 0.85rem; font-weight: 700; color: #212529;
+    }
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+        font-size: 0.75rem; font-weight: 700;
+        padding: 4px 10px; border-radius: 100px;
+    }
+    .status-pill.abierto { background: rgba(25,135,84,0.12); color: #146c43; }
+    .status-pill.cerrado { background: rgba(220,53,69,0.12); color: #b02a37; }
+    .status-pill i { font-size: 0.6rem; }
+    .url-section {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        margin-top: 0.5rem;
+    }
+    .url-section-label {
+        font-size: 0.7rem; font-weight: 700; color: #adb5bd;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        margin-bottom: 0.65rem;
+        display: flex; align-items: center; gap: 0.3rem;
+    }
+    .btn-ver-pagina {
+        display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        color: #fff; border: none; border-radius: 8px;
+        padding: 8px 14px; font-size: 0.8rem; font-weight: 700;
+        text-decoration: none; width: 100%; margin-bottom: 0.4rem;
+        transition: all 0.2s;
+    }
+    .btn-ver-pagina:hover {
+        background: linear-gradient(to right, #a93226, #cb4335);
+        color: #fff; transform: translateY(-1px);
+    }
+    .btn-copiar {
+        display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+        background: #fff; color: #495057;
+        border: 1px solid #dee2e6; border-radius: 8px;
+        padding: 7px 14px; font-size: 0.8rem; font-weight: 600;
+        width: 100%; cursor: pointer; transition: all 0.18s;
+    }
+    .btn-copiar:hover { background: #f8f9fa; border-color: #adb5bd; color: #212529; }
+    .btn-copiar.copied { border-color: #198754; color: #146c43; background: rgba(25,135,84,0.06); }
 
-<div class="row g-4">
+    /* ── Formulario (derecha) ── */
+    .form-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        overflow: hidden;
+        height: 100%;
+    }
+    .form-card-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        padding: 1.25rem 1.75rem;
+        display: flex; align-items: center; gap: 0.9rem;
+    }
+    .form-card-header .header-icon {
+        width: 40px; height: 40px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; color: #fff; flex-shrink: 0;
+    }
+    .form-card-header h4 {
+        color: #fff; font-weight: 700; font-size: 1.05rem; margin: 0 0 0.15rem;
+    }
+    .form-card-header p {
+        color: rgba(255,255,255,0.7); font-size: 0.78rem; margin: 0;
+    }
+    .form-card-body { padding: 1.5rem; }
+    .form-section {
+        background: #f8f9fa; border: 1px solid #eee;
+        border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 0.85rem;
+    }
+    .section-header {
+        display: flex; align-items: center; gap: 0.5rem;
+        margin-bottom: 0.9rem; padding-bottom: 0.6rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .section-icon {
+        width: 26px; height: 26px;
+        background: rgba(231,76,60,0.12); border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        color: #e74c3c; font-size: 0.8rem; flex-shrink: 0;
+    }
+    .section-header h6 {
+        font-weight: 700; font-size: 0.75rem; color: #495057;
+        margin: 0; text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .field-label {
+        font-weight: 600; font-size: 0.8rem;
+        color: #343a40; margin-bottom: 0.3rem; display: block;
+    }
+    .field-hint {
+        font-size: 0.73rem; color: #adb5bd; margin-top: 0.25rem;
+    }
+    .form-control, .form-select {
+        border-radius: 8px; padding: 8px 12px;
+        border: 1px solid #dee2e6; font-size: 0.85rem;
+        background: #fff; width: 100%;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+        border-color: #e74c3c; outline: none;
+    }
+    .field-error {
+        font-size: 0.74rem; color: #e74c3c; margin-top: 0.25rem;
+        display: flex; align-items: center; gap: 0.25rem;
+    }
+    .btn-guardar {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border: none; border-radius: 9px; padding: 10px 24px;
+        font-weight: 700; font-size: 0.85rem; color: #fff;
+        transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-guardar:hover {
+        background: linear-gradient(to right, #a93226, #cb4335);
+        transform: translateY(-1px); color: #fff;
+    }
+    .btn-volver {
+        border-radius: 9px; padding: 10px 20px; font-weight: 600;
+        font-size: 0.85rem; border: 1px solid #dee2e6; background: #fff;
+        color: #6c757d; transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
+    }
+    .btn-volver:hover { background: #f8f9fa; color: #343a40; }
 
-    <!-- INFORMACIÓN -->
+    /* Preview de imagen */
+    .img-preview {
+        width: 80px; height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+        margin-top: 0.5rem;
+    }
+    .img-preview-portada {
+        width: 100%; height: 100px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+        margin-top: 0.5rem;
+    }
 
+    /* Color preview */
+    .color-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .color-preview-box {
+        width: 48px; height: 48px;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        flex-shrink: 0;
+        transition: background 0.2s;
+    }
+
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .row.g-3.align-items-start {
+            gap: 1rem;
+        }
+        .col-lg-4,
+        .col-lg-8 {
+            max-width: 100% !important;
+        }
+        .form-card-header {
+            padding: 1rem 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-card-header .header-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        .form-card-header h4 {
+            font-size: 0.95rem;
+        }
+        .form-card-header p {
+            font-size: 0.74rem;
+        }
+        .form-card-body {
+            padding: 1rem;
+        }
+        .form-section {
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .field-label {
+            font-size: 0.78rem;
+        }
+        .form-control,
+        .form-select {
+            font-size: 0.82rem;
+            padding: 6px 10px;
+        }
+        .d-flex.gap-2.pt-1.flex-wrap {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn-guardar,
+        .btn-volver {
+            width: 100% !important;
+            justify-content: center;
+            padding: 8px 1rem;
+            font-size: 0.82rem;
+        }
+        .info-card-body {
+            padding: 1rem 1rem;
+        }
+        .info-card-header {
+            padding: 1rem 1rem;
+        }
+        .restaurant-initial {
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+        }
+    }
+    
+    /* Responsive: tablet */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .d-flex.gap-2.pt-1.flex-wrap {
+            flex-direction: row;
+            gap: 0.75rem;
+            flex-wrap: nowrap;
+        }
+        .btn-guardar,
+        .btn-volver {
+            width: auto;
+            flex: 1;
+        }
+    }
+</style>
+
+<div class="row g-3 align-items-start">
+
+    <!-- ── COLUMNA IZQUIERDA: Info ── -->
     <div class="col-lg-4">
+        <div class="info-card shadow-sm">
 
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body">
-
-                <h4 class="mb-4">
-
-                    Información actual
-
-                </h4>
-
-                <p>
-                    <strong>Restaurante:</strong><br>
-                    {{ restaurante.nombre }}
-                </p>
-
-                <p>
-                    <strong>NIT:</strong><br>
-                    {{ restaurante.nit }}
-                </p>
-
-                <p>
-                    <strong>Estado:</strong><br>
-
-                    {% if restaurante.estado == 'abierto' %}
-
-                        <span class="badge bg-success">
-                            Abierto
-                        </span>
-
+            <div class="info-card-header">
+                <div class="restaurant-initial">
+                    {% if restaurante.logo %}
+                        <img src="{{ restaurante.logo.url }}" alt="logo">
                     {% else %}
-
-                        <span class="badge bg-danger">
-                            Cerrado
-                        </span>
-
+                        {{ restaurante.nombre|first|upper }}
                     {% endif %}
-
-                </p>
-
-                <p>
-                    <strong>URL pública:</strong><br>
-
-                    <a
-                        href="/restaurantes/{{ restaurante.slug }}/"
-                        target="_blank">
-
-                        /restaurantes/{{ restaurante.slug }}/
-
-                    </a>
-                </p>
-
+                </div>
+                <h5>{{ restaurante.nombre }}</h5>
+                <p>{{ restaurante.slogan|default:"Panel de configuración" }}</p>
             </div>
 
-        </div>
+            <div class="info-card-body">
 
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-card-text"></i> NIT</span>
+                    <span class="info-value">{{ restaurante.nit }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-circle-fill"></i> Estado actual</span>
+                    <div class="mt-1">
+                        {% if restaurante.estado == 'abierto' %}
+                            <span class="status-pill abierto">
+                                <i class="bi bi-circle-fill"></i> Abierto
+                            </span>
+                        {% else %}
+                            <span class="status-pill cerrado">
+                                <i class="bi bi-circle-fill"></i> Cerrado
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-palette-fill"></i> Color principal</span>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        <div style="width:22px;height:22px;border-radius:6px;background:{{ restaurante.color_principal|default:'#e74c3c' }};border:1px solid #dee2e6;"></div>
+                        <span class="info-value">{{ restaurante.color_principal|default:'#e74c3c' }}</span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-link-45deg"></i> Página pública</span>
+                    <div class="url-section mt-1">
+                        <div class="url-section-label">
+                            <i class="bi bi-globe"></i> Enlace del restaurante
+                        </div>
+                        <a href="{% url 'pagina_restaurante' restaurante.slug %}"
+                           target="_blank" class="btn-ver-pagina">
+                            <i class="bi bi-box-arrow-up-right"></i> Ver página pública
+                        </a>
+                        <button type="button" class="btn-copiar" id="btnCopiar" onclick="copiarURL()">
+                            <i class="bi bi-copy"></i> Copiar URL
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <!-- FORMULARIO -->
-
+    <!-- ── COLUMNA DERECHA: Formulario ── -->
     <div class="col-lg-8">
+        <div class="form-card shadow-sm">
 
-        <div class="card border-0 shadow-sm">
+            <div class="form-card-header">
+                <div class="header-icon"><i class="bi bi-gear-fill"></i></div>
+                <div>
+                    <h4>Editar configuración</h4>
+                    <p>Actualiza la información y apariencia de tu restaurante</p>
+                </div>
+            </div>
 
-            <div class="card-body">
-
-                <h4 class="mb-4">
-
-                    Editar configuración
-
-                </h4>
-
-                <form method="POST">
-
+            <div class="form-card-body">
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
-                    <div class="mb-3">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 py-2 px-3 mb-3" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <div class="small mb-0"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
-                        <label class="form-label">
+                    <!-- FILA 1: Dos columnas lado a lado -->
+                    <div class="row g-3 mb-3">
+                        <!-- COLUMNA IZQUIERDA: INFORMACIÓN GENERAL -->
+                        <div class="col-lg-6">
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
+                                    <h6>Información general</h6>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="field-label">Nombre del restaurante</label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.nombre.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-0">
+                                    <label class="field-label">Slogan</label>
+                                    {{ form.slogan }}
+                                    <p class="field-hint">Frase corta que describe tu restaurante. Se muestra en la página pública.</p>
+                                    {% if form.slogan.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.slogan.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
 
-                            Nombre
+                        <!-- COLUMNA DERECHA: CONTACTO Y UBICACIÓN + ESTADO -->
+                        <div class="col-lg-6">
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                    <h6>Contacto y ubicación</h6>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-7">
+                                        <label class="field-label">Dirección</label>
+                                        {{ form.direccion }}
+                                        {% if form.direccion.errors %}
+                                            <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.direccion.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="field-label">Teléfono</label>
+                                        {{ form.telefono }}
+                                        {% if form.telefono.errors %}
+                                            <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.telefono.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-top">
+                                    <div style="margin-bottom: 0.9rem; padding-bottom: 0.6rem;">
+                                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.9rem;">
+                                            <div style="width:26px;height:26px; background:rgba(231,76,60,0.12);border-radius:6px; display:flex;align-items:center;justify-content:center; color:#e74c3c;font-size:0.8rem;flex-shrink:0;">
+                                                <i class="bi bi-toggle-on"></i>
+                                            </div>
+                                            <h6 style="font-weight:700; font-size:0.75rem; color:#495057; margin:0; text-transform:uppercase; letter-spacing:0.6px;">Estado del restaurante</h6>
+                                        </div>
+                                    </div>
+                                    <label class="field-label">Estado actual</label>
+                                    {{ form.estado }}
+                                    {% if form.estado.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.estado.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                        </label>
+                    <!-- APARIENCIA -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="bi bi-palette-fill"></i></div>
+                            <h6>Apariencia</h6>
+                        </div>
 
-                        {{ form.nombre }}
+                        <!-- Color principal -->
+                        <div class="mb-3">
+                            <label class="field-label">Color principal</label>
+                            <div class="color-row">
+                                {{ form.color_principal }}
+                                <div class="color-preview-box" id="colorPreview"
+                                     style="background: {{ restaurante.color_principal|default:'#e74c3c' }};"></div>
+                                <span class="text-muted small" id="colorHex">{{ restaurante.color_principal|default:'#e74c3c' }}</span>
+                            </div>
+                            <p class="field-hint">Este color se usará en el banner y botones de tu página pública.</p>
+                        </div>
 
-                        <div class="text-danger small mt-1">
+                        <!-- Logo -->
+                        <div class="mb-3">
+                            <label class="field-label">Logo del restaurante</label>
+                            {{ form.logo }}
+                            {% if restaurante.logo %}
+                                <div>
+                                    <img src="{{ restaurante.logo.url }}" class="img-preview" alt="Logo actual">
+                                    <p class="field-hint">Logo actual. Sube uno nuevo para reemplazarlo.</p>
+                                </div>
+                            {% else %}
+                                <p class="field-hint">No hay logo. Se mostrará la inicial del nombre.</p>
+                            {% endif %}
+                            {% if form.logo.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.logo.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
 
-                            {{ form.nombre.errors }}
-
+                        <!-- Portada -->
+                        <div class="mb-0">
+                            <label class="field-label">Imagen de portada</label>
+                            {{ form.portada }}
+                            {% if restaurante.portada %}
+                                <div>
+                                    <img src="{{ restaurante.portada.url }}" class="img-preview-portada" alt="Portada actual">
+                                    <p class="field-hint">Portada actual. Sube una nueva para reemplazarla.</p>
+                                </div>
+                            {% else %}
+                                <p class="field-hint">No hay portada. Se mostrará un fondo de color.</p>
+                            {% endif %}
+                            {% if form.portada.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.portada.errors|join:", " }}</div>
+                            {% endif %}
                         </div>
 
                     </div>
 
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Dirección
-
-                        </label>
-
-                        {{ form.direccion }}
-
-                        <div class="text-danger small mt-1">
-
-                            {{ form.direccion.errors }}
-
-                        </div>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Teléfono
-
-                        </label>
-
-                        {{ form.telefono }}
-
-                        <div class="text-danger small mt-1">
-
-                            {{ form.telefono.errors }}
-
-                        </div>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-
-                            Estado del restaurante
-
-                        </label>
-
-                        {{ form.estado }}
-
-                        <div class="text-danger small mt-1">
-
-                            {{ form.estado.errors }}
-
-                        </div>
-
-                    </div>
-
-                    <div class="d-flex gap-2">
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary">
-
-                            Guardar cambios
-
+                    <!-- ACCIONES -->
+                    <div class="d-flex gap-2 pt-1 flex-wrap">
+                        <button type="submit" class="btn-guardar">
+                            <i class="bi bi-check-circle-fill"></i> Guardar cambios
                         </button>
-
-                        <a
-                            href="{% url 'panel_admin' %}"
-                            class="btn btn-secondary">
-
-                            Volver
-
+                        <a href="{% url 'panel_admin' %}" class="btn-volver">
+                            <i class="bi bi-arrow-left"></i> Volver
                         </a>
-
                     </div>
 
                 </form>
-
             </div>
-
         </div>
-
     </div>
 
 </div>
+
+<script>
+    // Preview del color en tiempo real
+    const colorInput = document.querySelector('input[type="color"]');
+    const colorPreview = document.getElementById('colorPreview');
+    const colorHex = document.getElementById('colorHex');
+
+    if (colorInput) {
+        colorInput.addEventListener('input', function () {
+            colorPreview.style.background = this.value;
+            colorHex.textContent = this.value;
+        });
+    }
+
+    // Copiar URL
+    function marcarCopiado() {
+        const btn = document.getElementById('btnCopiar');
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡URL copiada!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-copy"></i> Copiar URL';
+            btn.classList.remove('copied');
+        }, 2000);
+    }
+
+    function copiarURL() {
+        const url = "{{ request.scheme }}://{{ request.get_host }}{% url 'pagina_restaurante' restaurante.slug %}";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(marcarCopiado).catch(() => copiarURLFallback(url));
+        } else {
+            copiarURLFallback(url);
+        }
+    }
+
+    function copiarURLFallback(url) {
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        try {
+            document.execCommand('copy');
+            marcarCopiado();
+        } catch (e) {
+            window.prompt('Copia este enlace:', url);
+        }
+        document.body.removeChild(input);
+    }
+</script>
 
 {% endblock %}

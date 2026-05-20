@@ -1,11 +1,158 @@
-<h1>
-    Panel Mesero
-</h1>
+{% extends 'dashboard/base_mesero.html' %}
 
-<p>
-    Bienvenido {{ request.user.username }}
-</p>
+{% block title %}Panel Mesero{% endblock %}
+{% block page_title %}Panel Mesero{% endblock %}
 
-<p>
-    Tipo de usuario {{ request.user.rol }}
-</p>
+{% block content %}
+
+<style>
+    .welcome-card {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 16px;
+        border: none;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .welcome-card::after {
+        content: '\F3C3';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 1.5rem; top: 50%;
+        transform: translateY(-50%);
+        font-size: 6rem;
+        color: rgba(255,255,255,0.08);
+        pointer-events: none;
+    }
+    .welcome-card h3 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.3rem;
+    }
+    .welcome-card p {
+        color: rgba(255,255,255,0.75);
+        margin: 0;
+        font-size: 0.88rem;
+    }
+    .btn-nueva-comanda {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.65rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+    .btn-nueva-comanda:hover {
+        background: rgba(255,255,255,0.28);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .info-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+    }
+    .info-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 700;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #212529;
+    }
+    .info-card-header i { color: #e74c3c; }
+    .info-card-body { padding: 1rem 1.5rem; }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid #f8f9fa;
+        font-size: 0.85rem;
+    }
+    .tip-item:last-child { border-bottom: none; }
+    .tip-num {
+        width: 22px; height: 22px;
+        background: rgba(231,76,60,0.1);
+        color: #e74c3c;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .tip-item p { margin: 0; color: #212529; line-height: 1.5; }
+    .tip-item span { font-weight: 600; }
+
+    /* ── MÓVIL: bienvenida ── */
+    @media (max-width: 768px) {
+        .welcome-card {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .welcome-card::after { display: none; }
+        .welcome-card h3 {
+            font-size: 1.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .welcome-card p { font-size: 0.8rem; }
+        .btn-nueva-comanda { padding: 0.5rem 1rem; font-size: 0.86rem; }
+    }
+</style>
+
+<div class="welcome-card">
+    <div>
+        <h3>Bienvenido, {{ request.user.username }} 👋</h3>
+        <p>Registra los pedidos de las mesas desde aquí.</p>
+    </div>
+    <a href="{% url 'registrar_comanda' %}" class="btn-nueva-comanda">
+        <i class="bi bi-plus-circle-fill"></i> Nueva comanda
+    </a>
+</div>
+
+<div class="info-card">
+    <div class="info-card-header">
+        <i class="bi bi-lightbulb-fill"></i> Guía rápida
+    </div>
+    <div class="info-card-body">
+        <div class="tip-item">
+            <span class="tip-num">1</span>
+            <p><span>Selecciona los productos</span> que el cliente desea, marcándolos en la lista del menú disponible.</p>
+        </div>
+        <div class="tip-item">
+            <span class="tip-num">2</span>
+            <p><span>Indica el número de mesa</span> y agrega notas especiales si el cliente lo requiere (ej: sin cebolla).</p>
+        </div>
+        <div class="tip-item">
+            <span class="tip-num">3</span>
+            <p><span>Envía el pedido</span> — llegará automáticamente al panel del administrador con estado "Pendiente".</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

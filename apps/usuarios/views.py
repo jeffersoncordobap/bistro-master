@@ -127,8 +127,7 @@ def panel_admin(request):
 
     restaurante = request.user.restaurante
 
-    empleados = restaurante.usuarios.count()
-
+    # Contar solo staff (meseros + domiciliarios), excluyendo al admin
     meseros = restaurante.usuarios.filter(
         rol=Usuario.Roles.MESERO
     ).count()
@@ -136,6 +135,8 @@ def panel_admin(request):
     domiciliarios = restaurante.usuarios.filter(
         rol=Usuario.Roles.DOMICILIARIO
     ).count()
+    
+    empleados = meseros + domiciliarios
 
     context = {
         'restaurante': restaurante,
@@ -323,10 +324,4 @@ def toggle_usuario(request, usuario_id):
 def logout_usuario(request):
 
     logout(request)
-
-    messages.success(
-        request,
-        'Sesión cerrada correctamente.'
-    )
-
     return redirect('inicio')

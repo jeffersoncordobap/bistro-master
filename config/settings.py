@@ -34,7 +34,11 @@ SECRET_KEY = 'django-insecure-(es$o3ip0h#c4&5+ue=utdcqy73i(dehux4or@_pq^^5-a2xxr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '192.168.0.9',
+]
 
 
 # Application definition
@@ -49,6 +53,8 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.landing',
     'apps.restaurantes',
+    'apps.productos',
+    'apps.comandas',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +134,7 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -1,0 +1,403 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Panel de Pedidos{% endblock %}
+{% block page_title %}Panel de Pedidos{% endblock %}
+
+{% block content %}
+
+<style>
+    .panel-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .panel-header-left { display:flex; align-items:center; gap:1rem; }
+    .panel-header-icon {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: #fff; flex-shrink: 0;
+    }
+    .panel-header h4 { color:#fff; font-weight:700; font-size:1.1rem; margin:0 0 0.15rem; }
+    .panel-header p  { color:rgba(255,255,255,0.75); font-size:0.83rem; margin:0; }
+
+    /* ── Kanban ── */
+    .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        align-items: start;
+    }
+    @media(max-width:1100px){ .kanban-board{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px) { .kanban-board{ grid-template-columns:1fr; } }
+
+    .kanban-col {
+        background: #f8f9fa;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .kanban-col-header {
+        padding: 0.85rem 1rem;
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 2px solid transparent;
+        font-weight: 700; font-size: 0.85rem;
+    }
+    .col-label { display:flex; align-items:center; gap:0.5rem; }
+    .col-dot   { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .col-count {
+        background: rgba(0,0,0,0.08); border-radius:20px;
+        padding: 0.1rem 0.55rem; font-size:0.72rem; font-weight:700;
+    }
+
+    .col-pendiente   .kanban-col-header { border-bottom-color:#ffa500; color:#e65100; }
+    .col-pendiente   .col-dot           { background:#ffa500; }
+    .col-preparacion .kanban-col-header { border-bottom-color:#2196f3; color:#1565c0; }
+    .col-preparacion .col-dot           { background:#2196f3; }
+    .col-listo       .kanban-col-header { border-bottom-color:#4caf50; color:#2e7d32; }
+    .col-listo       .col-dot           { background:#4caf50; }
+    .col-entregado   .kanban-col-header { border-bottom-color:#757575; color:#424242; }
+    .col-entregado   .col-dot           { background:#757575; }
+
+    .kanban-cards {
+        padding: 0.75rem;
+        display: flex; flex-direction: column; gap: 0.65rem;
+        min-height: 80px;
+    }
+
+    .cmd-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        transition: box-shadow 0.2s, transform 0.15s;
+        animation: cardIn 0.25s ease;
+    }
+    @keyframes cardIn {
+        from{ opacity:0; transform:translateY(6px); }
+        to  { opacity:1; transform:translateY(0); }
+    }
+    .cmd-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); transform:translateY(-1px); }
+
+    .cmd-card-inner {
+        border-left: 4px solid #dee2e6;
+        padding: 0.85rem 0.9rem 0.85rem 0.85rem;
+    }
+    .cmd-card[data-estado="pendiente"]      .cmd-card-inner { border-left-color:#ffa500; }
+    .cmd-card[data-estado="en_preparacion"] .cmd-card-inner { border-left-color:#2196f3; }
+    .cmd-card[data-estado="listo"]          .cmd-card-inner { border-left-color:#4caf50; }
+    .cmd-card[data-estado="entregado"]      .cmd-card-inner { border-left-color:#757575; }
+
+    .cmd-top {
+        display:flex; align-items:center; justify-content:space-between;
+        margin-bottom: 0.45rem;
+    }
+    .cmd-mesa {
+        font-weight:800; font-size:0.95rem; color:#212529;
+        display:flex; align-items:center; gap:0.3rem;
+    }
+    .cmd-mesa i { color:#e74c3c; font-size:0.85rem; }
+
+    .cmd-timer {
+        font-size:0.71rem; font-weight:700;
+        padding: 0.18rem 0.5rem; border-radius:20px;
+        background:#f8f9fa; color:#6c757d;
+        border: 1px solid #e9ecef;
+        font-variant-numeric: tabular-nums; white-space:nowrap;
+    }
+    .cmd-timer.warn  { background:#fff3cd; color:#7a5500;  border-color:#ffc107; }
+    .cmd-timer.alert { background:#f8d7da; color:#842029;  border-color:#f5c2c7; }
+
+    .cmd-meta {
+        font-size:0.74rem; color:#999;
+        margin-bottom: 0.55rem;
+        display:flex; align-items:center; gap:0.3rem;
+    }
+
+    .cmd-items { list-style:none; padding:0; margin:0 0 0.7rem; }
+    .cmd-item  {
+        display:flex; align-items:flex-start; gap:0.4rem;
+        font-size:0.79rem; color:#333;
+        padding: 0.28rem 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .cmd-item:last-child { border-bottom:none; }
+    .cmd-item-cant {
+        background:rgba(231,76,60,0.08); color:#c0392b;
+        font-weight:700; font-size:0.7rem;
+        padding:0.08rem 0.38rem; border-radius:20px;
+        white-space:nowrap; flex-shrink:0; margin-top:2px;
+    }
+    .cmd-item-nota {
+        font-size:0.68rem; color:#aaa; font-style:italic; display:block;
+    }
+
+    .cmd-actions { display:flex; gap:0.4rem; }
+    .btn-estado  {
+        flex:1; border:none; border-radius:8px;
+        padding:0.38rem 0.5rem; font-size:0.72rem; font-weight:700;
+        cursor:pointer; transition:all 0.2s;
+        display:flex; align-items:center; justify-content:center; gap:0.25rem;
+        white-space:nowrap;
+    }
+    .btn-estado:disabled { opacity:0.4; cursor:not-allowed; }
+    .btn-prev                 { background:#f0f0f0; border:1px solid #ddd; color:#555; }
+    .btn-prev:hover:not(:disabled) { background:#e0e0e0; }
+    .btn-next-preparacion     { background:#2196f3; color:#fff; }
+    .btn-next-preparacion:hover:not(:disabled) { background:#1565c0; }
+    .btn-next-listo           { background:#4caf50; color:#fff; }
+    .btn-next-listo:hover:not(:disabled)       { background:#2e7d32; }
+    .btn-next-entregado       { background:#757575; color:#fff; }
+    .btn-next-entregado:hover:not(:disabled)   { background:#424242; }
+    .btn-done { background:#f0f0f0; color:#aaa; cursor:default; font-size:0.7rem; }
+
+    .col-empty {
+        text-align:center; padding:1.5rem 1rem;
+        color:#ced4da; font-size:0.8rem;
+    }
+    .col-empty i { font-size:1.5rem; display:block; margin-bottom:0.4rem; }
+
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .panel-header {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.25rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+            justify-content: flex-start;
+        }
+        .panel-header-left {
+            width: 100%;
+        }
+        .panel-header-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 1.1rem;
+        }
+        .panel-header h4 {
+            font-size: 1rem;
+        }
+        .panel-header p {
+            font-size: 0.75rem;
+        }
+        #totalBadge {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        .kanban-board {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        .kanban-col-header {
+            padding: 0.75rem 0.9rem;
+            font-size: 0.8rem;
+        }
+        .kanban-cards {
+            min-height: 60px;
+            padding: 0.6rem;
+        }
+        .cmd-card-inner {
+            padding: 0.7rem 0.8rem;
+        }
+        .cmd-timer {
+            font-size: 0.68rem;
+        }
+        .btn-estado {
+            font-size: 0.68rem;
+            padding: 0.35rem 0.4rem;
+        }
+    }
+</style>
+
+<!-- Encabezado -->
+<div class="panel-header">
+    <div class="panel-header-left">
+        <div class="panel-header-icon"><i class="bi bi-kanban-fill"></i></div>
+        <div>
+            <h4>Panel de Pedidos</h4>
+            <p>Supervisa y gestiona el flujo de trabajo del local</p>
+        </div>
+    </div>
+    <span id="totalBadge" style="
+        background:rgba(255,255,255,0.18);
+        border:1.5px solid rgba(255,255,255,0.4);
+        color:#fff;
+        border-radius:20px;
+        padding:0.4rem 1rem;
+        font-size:0.82rem;
+        font-weight:700;
+        display:none;
+        align-items:center;
+        gap:0.4rem;
+        white-space:nowrap;
+        flex-shrink:0;
+    ">
+        <i class="bi bi-receipt"></i>
+        <span id="totalTexto">0 pedidos</span>
+    </span>
+</div>
+
+<!-- Board -->
+<div class="kanban-board">
+    <div class="kanban-col col-pendiente">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Pendiente</div>
+            <span class="col-count" id="cnt-pendiente">0</span>
+        </div>
+        <div class="kanban-cards" id="col-pendiente"></div>
+    </div>
+    <div class="kanban-col col-preparacion">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> En preparación</div>
+            <span class="col-count" id="cnt-en_preparacion">0</span>
+        </div>
+        <div class="kanban-cards" id="col-en_preparacion"></div>
+    </div>
+    <div class="kanban-col col-listo">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Listo</div>
+            <span class="col-count" id="cnt-listo">0</span>
+        </div>
+        <div class="kanban-cards" id="col-listo"></div>
+    </div>
+    <div class="kanban-col col-entregado">
+        <div class="kanban-col-header">
+            <div class="col-label"><span class="col-dot"></span> Entregado</div>
+            <span class="col-count" id="cnt-entregado">0</span>
+        </div>
+        <div class="kanban-cards" id="col-entregado"></div>
+    </div>
+</div>
+
+<script>
+const API_URL = "{% url 'api_panel_pedidos' %}";
+const CSRF    = "{{ csrf_token }}";
+const ESTADOS = ['pendiente','en_preparacion','listo','entregado'];
+const LABEL   = { pendiente:'Pendiente', en_preparacion:'En preparación', listo:'Listo', entregado:'Entregado' };
+const BTN_CLS = { en_preparacion:'btn-next-preparacion', listo:'btn-next-listo', entregado:'btn-next-entregado' };
+
+let timerData = {};
+
+function fmt(seg) {
+    if (seg < 60)   return `${seg}s`;
+    if (seg < 3600) return `${Math.floor(seg/60)}m ${String(seg%60).padStart(2,'0')}s`;
+    return `${Math.floor(seg/3600)}h ${Math.floor((seg%3600)/60)}m`;
+}
+function timerCls(seg, estado) {
+    if (estado === 'entregado') return '';
+    if (seg > 1800) return 'alert';
+    if (seg > 600)  return 'warn';
+    return '';
+}
+
+function buildCard(c) {
+    const idx  = ESTADOS.indexOf(c.estado);
+    const prev = idx > 0 ? ESTADOS[idx-1] : null;
+    const next = idx < ESTADOS.length-1 ? ESTADOS[idx+1] : null;
+    const seg  = c.segundos;
+
+    const items = c.items.map(it => `
+        <li class="cmd-item">
+            <span class="cmd-item-cant">×${it.cantidad}</span>
+            <div>${it.nombre}${it.nota ? `<span class="cmd-item-nota"><i class="bi bi-chat-left-text"></i> ${it.nota}</span>` : ''}</div>
+        </li>`).join('');
+
+    const btnPrev = prev
+        ? `<button class="btn-estado btn-prev" onclick="cambiarEstado(${c.id},'${prev}',this)"><i class="bi bi-chevron-left"></i></button>`
+        : '';
+    const btnNext = next
+        ? `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado(${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        : `<button class="btn-estado btn-done" disabled><i class="bi bi-check-all"></i> Completado</button>`;
+
+    return `<div class="cmd-card" data-id="${c.id}" data-estado="${c.estado}">
+        <div class="cmd-card-inner">
+            <div class="cmd-top">
+                <span class="cmd-mesa"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa ${c.mesa}</span>
+                <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.id}">${fmt(seg)}</span>
+            </div>
+            <div class="cmd-meta"><i class="bi bi-person"></i> ${c.mesero}</div>
+            <ul class="cmd-items">${items}</ul>
+            <div class="cmd-actions">${btnPrev}${btnNext}</div>
+        </div>
+    </div>`;
+}
+
+function renderBoard(comandas) {
+    ESTADOS.forEach(e => {
+        document.getElementById(`col-${e}`).innerHTML = '';
+        document.getElementById(`cnt-${e}`).textContent = '0';
+    });
+
+    // Total badge
+    const badge = document.getElementById('totalBadge');
+    const total = comandas.length;
+    document.getElementById('totalTexto').textContent = `${total} pedido${total !== 1 ? 's' : ''}`;
+    badge.style.display = total > 0 ? 'inline-flex' : 'none';
+
+    const grupos = {};
+    ESTADOS.forEach(e => grupos[e] = []);
+    comandas.forEach(c => {
+        timerData[c.id] = c.segundos;
+        if (grupos[c.estado]) grupos[c.estado].push(c);
+    });
+    ESTADOS.forEach(estado => {
+        const col  = document.getElementById(`col-${estado}`);
+        const cnt  = document.getElementById(`cnt-${estado}`);
+        const list = grupos[estado];
+        cnt.textContent = list.length;
+        col.innerHTML   = list.length
+            ? list.map(buildCard).join('')
+            : `<div class="col-empty"><i class="bi bi-inbox"></i>Sin pedidos</div>`;
+    });
+}
+
+async function fetchData() {
+    try {
+        const res  = await fetch(API_URL, { headers:{'X-Requested-With':'XMLHttpRequest'} });
+        const json = await res.json();
+        renderBoard(json.comandas);
+    } catch(e) { /* silencioso */ }
+}
+
+async function cambiarEstado(id, estado, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px"></span>';
+    try {
+        await fetch(`/comanda/${id}/estado/`, {
+            method:'POST',
+            headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':CSRF, 'Content-Type':'application/x-www-form-urlencoded' },
+            body:`estado=${estado}`
+        });
+        await fetchData();
+    } catch {
+        btn.disabled = false;
+        btn.innerHTML = '¡Error!';
+    }
+}
+
+setInterval(() => {
+    document.querySelectorAll('.cmd-card').forEach(card => {
+        const id = parseInt(card.dataset.id);
+        const es = card.dataset.estado;
+        if (timerData[id] !== undefined) {
+            timerData[id]++;
+            const el = document.getElementById(`timer-${id}`);
+            if (el) { el.textContent = fmt(timerData[id]); el.className = `cmd-timer ${timerCls(timerData[id],es)}`; }
+        }
+    });
+}, 1000);
+
+fetchData();
+setInterval(fetchData, 15000);
+</script>
+
+{% endblock %}

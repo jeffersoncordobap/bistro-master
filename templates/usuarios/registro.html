@@ -3,254 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro · Bistro Master</title>
 
-    <title>
-        Registro Restaurante
-    </title>
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
+    <style>
+        body {
+            background: linear-gradient(135deg, #1c1c1c, #2d2d2d, #1c1c1c);
+            min-height: 100vh;
+        }
+
+        .card {
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(to right, #c0392b, #e74c3c);
+            padding: 2rem 2.5rem;
+            text-align: center;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .section-divider .section-icon {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: rgba(231,76,60,0.1);
+            color: #e74c3c;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .section-divider h5 {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #212529;
+            margin: 0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #343a40;
+            margin-bottom: 0.35rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid #dee2e6;
+            font-size: 0.9rem;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
+            border-color: #e74c3c;
+        }
+
+        .btn-registro {
+            background: linear-gradient(to right, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .btn-registro:hover {
+            background: linear-gradient(to right, #a93226, #cb4335);
+            transform: translateY(-1px);
+        }
+
+        .field-error {
+            font-size: 0.78rem;
+            color: #e74c3c;
+            margin-top: 0.25rem;
+        }
+    </style>
 </head>
 
-<body style="background: linear-gradient(to right, #141e30, #243b55);">
-
-    <div class="container py-5">
-
+<body class="d-flex align-items-center py-5">
+    <div class="container">
         <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
 
-            <div class="col-lg-8">
-
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card shadow-lg border-0">
 
                     <!-- HEADER -->
-
-                    <div class="bg-dark text-white text-center p-4">
-
-                        <h1 class="fw-bold mb-2">
-                            Bistro Master
-                        </h1>
-
-                        <p class="mb-0">
-                            Crea tu restaurante y administra tu negocio
-                        </p>
-
+                    <div class="card-header-custom">
+                        <i class="bi bi-cup-hot-fill text-white fs-1 mb-2 d-block"></i>
+                        <h2 class="fw-bold text-white mb-1">Bistro Master</h2>
+                        <p class="text-white-50 mb-0 small">Crea tu restaurante y administra tu negocio</p>
                     </div>
 
                     <!-- BODY -->
-
-                    <div class="card-body p-5 bg-white">
-
+                    <div class="card-body p-4 p-lg-5 bg-white">
                         <form method="POST">
-
                             {% csrf_token %}
 
-                            <!-- RESTAURANTE -->
+                            <!-- SECCIÓN: RESTAURANTE -->
+                            <div class="mb-4">
+                                <div class="section-divider">
+                                    <span class="section-icon"><i class="bi bi-shop"></i></span>
+                                    <h5>Datos del Restaurante</h5>
+                                </div>
 
-                            <div class="mb-5">
-
-                                <h3 class="fw-bold text-primary mb-4">
-
-                                    Datos del Restaurante
-
-                                </h3>
-
-                                <div class="row">
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Nombre
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ restaurante_form.nombre.errors }}
-                                        </div>
-
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre</label>
                                         {{ restaurante_form.nombre }}
-
+                                        <div class="field-error">{{ restaurante_form.nombre.errors }}</div>
                                     </div>
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            NIT
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ restaurante_form.nit.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">NIT</label>
                                         {{ restaurante_form.nit }}
-
+                                        <div class="field-error">{{ restaurante_form.nit.errors }}</div>
                                     </div>
-
-                                </div>
-
-                                <div class="mb-3">
-
-                                    <label class="form-label fw-semibold">
-                                        Dirección
-                                    </label>
-
-                                    <div class="text-danger small">
-                                        {{ restaurante_form.direccion.errors }}
+                                    <div class="col-md-8">
+                                        <label class="form-label">Dirección</label>
+                                        {{ restaurante_form.direccion }}
+                                        <div class="field-error">{{ restaurante_form.direccion.errors }}</div>
                                     </div>
-
-                                    {{ restaurante_form.direccion }}
-
-                                </div>
-
-                                <div>
-
-                                    <label class="form-label fw-semibold">
-                                        Teléfono
-                                    </label>
-
-                                    <div class="text-danger small">
-                                        {{ restaurante_form.telefono.errors }}
+                                    <div class="col-md-4">
+                                        <label class="form-label">Teléfono</label>
+                                        {{ restaurante_form.telefono }}
+                                        <div class="field-error">{{ restaurante_form.telefono.errors }}</div>
                                     </div>
-
-                                    {{ restaurante_form.telefono }}
-
                                 </div>
-
                             </div>
 
-                            <!-- ADMINISTRADOR -->
-
+                            <!-- SECCIÓN: ADMINISTRADOR -->
                             <div class="mb-4">
+                                <div class="section-divider">
+                                    <span class="section-icon"><i class="bi bi-person-badge"></i></span>
+                                    <h5>Administrador Principal</h5>
+                                </div>
 
-                                <h3 class="fw-bold text-success mb-4">
-
-                                    Administrador Principal
-
-                                </h3>
-
-                                <div class="row">
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Usuario
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.username.errors }}
-                                        </div>
-
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Usuario</label>
                                         {{ usuario_form.username }}
-
+                                        <div class="field-error">{{ usuario_form.username.errors }}</div>
                                     </div>
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Correo electrónico
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.email.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">Correo electrónico</label>
                                         {{ usuario_form.email }}
-
+                                        <div class="field-error">{{ usuario_form.email.errors }}</div>
                                     </div>
-
-                                </div>
-
-                                <div class="row">
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Cédula
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.cedula.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">Cédula</label>
                                         {{ usuario_form.cedula }}
-
+                                        <div class="field-error">{{ usuario_form.cedula.errors }}</div>
                                     </div>
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Teléfono
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.telefono.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">Teléfono</label>
                                         {{ usuario_form.telefono }}
-
+                                        <div class="field-error">{{ usuario_form.telefono.errors }}</div>
                                     </div>
-
-                                </div>
-
-                                <div class="row">
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <label class="form-label fw-semibold">
-                                            Contraseña
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.password1.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">Contraseña</label>
                                         {{ usuario_form.password1 }}
-
+                                        <div class="field-error">{{ usuario_form.password1.errors }}</div>
                                     </div>
-
-                                    <div class="col-md-6 mb-4">
-
-                                        <label class="form-label fw-semibold">
-                                            Confirmar contraseña
-                                        </label>
-
-                                        <div class="text-danger small">
-                                            {{ usuario_form.password2.errors }}
-                                        </div>
-
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirmar contraseña</label>
                                         {{ usuario_form.password2 }}
-
+                                        <div class="field-error">{{ usuario_form.password2.errors }}</div>
                                     </div>
-
                                 </div>
-
                             </div>
 
                             <!-- BOTÓN -->
-
-                            <div class="d-grid">
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary btn-lg fw-bold rounded-3 py-3"
-                                >
-
-                                    Registrar Restaurante
-
+                            <div class="d-grid mt-2">
+                                <button type="submit" class="btn btn-registro text-white btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Registrar Restaurante
                                 </button>
+                            </div>
 
+                            <div class="text-center mt-3">
+                                <a href="{% url 'login' %}" class="text-decoration-none text-danger small">
+                                    ¿Ya tienes cuenta? Inicia sesión
+                                </a>
                             </div>
 
                         </form>
-
                     </div>
 
                 </div>
 
+                <p class="text-center text-white-50 small mt-4">
+                    © 2026 Bistro Master · Todos los derechos reservados
+                </p>
+
             </div>
-
         </div>
-
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

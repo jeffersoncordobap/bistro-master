@@ -1,166 +1,293 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}
-    Crear Usuario
-{% endblock %}
-
-{% block page_title %}
-    Crear Usuario
-{% endblock %}
+{% block title %}Crear Usuario{% endblock %}
+{% block page_title %}Crear Usuario{% endblock %}
 
 {% block content %}
 
-<div class="card border-0 shadow-sm">
+<style>
+    /* ── Encabezado ───────────────────────────────────── */
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .section-header-icon {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .section-header h4 { color: #fff; font-weight: 700; font-size: 1.1rem; margin: 0 0 0.15rem; }
+    .section-header p  { color: rgba(255,255,255,0.75); font-size: 0.83rem; margin: 0; }
 
-    <div class="card-body">
+    /* ── Card ─────────────────────────────────────────── */
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+    }
+    .bm-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 700;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #212529;
+    }
+    .bm-card-header i { color: #e74c3c; }
+    .bm-card-body { padding: 1.5rem; }
 
+    /* ── Campos ───────────────────────────────────────── */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.83rem;
+        color: #343a40;
+        margin-bottom: 0.35rem;
+    }
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1.5px solid #dee2e6;
+        font-size: 0.88rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+        outline: none;
+    }
+    .form-select {
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1.5px solid #dee2e6;
+        font-size: 0.88rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-select:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+        outline: none;
+    }
+    .field-error {
+        font-size: 0.77rem;
+        color: #e74c3c;
+        margin-top: 0.25rem;
+    }
+
+    /* ── Divisor de sección ───────────────────────────── */
+    .section-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .section-divider .section-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: rgba(231,76,60,0.1);
+        color: #e74c3c;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .section-divider h5 {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: #212529;
+        margin: 0;
+    }
+
+    /* ── Botones ──────────────────────────────────────── */
+    .btn-guardar {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 1.5rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #fff;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-guardar:hover {
+        background: linear-gradient(to right, #a93226, #cb4335);
+        transform: translateY(-1px);
+        color: #fff;
+    }
+    .btn-cancelar {
+        background: #f8f9fa;
+        border: 1.5px solid #dee2e6;
+        border-radius: 10px;
+        padding: 10px 1.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #6c757d;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-cancelar:hover {
+        background: #e9ecef;
+        color: #495057;
+    }
+    
+    /* Responsive: móvil */
+    @media (max-width: 768px) {
+        .section-header {
+            padding: 1rem 1rem;
+            border-radius: 12px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .section-header-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+        }
+        .section-header h4 {
+            font-size: 1rem;
+        }
+        .section-header p {
+            font-size: 0.75rem;
+        }
+        .bm-card-body {
+            padding: 1rem;
+        }
+        .form-label {
+            font-size: 0.8rem;
+        }
+        .form-control,
+        .form-select {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        .d-flex.gap-2.pt-2 {
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .btn-guardar,
+        .btn-cancelar {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 1rem;
+            font-size: 0.88rem;
+        }
+    }
+    
+    /* Responsive: tablet */
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .d-flex.gap-2.pt-2 {
+            flex-direction: row;
+            gap: 0.75rem;
+        }
+        .btn-guardar,
+        .btn-cancelar {
+            width: auto;
+            flex: 1;
+        }
+    }
+</style>
+
+<!-- Encabezado -->
+<div class="section-header">
+    <div class="section-header-icon">
+        <i class="bi bi-person-plus-fill"></i>
+    </div>
+    <div>
+        <h4>Crear Usuario</h4>
+        <p>Registra un nuevo mesero o domiciliario en el sistema</p>
+    </div>
+</div>
+
+<!-- Formulario -->
+<div class="bm-card">
+    <div class="bm-card-header">
+        <i class="bi bi-person-vcard"></i> Datos del usuario
+    </div>
+    <div class="bm-card-body">
         <form method="POST">
-
             {% csrf_token %}
 
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-
-                    <label class="form-label">
-
-                        Usuario
-
-                    </label>
-
+            <!-- Acceso -->
+            <div class="section-divider">
+                <span class="section-icon"><i class="bi bi-shield-lock"></i></span>
+                <h5>Acceso al sistema</h5>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Usuario</label>
                     {{ form.username }}
-                    <div class="text-danger small mt-1">
-                    {{ form.username.errors }}
-                    </div>
-
+                    <div class="field-error">{{ form.username.errors }}</div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label class="form-label">
-
-                        Correo
-
-                    </label>
-
+                <div class="col-md-6">
+                    <label class="form-label">Correo electrónico</label>
                     {{ form.email }}
-                    <div class="text-danger small mt-1">
-                    {{ form.email.errors }}
-                    </div>
-
+                    <div class="field-error">{{ form.email.errors }}</div>
                 </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-
-                    <label class="form-label">
-
-                        Cédula
-
-                    </label>
-
-                    {{ form.cedula }}
-                    
-                    <div class="text-danger small mt-1">
-                    {{ form.cedula.errors }}
-                    </div>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label class="form-label">
-
-                        Teléfono
-
-                    </label>
-
-                    {{ form.telefono }}
-
-                    <div class="text-danger small mt-1">
-                    {{ form.telefono.errors }}
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="mb-3">
-
-                <label class="form-label">
-
-                    Rol
-
-                </label>
-
-                {{ form.rol }}
-                
-                <div class="text-danger small mt-1">
-                {{ form.rol.errors }}
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-
-                    <label class="form-label">
-
-                        Contraseña
-
-                    </label>
-
+                <div class="col-md-6">
+                    <label class="form-label">Contraseña</label>
                     {{ form.password1 }}
-
-                    <div class="text-danger small mt-1">
-                    {{ form.password1.errors }}
-                    </div>
-
+                    <div class="field-error">{{ form.password1.errors }}</div>
                 </div>
-
-                <div class="col-md-6 mb-4">
-
-                    <label class="form-label">
-
-                        Confirmar contraseña
-
-                    </label>
-
+                <div class="col-md-6">
+                    <label class="form-label">Confirmar contraseña</label>
                     {{ form.password2 }}
-
-                    <div class="text-danger small mt-1">
-                    {{ form.password2.errors }}
-                    </div>
-
-
+                    <div class="field-error">{{ form.password2.errors }}</div>
                 </div>
-
             </div>
 
-            <div class="d-flex gap-2">
+            <!-- Datos personales -->
+            <div class="section-divider">
+                <span class="section-icon"><i class="bi bi-person"></i></span>
+                <h5>Datos personales</h5>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Cédula</label>
+                    {{ form.cedula }}
+                    <div class="field-error">{{ form.cedula.errors }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Teléfono</label>
+                    {{ form.telefono }}
+                    <div class="field-error">{{ form.telefono.errors }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Rol</label>
+                    {{ form.rol }}
+                    <div class="field-error">{{ form.rol.errors }}</div>
+                </div>
+            </div>
 
-                <button type="submit" class="btn btn-danger">
-
-                    Crear usuario
-
+            <!-- Acciones -->
+            <div class="d-flex gap-2 pt-2 border-top">
+                <button type="submit" class="btn-guardar">
+                    <i class="bi bi-check-lg"></i> Crear usuario
                 </button>
-
-                <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary">
-
-                    Cancelar
-
+                <a href="{% url 'lista_usuarios' %}" class="btn-cancelar">
+                    <i class="bi bi-x-lg"></i> Cancelar
                 </a>
-
             </div>
 
         </form>
-
     </div>
-
 </div>
 
 {% endblock %}
