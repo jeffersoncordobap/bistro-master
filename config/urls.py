@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('apps.restaurantes.urls')),
     path('productos/',include('apps.productos.urls')),
     path('', include('apps.comandas.urls')),
+    path('', include('apps.domicilios.urls')),
     path('tiqueteras/',include('apps.tiqueteras.urls')
 ),
 ]

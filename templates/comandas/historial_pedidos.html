@@ -1,0 +1,230 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Historial de Pedidos{% endblock %}
+{% block page_title %}Historial de Pedidos{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .section-header-left { display:flex; align-items:center; gap:1rem; }
+    .section-header-icon {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: #fff; flex-shrink: 0;
+    }
+    .section-header h4 { color:#fff; font-weight:800; font-size:1.1rem; margin:0 0 0.15rem; }
+    .section-header p  { color:rgba(255,255,255,0.75); font-size:0.83rem; margin:0; }
+
+    .btn-volver {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+    .btn-volver:hover { background: rgba(255,255,255,0.28); color:#fff; }
+
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .bm-table { width:100%; margin:0; border-collapse: collapse; }
+    .bm-table thead tr { background:#f8f9fa; border-bottom: 2px solid #dee2e6; }
+    .bm-table thead th {
+        padding: 0.85rem 1.1rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+    .bm-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
+    .bm-table tbody tr:hover { background:#fafafa; }
+    .bm-table tbody tr:last-child { border-bottom:none; }
+    .bm-table tbody td {
+        padding: 1rem 1.1rem;
+        font-size: 0.88rem;
+        color: #212529;
+        vertical-align: top;
+    }
+    .subtle { color:#999; font-size:0.78rem; margin-top:0.15rem; }
+    .items { color:#333; font-size:0.86rem; }
+    .items span { display:block; padding:0.12rem 0; }
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+    .estado-badge .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .st-pendiente { background: rgba(255,165,0,0.14); color:#e65100; }
+    .st-pendiente .dot { background:#ffa500; }
+    .st-preparacion { background: rgba(33,150,243,0.12); color:#1565c0; }
+    .st-preparacion .dot { background:#2196f3; }
+    .st-listo { background: rgba(76,175,80,0.12); color:#2e7d32; }
+    .st-listo .dot { background:#4caf50; }
+    .st-entregado { background: rgba(117,117,117,0.14); color:#424242; }
+    .st-entregado .dot { background:#757575; }
+
+    .tipo-badge {
+        display:inline-flex;
+        align-items:center;
+        gap:0.35rem;
+        padding:0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size:0.73rem;
+        font-weight:800;
+        white-space: nowrap;
+    }
+    .tipo-dom { background: rgba(255,193,7,0.2); color:#7a5500; }
+    .tipo-tiq { background: rgba(13,202,240,0.2); color:#055160; }
+    .tipo-nor { background: rgba(108,117,125,0.18); color:#495057; }
+
+    @media(max-width: 900px){
+        .bm-table thead { display:none; }
+        .bm-table, .bm-table tbody, .bm-table tr, .bm-table td { display:block; width:100%; }
+        .bm-table tbody td { padding: 0.8rem 1rem; }
+        .bm-table tbody tr { padding: 0.4rem 0; }
+        .bm-table tbody td[data-label]::before {
+            content: attr(data-label);
+            display:block;
+            font-size:0.72rem;
+            color:#999;
+            font-weight:800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+    }
+</style>
+
+<div class="section-header">
+    <div class="section-header-left">
+        <div class="section-header-icon"><i class="bi bi-clock-history"></i></div>
+        <div>
+            <h4>Historial de Pedidos</h4>
+            <p>Registro completo de pedidos del restaurante</p>
+        </div>
+    </div>
+    <a class="btn-volver" href="{% url 'panel_pedidos' %}">
+        <i class="bi bi-arrow-left"></i>
+        Volver a Pedidos
+    </a>
+</div>
+
+<div class="bm-card">
+    <table class="bm-table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Info</th>
+                <th>Items</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td data-label="Fecha">
+                    <div style="font-weight:900;">{{ row.fecha|date:"d/m/Y" }}</div>
+                    <div class="subtle"><i class="bi bi-clock"></i> {{ row.fecha|date:"H:i" }}</div>
+                </td>
+                <td data-label="Tipo">
+                    {% if row.tipo == 'domicilio' %}
+                        <span class="tipo-badge tipo-dom"><i class="bi bi-scooter"></i> Domicilio</span>
+                    {% else %}
+                        {% if row.tipo_consumo == 'tiquetera' %}
+                            <span class="tipo-badge tipo-tiq"><i class="bi bi-ticket-perforated"></i> Tiquetera</span>
+                        {% else %}
+                            <span class="tipo-badge tipo-nor"><i class="bi bi-cash"></i> Normal</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td data-label="Estado">
+                    {% if row.estado == 'pendiente' %}
+                        <span class="estado-badge st-pendiente"><span class="dot"></span>Pendiente</span>
+                    {% elif row.estado == 'en_preparacion' %}
+                        <span class="estado-badge st-preparacion"><span class="dot"></span>En preparación</span>
+                    {% elif row.estado == 'listo' %}
+                        <span class="estado-badge st-listo"><span class="dot"></span>Listo</span>
+                    {% else %}
+                        <span class="estado-badge st-entregado"><span class="dot"></span>Entregado</span>
+                    {% endif %}
+                </td>
+                <td data-label="Info">
+                    {% if row.tipo == 'domicilio' %}
+                        <div style="font-weight:900;"><i class="bi bi-person"></i> {{ row.cliente_nombre }}{% if row.cliente_telefono %} · {{ row.cliente_telefono }}{% endif %}</div>
+                        <div class="subtle"><i class="bi bi-geo-alt"></i> {{ row.direccion }}</div>
+                        {% if row.referencia %}
+                            <div class="subtle"><i class="bi bi-chat-left-text"></i> {{ row.referencia }}</div>
+                        {% endif %}
+                    {% else %}
+                        <div style="font-weight:900;"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa {{ row.mesa }}</div>
+                        <div class="subtle"><i class="bi bi-person"></i> {{ row.mesero }}</div>
+                        {% if row.tiquetera_cliente %}
+                            <div class="subtle"><i class="bi bi-person-badge"></i> {{ row.tiquetera_cliente }}</div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td data-label="Items">
+                    <div class="items">
+                        {% for it in row.items %}
+                            <span>×{{ it.cantidad }} {{ it.producto.nombre }}{% if it.nota %} <em style="color:#aaa;">({{ it.nota }})</em>{% endif %}</span>
+                        {% empty %}
+                            <span class="subtle">Sin items</span>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td data-label="Total" style="font-weight:900; white-space:nowrap;">
+                    {% if row.total %}
+                        ${{ row.total }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:2rem; color:#bbb; font-weight:800;">
+                    <i class="bi bi-inbox" style="font-size:1.5rem; display:block; margin-bottom:.4rem;"></i>
+                    Aún no hay pedidos para mostrar
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+

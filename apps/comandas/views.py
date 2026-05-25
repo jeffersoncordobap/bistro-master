@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -16,6 +17,8 @@ from apps.tiqueteras.models import (
     Tiquetera,
     ConsumoTiquetera
 )
+
+from apps.domicilios.models import PedidoDomicilio
 
 from .models import (
     Comanda,
@@ -290,6 +293,87 @@ def panel_pedidos(request):
 
 @login_required
 @rol_requerido([Usuario.Roles.ADMIN])
+def historial_pedidos(request):
+
+    comandas = Comanda.objects.filter(
+        restaurante=request.user.restaurante
+    ).prefetch_related(
+        'items__producto'
+    ).select_related(
+        'mesero',
+        'tiquetera'
+    )
+
+    try:
+        pedidos_domicilio = list(
+            PedidoDomicilio.objects.filter(
+                restaurante=request.user.restaurante
+            ).prefetch_related(
+                'items__producto'
+            )
+        )
+    except (OperationalError, ProgrammingError):
+        pedidos_domicilio = []
+
+    rows = []
+
+    for c in comandas:
+
+        rows.append(
+            {
+                'tipo': 'comanda',
+                'fecha': c.fecha_creacion,
+                'estado': c.estado,
+                'mesa': c.numero_mesa,
+                'mesero': c.mesero.username,
+                'tipo_consumo': c.tipo_consumo,
+                'tiquetera_cliente': (
+                    c.tiquetera.cliente_nombre
+                    if c.tiquetera
+                    else None
+                ),
+                'items': c.items.all(),
+                'total': None,
+                'cliente_nombre': None,
+                'cliente_telefono': None,
+                'direccion': None,
+                'referencia': None,
+            }
+        )
+
+    for p in pedidos_domicilio:
+
+        rows.append(
+            {
+                'tipo': 'domicilio',
+                'fecha': p.fecha_creacion,
+                'estado': p.estado,
+                'mesa': None,
+                'mesero': None,
+                'tipo_consumo': None,
+                'tiquetera_cliente': None,
+                'items': p.items.all(),
+                'total': p.total,
+                'cliente_nombre': p.cliente_nombre,
+                'cliente_telefono': p.cliente_telefono,
+                'direccion': p.direccion,
+                'referencia': p.referencia,
+            }
+        )
+
+    rows.sort(key=lambda r: r['fecha'], reverse=True)
+
+    return render(
+        request,
+        'comandas/historial_pedidos.html',
+        {
+            'rows': rows,
+        }
+    )
+
+
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
 def api_panel_pedidos(request):
 
     ahora = timezone.now()
@@ -304,6 +388,19 @@ def api_panel_pedidos(request):
     ).order_by(
         '-fecha_creacion'
     )
+
+    try:
+        pedidos_domicilio = list(
+            PedidoDomicilio.objects.filter(
+                restaurante=request.user.restaurante
+            ).prefetch_related(
+                'items__producto'
+            ).order_by(
+                '-fecha_creacion'
+            )
+        )
+    except (OperationalError, ProgrammingError):
+        pedidos_domicilio = []
 
     data = []
 
@@ -326,7 +423,9 @@ def api_panel_pedidos(request):
 
         data.append({
 
+            'tipo': 'comanda',
             'id': c.id,
+            'uid': f'comanda-{c.id}',
 
             'mesa': c.numero_mesa,
 
@@ -335,6 +434,8 @@ def api_panel_pedidos(request):
             'mesero': c.mesero.username,
 
             'segundos': segundos,
+
+            'created_ts': int(c.fecha_creacion.timestamp()),
 
             'tipo_consumo': c.tipo_consumo,
 
@@ -346,6 +447,41 @@ def api_panel_pedidos(request):
 
             'items': items,
         })
+
+    for p in pedidos_domicilio:
+
+        segundos = int(
+            (ahora - p.fecha_creacion).total_seconds()
+        )
+
+        items = [
+            {
+                'nombre': item.producto.nombre,
+                'cantidad': item.cantidad,
+                'nota': item.nota or '',
+            }
+            for item in p.items.all()
+        ]
+
+        data.append({
+            'tipo': 'domicilio',
+            'id': p.id,
+            'uid': f'domicilio-{p.id}',
+            'mesa': None,
+            'estado': p.estado,
+            'mesero': None,
+            'segundos': segundos,
+            'created_ts': int(p.fecha_creacion.timestamp()),
+            'tipo_consumo': None,
+            'tiquetera_cliente': None,
+            'cliente_nombre': p.cliente_nombre,
+            'cliente_telefono': p.cliente_telefono,
+            'direccion': p.direccion,
+            'referencia': p.referencia,
+            'items': items,
+        })
+
+    data.sort(key=lambda x: x.get('created_ts', 0), reverse=True)
 
     return JsonResponse({
         'comandas': data
@@ -381,6 +517,26 @@ def cambiar_estado_comanda(request, comanda_id):
             'estado': comanda.estado
         })
 
+    return redirect('panel_pedidos')
+
+
+@login_required
+@rol_requerido([Usuario.Roles.ADMIN])
+@require_POST
+def eliminar_comanda(request, comanda_id):
+
+    comanda = get_object_or_404(
+        Comanda,
+        id=comanda_id,
+        restaurante=request.user.restaurante,
+    )
+
+    comanda.delete()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True})
+
+    messages.success(request, 'Pedido eliminado correctamente.')
     return redirect('panel_pedidos')
 
 

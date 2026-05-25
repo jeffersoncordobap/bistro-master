@@ -136,8 +136,8 @@
 
 <div class="welcome-card">
     <div>
-        <h3>Bienvenido, {{ request.user.username }} 👋</h3>
-        <p>Gestiona tus entregas pendientes desde aquí.</p>
+        <h3>Bienvenido, {{ request.user.username }}</h3>
+        <p>Gestiona tus domicilios y el estado de entrega desde aquí.</p>
     </div>
     <span class="rol-badge">
         <i class="bi bi-bicycle"></i> Domiciliario
@@ -151,15 +151,15 @@
     <div class="info-card-body">
         <div class="tip-item">
             <span class="tip-num">1</span>
-            <p><span>Revisa tus pedidos asignados</span> — el administrador te asignará los domicilios que debes entregar.</p>
+            <p><span>Abre “Domicilios”</span> — allí verás los domicilios que el administrador marcó como entregados.</p>
         </div>
         <div class="tip-item">
             <span class="tip-num">2</span>
-            <p><span>Consulta la información del cliente</span> — nombre, dirección y teléfono están disponibles en cada pedido.</p>
+            <p><span>Presiona “Recibido”</span> para tomar un domicilio; se moverá a “Mis domicilios”.</p>
         </div>
         <div class="tip-item">
             <span class="tip-num">3</span>
-            <p><span>Marca el pedido como entregado</span> una vez lo hayas entregado para cerrar el ciclo correctamente.</p>
+            <p><span>Actualiza el estado</span> a “En camino” y luego “Entregado” para cerrar el ciclo.</p>
         </div>
     </div>
 </div>

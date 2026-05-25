@@ -13,9 +13,19 @@ urlpatterns = [
         name='panel_pedidos'
     ),
     path(
+        'panel-pedidos/historial/',
+        views.historial_pedidos,
+        name='historial_pedidos'
+    ),
+    path(
         'comanda/<int:comanda_id>/estado/',
         views.cambiar_estado_comanda,
         name='cambiar_estado_comanda'
+    ),
+    path(
+        'comanda/<int:comanda_id>/eliminar/',
+        views.eliminar_comanda,
+        name='eliminar_comanda',
     ),
     # Endpoint JSON para polling en tiempo real
     path(

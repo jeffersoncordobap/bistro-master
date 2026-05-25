@@ -1,0 +1,147 @@
+{% extends 'dashboard/base_domiciliario.html' %}
+
+{% block title %}Domicilios{% endblock %}
+{% block page_title %}Domicilios{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .section-header h4 { color:#fff; font-weight:900; font-size:1.05rem; margin:0 0 .15rem; }
+    .section-header p { color:rgba(255,255,255,0.75); font-size:.84rem; margin:0; }
+    .pill {
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        padding:.3rem .75rem;
+        border-radius:999px;
+        font-size:.78rem;
+        font-weight:900;
+        white-space:nowrap;
+        background:rgba(255,255,255,0.18);
+        border:1.5px solid rgba(255,255,255,0.4);
+        color:#fff;
+    }
+
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .row-wrap {
+        padding: 1rem 1.15rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .row-wrap:last-child { border-bottom:none; }
+
+    .row-top {
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .meta {
+        font-size: .88rem;
+        color:#212529;
+    }
+    .meta b { font-weight:900; }
+    .meta small { display:block; color:#999; font-size:.76rem; margin-top:.15rem; }
+    .items {
+        margin-top: .65rem;
+        padding-top: .65rem;
+        border-top: 1px dashed #f0f0f0;
+        color:#444;
+        font-size:.86rem;
+    }
+
+    .btn-recibido {
+        background: #e74c3c;
+        color:#fff;
+        border:none;
+        border-radius: 12px;
+        padding: .7rem 1.05rem;
+        font-weight: 900;
+        font-size: .92rem;
+        display:inline-flex;
+        align-items:center;
+        gap:.4rem;
+        white-space:nowrap;
+    }
+    .btn-recibido:hover { filter: brightness(.95); }
+
+    @media(max-width: 768px){
+        .row-wrap { padding: .85rem .9rem; }
+        .btn-recibido { width:100%; justify-content:center; }
+    }
+</style>
+
+<div class="section-header">
+    <div>
+        <h4>Domicilios</h4>
+        <p>Estos domicilios ya fueron marcados como <b>entregados</b> por el administrador. Tómalos cuando estés listo.</p>
+    </div>
+    <span class="pill"><i class="bi bi-inbox"></i> {{ pedidos|length }} disponibles</span>
+</div>
+
+<div class="bm-card">
+    {% for p in pedidos %}
+    <div class="row-wrap">
+        <div class="row-top">
+            <div style="min-width: 240px;">
+                <div style="display:flex; align-items:center; gap:.55rem; flex-wrap:wrap;">
+                    <div style="font-weight:900;">Domicilio #{{ p.id }}</div>
+                    <span style="color:#999; font-size:.78rem; font-weight:800;"><i class="bi bi-clock"></i> {{ p.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div style="margin-top:.25rem; color:#999; font-size:.82rem;">
+                    <i class="bi bi-geo-alt"></i> {{ p.direccion }}
+                    {% if p.referencia %}<span style="color:#bbb;"> · {{ p.referencia }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="meta" style="min-width: 220px;">
+                <b><i class="bi bi-person"></i> {{ p.cliente_nombre }}</b>
+                <small><i class="bi bi-telephone"></i> {{ p.cliente_telefono }}</small>
+            </div>
+
+            <div class="meta" style="min-width: 170px;">
+                <b><i class="bi bi-cash"></i> Total</b>
+                <small style="font-weight:900; color:#212529;">${{ p.total }}</small>
+            </div>
+
+            <form method="post" action="{% url 'domiciliario_marcar_recibido' pedido_id=p.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-recibido" title="Tomar domicilio">
+                    <i class="bi bi-check2-circle"></i> Recibido
+                </button>
+            </form>
+        </div>
+
+        <div class="items">
+            {% for it in p.items.all %}
+                <div>×{{ it.cantidad }} {{ it.producto.nombre }}{% if it.nota %} <span style="color:#aaa; font-style:italic;">({{ it.nota }})</span>{% endif %}</div>
+            {% empty %}
+                <div style="color:#bbb;">Sin items</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center; padding:2.5rem 1.25rem; color:#bbb; font-weight:900;">
+        <i class="bi bi-inbox" style="font-size:1.6rem; display:block; margin-bottom:.4rem;"></i>
+        No hay domicilios disponibles por ahora
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
