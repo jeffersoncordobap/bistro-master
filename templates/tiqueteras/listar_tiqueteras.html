@@ -18,6 +18,14 @@
         flex-wrap:wrap;
     }
 
+    .section-actions{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        gap:0.75rem;
+        flex-wrap:wrap;
+    }
+
     .section-title{
         display:flex;
         align-items:center;
@@ -52,11 +60,15 @@
         border:none;
         background:#fff;
         color:#c0392b;
-        padding:0.7rem 1rem;
+        padding:0.75rem 1rem;
         border-radius:10px;
         font-weight:700;
         text-decoration:none;
         transition:0.2s;
+        display:inline-flex;
+        align-items:center;
+        gap:0.4rem;
+        white-space:nowrap;
     }
 
     .btn-crear:hover{
@@ -159,10 +171,17 @@
 
     </div>
 
-    <a href="{% url 'crear_tiquetera' %}" class="btn-crear">
-        <i class="bi bi-plus-circle me-1"></i>
-        Nueva tiquetera
-    </a>
+    <div class="section-actions">
+        <a href="{% url 'historial_tiqueteras' %}" class="btn-crear">
+            <i class="bi bi-clock-history"></i>
+            Historial
+        </a>
+
+        <a href="{% url 'crear_tiquetera' %}" class="btn-crear">
+            <i class="bi bi-plus-circle"></i>
+            Nueva tiquetera
+        </a>
+    </div>
 
 </div>
 

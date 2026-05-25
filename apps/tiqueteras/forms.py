@@ -4,6 +4,46 @@ from django.utils import timezone
 from .models import Tiquetera, PlanTiquetera
 
 
+class HistorialTiqueteraFiltroForm(forms.Form):
+
+    fecha_inicio = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+
+    fecha_fin = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+
+    cliente = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nombre del cliente'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
+
+        if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+            raise forms.ValidationError(
+                'La fecha final debe ser mayor o igual a la fecha inicial.'
+            )
+
+        return cleaned_data
+
+
 class TiqueteraForm(forms.ModelForm):
 
     class Meta:

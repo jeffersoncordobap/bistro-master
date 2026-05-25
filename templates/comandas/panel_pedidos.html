@@ -440,14 +440,25 @@ function buildCard(c) {
 
     // Información adicional para el tipo de consumo
     let consumoInfo = '';
+    let tiqClienteHtml = '';
+
     if (isDom) {
         consumoInfo = `<span class="badge bg-warning text-dark ms-2" style="font-size:0.65rem; font-weight:800; padding:0.2em 0.55em;"><i class="bi bi-scooter me-1"></i>Domicilio</span>`;
     } else if (c.tipo_consumo === 'tiquetera') {
+
         consumoInfo = `<span class="badge bg-info text-dark ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-ticket-perforated me-1"></i>Tiquetera</span>`;
+
         if (c.tiquetera_cliente) {
-            consumoInfo += `<div class="cmd-meta mt-1" style="font-size:0.7rem; color:#6c757d;"><i class="bi bi-person-badge me-1"></i>${c.tiquetera_cliente}</div>`;
+            tiqClienteHtml = `
+                <span class="me-2" style="font-size:0.72rem; color:#6c757d;">
+                    <i class="bi bi-person-badge me-1"></i>
+                    ${c.tiquetera_cliente}
+                </span>
+            `;
         }
+
     } else {
+
         consumoInfo = `<span class="badge bg-secondary ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-cash me-1"></i>Normal</span>`;
     }
 
@@ -464,7 +475,11 @@ function buildCard(c) {
     } else {
         metaHtml = `
             <div class="cmd-meta cmd-meta-row">
-                <div class="cmd-meta-left"><i class="bi bi-person"></i> <span>${c.mesero}</span></div>
+                <div class="cmd-meta-left">
+                    ${tiqClienteHtml}
+                    <i class="bi bi-person"></i>
+                    <span>${c.mesero}</span>
+                </div>
                 ${delBtn}
             </div>
         `;
@@ -476,12 +491,16 @@ function buildCard(c) {
                 <span class="cmd-mesa">${isDom ? '<i class="bi bi-bag-heart-fill"></i> Domicilio' : '<i class="bi bi-grid-3x3-gap-fill"></i> Mesa ' + c.mesa} ${consumoInfo}</span>
                 <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.uid}">${fmt(seg)}</span>
             </div>
+
             ${metaHtml}
+
             <ul class="cmd-items">${items}</ul>
+
             <div class="cmd-actions">${btnPrev}${btnNext}</div>
         </div>
     </div>`;
-}
+    }
+
 
 function renderBoard(comandas) {
     ESTADOS.forEach(e => {

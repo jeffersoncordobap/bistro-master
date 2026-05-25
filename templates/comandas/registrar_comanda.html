@@ -5,6 +5,7 @@
 
 <style>
     /* ── Encabezado de página ── */
+
     .section-header {
         background: linear-gradient(to right, #c0392b, #e74c3c);
         border-radius: 14px;
@@ -14,14 +15,21 @@
         align-items: center;
         gap: 1rem;
     }
-    .section-header h4 { color:#fff; font-weight:700; font-size:1.1rem; margin:0 0 .15rem; }
-    .section-header p  { color:rgba(255,255,255,.75); font-size:.83rem; margin:0; }
+    .section-header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+    }
     .section-header-icon {
         width:44px; height:44px;
         background:rgba(255,255,255,.15); border-radius:10px;
         display:flex; align-items:center; justify-content:center;
         font-size:1.3rem; color:#fff; flex-shrink:0;
     }
+
+    .section-header h4 { color:#fff; font-weight:700; font-size:1.1rem; margin:0 0 .15rem; }
+    .section-header p  { color:rgba(255,255,255,.75); font-size:.83rem; margin:0; }
 
     /* ── Card base ── */
     .bm-card { background:#fff; border-radius:14px; border:1px solid #dee2e6; }
@@ -33,57 +41,6 @@
     }
     .bm-card-header i { color:#e74c3c; }
     .bm-card-body { padding:1.5rem; }
-
-    /* ── Input mesa ── */
-    .mesa-input {
-        border-radius:10px; padding:11px 14px;
-        border:1.5px solid #dee2e6; font-size:.95rem;
-        transition:border-color .2s, box-shadow .2s;
-    }
-    .mesa-input:focus {
-        border-color:#e74c3c;
-        box-shadow:0 0 0 3px rgba(192,57,43,.12); outline:none;
-    }
-
-    /* ══════════════════════════════════════
-       HEADER DE CATEGORÍA — la mejora clave
-    ══════════════════════════════════════ */
-    .cat-section { margin-bottom: 2rem; }
-
-    .cat-header {
-        display: flex;
-        align-items: center;
-        gap: .65rem;
-        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-        border-radius: 10px;
-        padding: .65rem 1.1rem;
-        margin-bottom: 1rem;
-    }
-    .cat-header-ico {
-        width: 28px; height: 28px;
-        background: rgba(255,255,255,.12);
-        border-radius: 7px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: .8rem; color: #fff;
-        flex-shrink: 0;
-    }
-    .cat-header-name {
-        font-size: .8rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #fff;
-        flex: 1;
-    }
-    .cat-header-count {
-        background: rgba(255,255,255,.15);
-        color: rgba(255,255,255,.85);
-        font-size: .7rem;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: 100px;
-        border: 1px solid rgba(255,255,255,.12);
-    }
 
     /* ── Tarjetas de producto ── */
     .producto-card {
@@ -167,6 +124,7 @@
         border: 1px solid #dee2e6;
         position: sticky; top: 1.5rem;
         overflow: hidden;
+        z-index: 2;
     }
     .resumen-header {
         background: linear-gradient(to right, #c0392b, #e74c3c);
@@ -258,9 +216,22 @@
         background: linear-gradient(to right, #c0392b, #e74c3c);
         padding: 1.2rem 0;
         margin-bottom: 1.5rem;
-        z-index: 50;
+        z-index: 1;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .categoria-filtro-bar.cat-fixed {
+        position: fixed !important;
+        top: 56px;
+        left: 0;
+        z-index: 12;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .categoria-filtro-placeholder {
+        width: 100%;
     }
 
     /* En pantallas pequeñas la barra debe desplazarse con la página
@@ -271,6 +242,13 @@
             top: auto;
             border-radius: 10px;
             margin-bottom: 1rem;
+        }
+
+        .categoria-filtro-bar.cat-fixed {
+            position: static !important;
+            left: auto;
+            top: auto;
+            width: auto !important;
         }
     }
 
@@ -317,6 +295,43 @@
         color: #e74c3c;
     }
 
+    /* ─── HEADER DE CATEGORÍA ─── */
+    .cat-header {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+        border-radius: 10px;
+        padding: 0.65rem 1.1rem;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+    }
+    .cat-header:first-of-type { margin-top: 0; }
+    .cat-header-ico {
+        width: 28px; height: 28px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem; color: #fff; flex-shrink: 0;
+    }
+    .cat-header-name {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #fff;
+        flex: 1;
+    }
+    .cat-header-count {
+        background: rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.85);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+
     /* Secciones de categoría */
     .cat-section {
         display: none;
@@ -325,6 +340,12 @@
     .cat-section.visible {
         display: block;
     }
+
+    /* Separación entre secciones para evitar que queden muy pegadas */
+    .cat-section { margin-bottom: 1.6rem; }
+
+    /* Separación extra entre header y contenido de la sección */
+    .cat-section .row { margin-top: 0.6rem; }
 
     /* Mesa display en resumen */
     .resumen-mesa-row {
@@ -461,17 +482,19 @@
     }
 </style>
 
-<!-- Encabezado -->
-<div class="section-header">
-    <div class="section-header-icon"><i class="bi bi-journal-plus"></i></div>
-    <div>
-        <h4>Nueva Comanda</h4>
-        <p>Selecciona los productos y asigna el número de mesa</p>
-    </div>
-</div>
-
 <form method="POST" id="formComanda">
     {% csrf_token %}
+
+    <!-- Encabezado -->
+    <div class="section-header">
+        <div class="section-header-left">
+            <div class="section-header-icon"><i class="bi bi-journal-plus"></i></div>
+            <div>
+                <h4>Nueva Comanda</h4>
+                <p>Selecciona los productos y asigna el número de mesa</p>
+            </div>
+        </div>
+    </div>
 
     <div class="row g-4">
 
@@ -620,17 +643,19 @@
                     </div>
 
                     <!-- Selector de tiquetera -->
-                    <div class="mt-3 d-none"
-                        id="contenedor_tiquetera">
+                    <div class="mt-3 d-none" id="contenedor_tiquetera">
 
                         <label class="form-label fw-semibold mb-2">
                             <i class="bi bi-ticket-perforated-fill me-1"></i>
                             Cliente con tiquetera
                         </label>
 
-                        <select name="tiquetera"
-                                id="tiquetera_id"
-                                class="form-control mesa-input">
+                        <div class="mb-2">
+                            <input type="search" id="buscar_tiquetera_input" class="form-control" placeholder="Buscar por ID o nombre de cliente">
+                            <div id="sugerencias_tiquetera" class="list-group mt-1" style="position:relative; z-index:1000;"></div>
+                        </div>
+
+                        <select name="tiquetera" id="tiquetera_id" class="form-control mesa-input">
 
                             <option value="">
                                 Selecciona una tiquetera
@@ -638,12 +663,13 @@
 
                             {% for tiquetera in tiqueteras %}
                             <option value="{{ tiquetera.id }}">
-                                {{ tiquetera.cliente_nombre }}
-                                - {{ tiquetera.saldo_consumos }} consumos
+                                {{ tiquetera.cliente_nombre }} - {{ tiquetera.saldo_consumos }} consumos
                             </option>
                             {% endfor %}
 
                         </select>
+
+                        <div class="small text-muted mt-1" id="selected_tiquetera"></div>
 
                     </div>
 
@@ -698,6 +724,85 @@
            style="width: 100px; text-align: center;"
            required>
 
+</div>
+
+<script>
+// Buscador de tiqueteras (autocomplete simple)
+;(function(){
+    const input = document.getElementById('buscar_tiquetera_input');
+    const sugerencias = document.getElementById('sugerencias_tiquetera');
+    const select = document.getElementById('tiquetera_id');
+    const selectedInfo = document.getElementById('selected_tiquetera');
+
+    if (!input) return;
+
+    let timer = null;
+
+    input.addEventListener('input', function(){
+        const q = this.value.trim();
+
+        clearTimeout(timer);
+        if (q.length < 1){
+            sugerencias.innerHTML = '';
+            return;
+        }
+
+        timer = setTimeout(()=>{
+            fetch(`/tiqueteras/buscar/?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => {
+                    sugerencias.innerHTML = '';
+                    (data.results || []).forEach(item => {
+                        const el = document.createElement('button');
+                        el.type = 'button';
+                        el.className = 'list-group-item list-group-item-action';
+                        el.textContent = `${item.cliente_nombre} — ${item.saldo_consumos} consumos (ID ${item.id})`;
+                        el.addEventListener('click', ()=>{
+                            // seleccionar en el select
+                            const opt = Array.from(select.options).find(o=>o.value==item.id);
+                            if(opt){
+                                select.value = item.id;
+                            } else {
+                                // si no existe en select, añadirlo
+                                const newOpt = document.createElement('option');
+                                newOpt.value = item.id;
+                                newOpt.text = `${item.cliente_nombre} - ${item.saldo_consumos} consumos`;
+                                select.appendChild(newOpt);
+                                select.value = item.id;
+                            }
+                            selectedInfo.textContent = `Seleccionado: ${item.cliente_nombre} — ${item.saldo_consumos} consumos`;
+                            sugerencias.innerHTML = '';
+                        });
+                        sugerencias.appendChild(el);
+                    });
+                }).catch(()=>{});
+        }, 250);
+    });
+
+    // (removed submit handler from here; moved to global scope to ensure it always runs)
+
+})();
+</script>
+
+<!-- Modal Bootstrap para confirmación de gasto de tiquete -->
+<div class="modal fade" id="confirmTiqueteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar gasto de tiquete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vas a gastar 1 tiquete de:</p>
+                <p class="fw-bold" id="confirmTiqueteCliente"></p>
+                <p class="small text-muted">El registro quedará como sólo lectura y se registrará la fecha y el usuario.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="confirmTiqueteBtn" class="btn btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Tipo consumo modal -->
@@ -987,4 +1092,118 @@
     });
 </script>
 
+<script>
+    // Fijar la barra de categorías sin dejar que invada la card de resumen
+    document.addEventListener('DOMContentLoaded', function() {
+        const bar = document.querySelector('.categoria-filtro-bar');
+        if (!bar) return;
+
+        const card = bar.closest('.bm-card');
+        const header = card ? card.querySelector('.bm-card-header') : null;
+        const topbar = document.querySelector('.bm-topbar');
+        const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 56;
+
+        if (!card || !header) return;
+
+        const placeholder = document.createElement('div');
+        placeholder.className = 'categoria-filtro-placeholder';
+        placeholder.style.height = `${bar.offsetHeight}px`;
+
+        let isFixed = false;
+
+        function headerBottom() {
+            const rect = header.getBoundingClientRect();
+            return rect.top + window.scrollY + rect.height;
+        }
+
+        function setFixedStyles() {
+            const cardRect = card.getBoundingClientRect();
+            bar.classList.add('cat-fixed');
+            bar.style.width = `${cardRect.width}px`;
+            bar.style.left = `${cardRect.left}px`;
+            bar.style.top = `${topbarHeight}px`;
+            placeholder.style.width = `${cardRect.width}px`;
+        }
+
+        function clearFixedStyles() {
+            bar.classList.remove('cat-fixed');
+            bar.style.width = '';
+            bar.style.left = '';
+            bar.style.top = '';
+        }
+
+        function update() {
+            const shouldFix = window.scrollY + topbarHeight >= headerBottom();
+
+            if (shouldFix && !isFixed) {
+                bar.parentNode.insertBefore(placeholder, bar);
+                setFixedStyles();
+                isFixed = true;
+            } else if (!shouldFix && isFixed) {
+                clearFixedStyles();
+                if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+                isFixed = false;
+            }
+
+            if (isFixed) {
+                setFixedStyles();
+            }
+        }
+
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', function() {
+            if (isFixed) setFixedStyles();
+        });
+
+        update();
+    });
+</script>
+
 {% endblock %}
+
+<script>
+// Global submit handler: confirm tiquetera consumption and allow submit
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('formComanda');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e){
+        const tipoEl = document.getElementById('tipo_consumo') || document.getElementById('tipo_consumo_modal');
+        const tipo = tipoEl ? tipoEl.value : 'normal';
+        if (tipo !== 'tiquetera') return; // allow normal submits
+
+        // determine selected tiquetera from either select
+        const sel = document.getElementById('tiquetera_id') || document.getElementById('tiquetera_id_modal');
+        const tiq = sel ? sel.value : '';
+        if (!tiq){
+            e.preventDefault();
+            alert('Debes seleccionar una tiquetera antes de confirmar el consumo.');
+            return;
+        }
+
+        // show bootstrap modal if available, otherwise native confirm
+        const cliente = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+        const modalEl = document.getElementById('confirmTiqueteModal');
+        const modalCliente = document.getElementById('confirmTiqueteCliente');
+        const confirmarBtn = document.getElementById('confirmTiqueteBtn');
+
+        e.preventDefault();
+
+        if (modalEl && modalCliente && confirmarBtn && window.bootstrap){
+            modalCliente.textContent = cliente;
+            const bsModal = new bootstrap.Modal(modalEl);
+            const handler = function(){
+                confirmarBtn.removeEventListener('click', handler);
+                bsModal.hide();
+                form.submit();
+            };
+            confirmarBtn.addEventListener('click', handler);
+            bsModal.show();
+            return;
+        }
+
+        const ok = confirm(`Confirma gastar un tiquete de: ${cliente}`);
+        if (ok) form.submit();
+    });
+});
+</script>

@@ -4,6 +4,17 @@ from . import views
 urlpatterns = [
 
     path(
+        'historial/',
+        views.historial_tiqueteras,
+        name='historial_tiqueteras'
+    ),
+    path(
+        'buscar/',
+        views.buscar_tiquetera,
+        name='buscar_tiquetera'
+    ),
+
+    path(
         '',
         views.listar_tiqueteras,
         name='listar_tiqueteras'
