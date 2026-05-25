@@ -16,6 +16,7 @@ class Usuario(AbstractUser):
         ADMIN = 'admin', 'Administrador'
         MESERO = 'mesero', 'Mesero'
         DOMICILIARIO = 'domiciliario', 'Domiciliario'
+        CAJERO = 'cajero', 'Cajero'
 
     restaurante = models.ForeignKey(
         Restaurante,

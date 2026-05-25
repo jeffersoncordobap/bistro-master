@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '192.168.0.9',
+    '192.168.0.7',
 ]
 
 
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'apps.restaurantes',
     'apps.productos',
     'apps.comandas',
+    'apps.tiqueteras',
 ]
 
 MIDDLEWARE = [

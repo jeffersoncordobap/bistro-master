@@ -1,0 +1,285 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Tiqueteras{% endblock %}
+{% block page_title %}Tiqueteras{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-header{
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:1rem;
+        flex-wrap:wrap;
+    }
+
+    .section-actions{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        gap:0.75rem;
+        flex-wrap:wrap;
+    }
+
+    .section-title{
+        display:flex;
+        align-items:center;
+        gap:1rem;
+    }
+
+    .section-icon{
+        width:46px;
+        height:46px;
+        border-radius:12px;
+        background: rgba(255,255,255,0.15);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#fff;
+        font-size:1.3rem;
+    }
+
+    .section-header h4{
+        color:#fff;
+        margin:0;
+        font-weight:700;
+    }
+
+    .section-header p{
+        color:rgba(255,255,255,0.8);
+        margin:0;
+        font-size:0.85rem;
+    }
+
+    .btn-crear{
+        border:none;
+        background:#fff;
+        color:#c0392b;
+        padding:0.75rem 1rem;
+        border-radius:10px;
+        font-weight:700;
+        text-decoration:none;
+        transition:0.2s;
+        display:inline-flex;
+        align-items:center;
+        gap:0.4rem;
+        white-space:nowrap;
+    }
+
+    .btn-crear:hover{
+        background:#f8f9fa;
+        transform:translateY(-1px);
+    }
+
+    .tabla-card{
+        background:#fff;
+        border-radius:14px;
+        border:1px solid #dee2e6;
+        overflow:hidden;
+    }
+
+    .table{
+        margin:0;
+    }
+
+    .table thead{
+        background:#fff5f5;
+    }
+
+    .table thead th{
+        color:#c0392b;
+        font-size:0.82rem;
+        font-weight:700;
+        border-bottom:none;
+        padding:1rem;
+        white-space:nowrap;
+    }
+
+    .table tbody td{
+        vertical-align:middle;
+        padding:1rem;
+        font-size:0.88rem;
+    }
+
+    .cliente{
+        font-weight:700;
+        color:#212529;
+    }
+
+    .badge-servicio{
+        background:rgba(231,76,60,0.1);
+        color:#c0392b;
+        padding:0.35rem 0.7rem;
+        border-radius:20px;
+        font-size:0.72rem;
+        font-weight:700;
+    }
+
+    .badge-activa{
+        background:#d1e7dd;
+        color:#0f5132;
+        padding:0.35rem 0.7rem;
+        border-radius:20px;
+        font-size:0.72rem;
+        font-weight:700;
+    }
+
+    .badge-inactiva{
+        background:#f8d7da;
+        color:#842029;
+        padding:0.35rem 0.7rem;
+        border-radius:20px;
+        font-size:0.72rem;
+        font-weight:700;
+    }
+
+    .saldo{
+        font-weight:800;
+        color:#e74c3c;
+    }
+
+    .empty-state{
+        padding:3rem 1rem;
+        text-align:center;
+        color:#adb5bd;
+    }
+
+    .empty-state i{
+        font-size:2.5rem;
+        margin-bottom:0.75rem;
+        display:block;
+    }
+</style>
+
+<div class="section-header">
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            <i class="bi bi-ticket-perforated-fill"></i>
+        </div>
+
+        <div>
+            <h4>Gestión de Tiqueteras</h4>
+            <p>Administra las tiqueteras activas del restaurante</p>
+        </div>
+
+    </div>
+
+    <div class="section-actions">
+        <a href="{% url 'historial_tiqueteras' %}" class="btn-crear">
+            <i class="bi bi-clock-history"></i>
+            Historial
+        </a>
+
+        <a href="{% url 'crear_tiquetera' %}" class="btn-crear">
+            <i class="bi bi-plus-circle"></i>
+            Nueva tiquetera
+        </a>
+    </div>
+
+</div>
+
+<div class="tabla-card">
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Plan</th>
+                    <th>Servicio</th>
+                    <th>Saldo</th>
+                    <th>Vigencia</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for tiquetera in tiqueteras %}
+
+                <tr>
+
+                    <td>
+                        <div class="cliente">
+                            {{ tiquetera.cliente_nombre }}
+                        </div>
+
+                        <small class="text-muted">
+                            {{ tiquetera.cliente_telefono }}
+                        </small>
+                    </td>
+
+                    <td>
+                        {{ tiquetera.plan.nombre }}
+                    </td>
+
+                    <td>
+                        <span class="badge-servicio">
+                            {{ tiquetera.plan.get_tipo_servicio_display }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="saldo">
+                            {{ tiquetera.saldo_consumos }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ tiquetera.fecha_inicio }}
+                        <br>
+                        <small class="text-muted">
+                            hasta {{ tiquetera.fecha_vencimiento }}
+                        </small>
+                    </td>
+
+                    <td>
+
+                        {% if tiquetera.esta_vigente %}
+                            <span class="badge-activa">
+                                Activa
+                            </span>
+                        {% else %}
+                            <span class="badge-inactiva">
+                                Inactiva
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6">
+
+                        <div class="empty-state">
+                            <i class="bi bi-ticket-perforated"></i>
+
+                            No hay tiqueteras registradas
+                        </div>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
