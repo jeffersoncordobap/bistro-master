@@ -237,19 +237,28 @@ def cambiar_estado_pedido_domicilio(request, pedido_id):
     nuevo_estado = request.POST.get('estado')
 
     if nuevo_estado in dict(PedidoDomicilio.Estados.choices):
+        # Bloqueo: cuando un domicilio está en "LISTO", el paso a "ENTREGADO" lo hace el domiciliario.
+        if pedido.estado == PedidoDomicilio.Estados.LISTO and nuevo_estado == PedidoDomicilio.Estados.ENTREGADO:
+            msg = 'Este domicilio se marca como “Entregado” cuando el domiciliario finaliza la entrega.'
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'ok': False, 'error': msg}, status=409)
+            messages.error(request, msg)
+            return JsonResponse({'ok': False, 'error': msg}, status=409)
+
         pedido.estado = nuevo_estado
         update_fields = ['estado']
 
         # Nuevo flujo:
-        # - ADMIN marca el pedido como "entregado" (listo para que un domiciliario lo tome).
+        # - ADMIN marca el pedido como "listo" (disponible para que un domiciliario lo tome).
         # - En este punto NO debe existir estado_entrega; se asigna cuando el domiciliario marca "Recibido".
-        if nuevo_estado == PedidoDomicilio.Estados.ENTREGADO:
+        if nuevo_estado == PedidoDomicilio.Estados.LISTO:
+            pedido.domiciliario = None
             pedido.estado_entrega = None
             pedido.fecha_recibido = None
             pedido.fecha_en_camino = None
             pedido.fecha_entregado = None
             update_fields.extend(
-                ['estado_entrega', 'fecha_recibido', 'fecha_en_camino', 'fecha_entregado']
+                ['domiciliario', 'estado_entrega', 'fecha_recibido', 'fecha_en_camino', 'fecha_entregado']
             )
 
         pedido.save(update_fields=update_fields)
@@ -280,7 +289,7 @@ def panel_domicilios(request):
 
     pedidos = PedidoDomicilio.objects.filter(
         restaurante=request.user.restaurante,
-        estado=PedidoDomicilio.Estados.ENTREGADO,
+        estado__in=[PedidoDomicilio.Estados.LISTO, PedidoDomicilio.Estados.ENTREGADO],
         estado_entrega__isnull=False,
         fecha_creacion__gte=inicio_dia,
         fecha_creacion__lt=fin_dia,
@@ -366,7 +375,7 @@ def domiciliario_domicilios(request):
     pedidos = (
         PedidoDomicilio.objects.filter(
             restaurante=request.user.restaurante,
-            estado=PedidoDomicilio.Estados.ENTREGADO,
+            estado=PedidoDomicilio.Estados.LISTO,
         )
         .filter(
             Q(domiciliario__isnull=True)
@@ -397,7 +406,7 @@ def domiciliario_marcar_recibido(request, pedido_id):
             PedidoDomicilio.objects.select_for_update(),
             id=pedido_id,
             restaurante=request.user.restaurante,
-            estado=PedidoDomicilio.Estados.ENTREGADO,
+            estado=PedidoDomicilio.Estados.LISTO,
         )
 
         # Si ya tiene estado_entrega y ya existe domiciliario, está tomado.
@@ -440,7 +449,7 @@ def domiciliario_mis_domicilios(request):
     pedidos = (
         PedidoDomicilio.objects.filter(
             restaurante=request.user.restaurante,
-            estado=PedidoDomicilio.Estados.ENTREGADO,
+            estado__in=[PedidoDomicilio.Estados.LISTO, PedidoDomicilio.Estados.ENTREGADO],
             domiciliario=request.user,
             estado_entrega__in=[
                 PedidoDomicilio.EstadosEntrega.RECIBIDO,
@@ -468,7 +477,7 @@ def domiciliario_historial_domicilios(request):
     pedidos = (
         PedidoDomicilio.objects.filter(
             restaurante=request.user.restaurante,
-            estado=PedidoDomicilio.Estados.ENTREGADO,
+            estado__in=[PedidoDomicilio.Estados.LISTO, PedidoDomicilio.Estados.ENTREGADO],
             domiciliario=request.user,
             estado_entrega__in=[
                 PedidoDomicilio.EstadosEntrega.RECIBIDO,
@@ -498,7 +507,7 @@ def domiciliario_marcar_en_camino(request, pedido_id):
         PedidoDomicilio,
         id=pedido_id,
         restaurante=request.user.restaurante,
-        estado=PedidoDomicilio.Estados.ENTREGADO,
+        estado__in=[PedidoDomicilio.Estados.LISTO, PedidoDomicilio.Estados.ENTREGADO],
         domiciliario=request.user,
     )
 
@@ -550,7 +559,7 @@ def domiciliario_marcar_entregado(request, pedido_id):
         PedidoDomicilio,
         id=pedido_id,
         restaurante=request.user.restaurante,
-        estado=PedidoDomicilio.Estados.ENTREGADO,
+        estado__in=[PedidoDomicilio.Estados.LISTO, PedidoDomicilio.Estados.ENTREGADO],
         domiciliario=request.user,
     )
 
@@ -566,8 +575,9 @@ def domiciliario_marcar_entregado(request, pedido_id):
 
     if pedido.estado_entrega != PedidoDomicilio.EstadosEntrega.ENTREGADO:
         pedido.estado_entrega = PedidoDomicilio.EstadosEntrega.ENTREGADO
+        pedido.estado = PedidoDomicilio.Estados.ENTREGADO
         pedido.fecha_entregado = pedido.fecha_entregado or timezone.now()
-        pedido.save(update_fields=['estado_entrega', 'fecha_entregado'])
+        pedido.save(update_fields=['estado', 'estado_entrega', 'fecha_entregado'])
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'ok': True})
@@ -630,6 +640,8 @@ def cambiar_estado_entrega_domicilio(request, pedido_id):
         pedido.fecha_en_camino = pedido.fecha_en_camino or now
         update_fields.append('fecha_en_camino')
     elif estado == PedidoDomicilio.EstadosEntrega.ENTREGADO:
+        pedido.estado = PedidoDomicilio.Estados.ENTREGADO
+        update_fields.append('estado')
         pedido.fecha_entregado = pedido.fecha_entregado or now
         update_fields.append('fecha_entregado')
 
