@@ -420,6 +420,7 @@ function buildCard(c) {
     const seg  = c.segundos;
     const isDom = c.tipo === 'domicilio';
     const isDone = c.estado === 'entregado';
+    const lockNext = isDom && c.estado === 'listo';
 
     const delBtn = isDone
         ? `<button type="button" class="btn-del" title="No disponible para entregados" disabled><i class="bi bi-trash3"></i></button>`
@@ -435,7 +436,10 @@ function buildCard(c) {
         ? `<button class="btn-estado btn-prev" onclick="cambiarEstado('${c.tipo}',${c.id},'${prev}',this)"><i class="bi bi-chevron-left"></i></button>`
         : '';
     const btnNext = next
-        ? `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado('${c.tipo}',${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        ? (lockNext
+            ? `<button class="btn-estado ${BTN_CLS[next]||''}" disabled title="El domiciliario marca este domicilio como entregado."><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+            : `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado('${c.tipo}',${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        )
         : `<button class="btn-estado btn-done" disabled><i class="bi bi-check-all"></i> Completado</button>`;
 
     // Información adicional para el tipo de consumo
