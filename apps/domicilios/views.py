@@ -78,6 +78,16 @@ def crear_pedido_domicilio(request, slug):
             status=400,
         )
 
+    if not cliente_telefono.isdigit():
+        return JsonResponse(
+            {
+                'ok': False,
+                'error': 'El teléfono debe ser numérico.',
+            },
+            status=400,
+        )
+    
+    
     if not isinstance(items, list) or not items:
         return JsonResponse(
             {

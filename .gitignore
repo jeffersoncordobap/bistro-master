@@ -9,6 +9,8 @@ venv/
 env/
 .env/
 ENV/
+.venv/
+.env
 
 # Base de datos de desarrollo (SQLite)
 *.sqlite3
