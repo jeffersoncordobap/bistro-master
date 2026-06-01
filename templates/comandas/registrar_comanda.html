@@ -495,7 +495,17 @@
             </div>
         </div>
     </div>
-
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger">
+            <span class="bm-alert-msg">{{ message }}</span>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Cerrar"></button>
+        </div>
+    {% endfor %}
+    {% endif %}
     <div class="row g-4">
 
         <!-- ── Columna izquierda ── -->
@@ -551,6 +561,10 @@
 
                                         {% if producto.descripcion %}
                                         <p class="producto-desc">{{ producto.descripcion }}</p>
+                                        {% endif %}
+
+                                        {% if producto.control_stock %}
+                                        <p class="producto-desc">Disponibles:{{ producto.stock }}</p>
                                         {% endif %}
 
                                         <span class="producto-precio">${{ producto.precio }}</span>
@@ -663,7 +677,12 @@
 
                             {% for tiquetera in tiqueteras %}
                             <option value="{{ tiquetera.id }}">
-                                {{ tiquetera.cliente_nombre }} - {{ tiquetera.saldo_consumos }} consumos
+                                {{ tiquetera.cliente_nombre }} - {{ tiquetera.saldo_consumos }} consumos -
+                                 {% if tiquetera.plan.permite_multiples_consumos %}
+                                    Múltiple
+                                {% else %}
+                                    Único
+                                {% endif %}
                             </option>
                             {% endfor %}
 

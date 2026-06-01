@@ -7,6 +7,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.db import transaction
 
 from apps.usuarios.decorators import rol_requerido
 from apps.usuarios.models import Usuario
@@ -166,71 +167,84 @@ def registrar_comanda(request):
                         'comandas/registrar_comanda.html',
                         context
                     )
+            with transaction.atomic():
+                comanda = Comanda.objects.create(
 
-            comanda = Comanda.objects.create(
+                    restaurante=request.user.restaurante,
 
-                restaurante=request.user.restaurante,
+                    mesero=request.user,
 
-                mesero=request.user,
+                    numero_mesa=numero_mesa,
 
-                numero_mesa=numero_mesa,
+                    estado=Comanda.Estados.PENDIENTE,
 
-                estado=Comanda.Estados.PENDIENTE,
+                    tipo_consumo=tipo_consumo,
 
-                tipo_consumo=tipo_consumo,
+                    tiquetera=tiquetera
+                )
 
-                tiquetera=tiquetera
-            )
+                for producto_id in productos_ids:
+                    if tiquetera and not tiquetera.plan.permite_multiples_consumos:
+                        cantidad = 1
+                        
+                    else:
+                        cantidad = int(
+                            request.POST.get(
+                                f'cantidad_{producto_id}',
+                                1
+                            )
+                        )
 
-            print('COMANDA CREADA:', comanda.id)
-
-            for producto_id in productos_ids:
-
-                cantidad = int(
-                    request.POST.get(
-                        f'cantidad_{producto_id}',
-                        1
+                    nota = request.POST.get(
+                        f'nota_{producto_id}',
+                        ''
                     )
-                )
+                    
+                    producto = Producto.objects.get(id=producto_id,restaurante=request.user.restaurante)
+                    if producto.control_stock:
+                        producto.descontar_stock(cantidad)
 
-                nota = request.POST.get(
-                    f'nota_{producto_id}',
-                    ''
-                )
+                    ItemComanda.objects.create(
 
-                ItemComanda.objects.create(
+                        comanda=comanda,
 
-                    comanda=comanda,
+                        producto_id=producto_id,
 
-                    producto_id=producto_id,
+                        cantidad=cantidad,
 
-                    cantidad=cantidad,
+                        nota=nota
+                    )
 
-                    nota=nota
-                )
+                if tiquetera:
+                    #Agregue apartado para multiples consumos de tiquetera en una misma comanda, se suman las cantidades de cada producto seleccionado
+                    if tiquetera.plan.permite_multiples_consumos:
+                        cantidad_consumos = sum(
 
-            if tiquetera:
+                            int(request.POST.get(
+                                f'cantidad_{pid}',
+                                1
+                            )) for pid in productos_ids
+                        )
+                        tiquetera.consumir(cantidad_consumos)
+                    else:
+                        tiquetera.consumir()
 
-                tiquetera.saldo_consumos -= 1
+                    if tiquetera.saldo_consumos <= 0:
 
-                if tiquetera.saldo_consumos <= 0:
+                        tiquetera.activa = False
 
-                    tiquetera.activa = False
+                    tiquetera.save()
 
-                tiquetera.save()
+                    ConsumoTiquetera.objects.create(
 
-                ConsumoTiquetera.objects.create(
+                        tiquetera=tiquetera,
 
-                    tiquetera=tiquetera,
+                        comanda=comanda,
 
-                    comanda=comanda,
+                        cantidad=cantidad_consumos if tiquetera.plan.permite_multiples_consumos else 1,
 
-                    cantidad=1,
-
-                    registrado_por=request.user
-                )
-
-                print('Saldo actualizado:', tiquetera.saldo_consumos)
+                        registrado_por=request.user
+                    )
 
             messages.success(
                 request,
@@ -240,9 +254,6 @@ def registrar_comanda(request):
             return redirect('mis_comandas')
 
         except ValueError as e:
-
-            print('ERROR VALUE:', str(e))
-
             messages.error(
                 request,
                 f'Error en los datos del formulario: {str(e)}'
@@ -255,9 +266,6 @@ def registrar_comanda(request):
             )
 
         except Exception as e:
-
-            print('ERROR GENERAL:', str(e))
-
             raise e
 
     return render(
