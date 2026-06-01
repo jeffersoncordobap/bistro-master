@@ -88,6 +88,18 @@
         padding-right: 1.75rem; /* espacio para el check */
         line-height: 1.3;
     }
+
+    .producto-stock{
+            display:inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background:#dcfce7;
+            color:#166534;
+            font-size:.7rem;
+            font-weight:700;
+            margin-bottom:.5rem;
+        }
+
     .producto-desc {
         font-size: .78rem; color: #6c757d;
         margin-bottom: .5rem; line-height: 1.4;
@@ -558,16 +570,19 @@
                                                id="producto_{{ producto.id }}">
 
                                         <div class="producto-nombre">{{ producto.nombre }}</div>
+                                        
+
+                                        {% if producto.control_stock %}
+                                        <p class="producto-stock">{{ producto.stock }} disponibles</p>
+                                        {% endif %}
 
                                         {% if producto.descripcion %}
                                         <p class="producto-desc">{{ producto.descripcion }}</p>
                                         {% endif %}
 
-                                        {% if producto.control_stock %}
-                                        <p class="producto-desc">Disponibles:{{ producto.stock }}</p>
-                                        {% endif %}
+                                        
 
-                                        <span class="producto-precio">${{ producto.precio }}</span>
+                                        <p class="producto-precio">${{ producto.precio }}</p>
 
                                         <div class="producto-controles">
                                             <div class="mb-2">

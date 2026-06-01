@@ -152,16 +152,54 @@ def crear_pedido_domicilio(request, slug):
         )
 
     try:
-        pedido = PedidoDomicilio.objects.create(
-            restaurante=restaurante,
-            estado=PedidoDomicilio.Estados.PENDIENTE,
-            cliente_nombre=cliente_nombre,
-            cliente_telefono=cliente_telefono,
-            direccion=direccion,
-            referencia=referencia,
-            total=Decimal('0.00'),
+        with transaction.atomic():
+
+            pedido = PedidoDomicilio.objects.create(
+                restaurante=restaurante,
+                estado=PedidoDomicilio.Estados.PENDIENTE,
+                cliente_nombre=cliente_nombre,
+                cliente_telefono=cliente_telefono,
+                direccion=direccion,
+                referencia=referencia,
+                total=Decimal('0.00'),
+            )
+
+            total = Decimal('0.00')
+
+            for it in normalized_items:
+
+                producto = productos_map[it['producto_id']]
+                cantidad = it['cantidad']
+
+                if producto.control_stock:
+                    producto.descontar_stock(cantidad)
+
+                ItemPedidoDomicilio.objects.create(
+                    pedido=pedido,
+                    producto=producto,
+                    cantidad=cantidad,
+                    nota=it['nota'],
+                )
+
+                total += (
+                    producto.precio or Decimal('0.00')
+                ) * Decimal(cantidad)
+
+            pedido.total = total
+            pedido.save(update_fields=['total'])
+
+    except ValueError as e:
+
+        return JsonResponse(
+            {
+                'ok': False,
+                'error': str(e),
+            },
+            status=400,
         )
+
     except (OperationalError, ProgrammingError):
+
         return JsonResponse(
             {
                 'ok': False,
@@ -172,42 +210,13 @@ def crear_pedido_domicilio(request, slug):
             },
             status=500,
         )
-
-    total = Decimal('0.00')
-
-    for it in normalized_items:
-        producto = productos_map[it['producto_id']]
-        cantidad = it['cantidad']
-
-        try:
-            ItemPedidoDomicilio.objects.create(
-                pedido=pedido,
-                producto=producto,
-                cantidad=cantidad,
-                nota=it['nota'],
-            )
-        except (OperationalError, ProgrammingError):
-            return JsonResponse(
-                {
-                    'ok': False,
-                    'error': (
-                        'El sistema no está listo: faltan migraciones de domicilios. '
-                        'Ejecuta: python manage.py migrate'
-                    ),
-                },
-                status=500,
-            )
-
-        total += (producto.precio or Decimal('0.00')) * Decimal(cantidad)
-
-    pedido.total = total
-    pedido.save(update_fields=['total'])
-
     return JsonResponse(
         {
             'ok': True,
             'pedido_id': pedido.id,
-            'fecha_creacion': timezone.localtime(pedido.fecha_creacion).isoformat(),
+            'fecha_creacion': timezone.localtime(
+                pedido.fecha_creacion
+            ).isoformat(),
         }
     )
 
