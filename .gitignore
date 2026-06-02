@@ -14,6 +14,8 @@ ENV/
 
 # Base de datos de desarrollo (SQLite)
 *.sqlite3
+*.bak
+db.sqlite3.bak
 
 # Archivos de configuración sensible
 .env
@@ -22,6 +24,7 @@ local_settings.py
 # Archivos de medios y estáticos (Media & Static)
 /static/
 /media/
+staticfiles/
 
 # Logs y bases de datos temporales
 *.log
