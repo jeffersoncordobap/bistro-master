@@ -119,6 +119,59 @@
         margin-bottom: 0.55rem;
         display:flex; align-items:center; gap:0.3rem;
     }
+    .cmd-meta-row { justify-content: space-between; gap: .6rem; }
+    .cmd-meta-left { display:flex; align-items:center; gap:0.3rem; min-width:0; }
+    .cmd-meta-left span { min-width:0; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-del {
+        width: 28px; height: 28px;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        background: #fff;
+        color: #adb5bd;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        flex-shrink:0;
+        cursor:pointer;
+        transition: background .14s, border-color .14s, color .14s, transform .12s;
+    }
+    .btn-del:hover {
+        background: rgba(231,76,60,0.06);
+        border-color: rgba(231,76,60,0.35);
+        color: #c0392b;
+        transform: scale(.98);
+    }
+    .btn-del:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none;
+        background: #fff;
+        border-color: #e9ecef;
+        color: #adb5bd;
+    }
+    .btn-del:disabled:hover { transform:none; }
+
+    .bm-modal .modal-content {
+        border-radius: 18px;
+        border: 1px solid #f1d0d0;
+        overflow: hidden;
+    }
+    .bm-modal .modal-header {
+        background: #fff5f5;
+        border-bottom: 1px solid #f3e1e1;
+    }
+    .bm-modal-icon {
+        width: 36px; height: 36px;
+        border-radius: 12px;
+        background: rgba(231,76,60,0.12);
+        color: #c0392b;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-shrink:0;
+        font-size: 1.05rem;
+    }
+    .bm-modal-sub { color:#999; font-size:.82rem; font-weight:800; margin-top:.05rem; }
 
     .cmd-items { list-style:none; padding:0; margin:0 0 0.7rem; }
     .cmd-item  {
@@ -193,6 +246,16 @@
             justify-content: center;
             font-size: 0.8rem;
         }
+        #panelHeaderActions {
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.55rem;
+        }
+        #historyBtn {
+            width: 100%;
+            justify-content: center;
+        }
         .kanban-board {
             grid-template-columns: 1fr;
             gap: 0.75rem;
@@ -227,23 +290,43 @@
             <p>Supervisa y gestiona el flujo de trabajo del local</p>
         </div>
     </div>
-    <span id="totalBadge" style="
-        background:rgba(255,255,255,0.18);
-        border:1.5px solid rgba(255,255,255,0.4);
-        color:#fff;
-        border-radius:20px;
-        padding:0.4rem 1rem;
-        font-size:0.82rem;
-        font-weight:700;
-        display:none;
-        align-items:center;
-        gap:0.4rem;
-        white-space:nowrap;
-        flex-shrink:0;
-    ">
-        <i class="bi bi-receipt"></i>
-        <span id="totalTexto">0 pedidos</span>
-    </span>
+    <div id="panelHeaderActions" style="display:flex; align-items:center; gap:0.6rem; flex-shrink:0;">
+        <span id="totalBadge" style="
+            background:rgba(255,255,255,0.18);
+            border:1.5px solid rgba(255,255,255,0.4);
+            color:#fff;
+            border-radius:20px;
+            padding:0.4rem 1rem;
+            font-size:0.82rem;
+            font-weight:700;
+            display:none;
+            align-items:center;
+            gap:0.4rem;
+            white-space:nowrap;
+            flex-shrink:0;
+        ">
+            <i class="bi bi-receipt"></i>
+            <span id="totalTexto">0 pedidos</span>
+        </span>
+
+        <a href="{% url 'historial_pedidos' %}" id="historyBtn" style="
+            background:rgba(255,255,255,0.18);
+            border:2px solid rgba(255,255,255,0.5);
+            color:#fff;
+            border-radius:10px;
+            padding:0.5rem 0.95rem;
+            font-weight:800;
+            font-size:0.82rem;
+            display:inline-flex;
+            align-items:center;
+            gap:0.4rem;
+            text-decoration:none;
+            white-space:nowrap;
+        ">
+            <i class="bi bi-clock-history"></i>
+            Historial
+        </a>
+    </div>
 </div>
 
 <!-- Board -->
@@ -278,6 +361,36 @@
     </div>
 </div>
 
+<!-- Modal eliminar pedido -->
+<div class="modal fade bm-modal" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:.6rem;">
+                    <div class="bm-modal-icon"><i class="bi bi-trash3"></i></div>
+                    <div>
+                        <div class="modal-title h6 m-0" style="font-weight:900; color:#212529;">Eliminar pedido</div>
+                        <div class="bm-modal-sub" id="deleteLabel">Pedido</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div style="font-weight:900; color:#212529; margin-bottom:.25rem;">¿Confirmas eliminar este pedido?</div>
+                <div style="color:#777; font-size:.9rem;">Esta acción no se puede deshacer.</div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #f3e1e1;">
+                <button type="button" class="btn btn-light" id="deleteCancelBtn" data-bs-dismiss="modal" style="border-radius: 12px; font-weight:900;">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteConfirmBtn" onclick="confirmDelete()" style="border-radius: 12px; font-weight:900;">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 const API_URL = "{% url 'api_panel_pedidos' %}";
 const CSRF    = "{{ csrf_token }}";
@@ -305,6 +418,13 @@ function buildCard(c) {
     const prev = idx > 0 ? ESTADOS[idx-1] : null;
     const next = idx < ESTADOS.length-1 ? ESTADOS[idx+1] : null;
     const seg  = c.segundos;
+    const isDom = c.tipo === 'domicilio';
+    const isDone = c.estado === 'entregado';
+    const lockNext = isDom && c.estado === 'listo';
+
+    const delBtn = isDone
+        ? `<button type="button" class="btn-del" title="No disponible para entregados" disabled><i class="bi bi-trash3"></i></button>`
+        : `<button type="button" class="btn-del" title="Eliminar pedido" onclick="openDeleteModal('${c.tipo}',${c.id})"><i class="bi bi-trash3"></i></button>`;
 
     const items = c.items.map(it => `
         <li class="cmd-item">
@@ -313,36 +433,78 @@ function buildCard(c) {
         </li>`).join('');
 
     const btnPrev = prev
-        ? `<button class="btn-estado btn-prev" onclick="cambiarEstado(${c.id},'${prev}',this)"><i class="bi bi-chevron-left"></i></button>`
+        ? `<button class="btn-estado btn-prev" onclick="cambiarEstado('${c.tipo}',${c.id},'${prev}',this)"><i class="bi bi-chevron-left"></i></button>`
         : '';
     const btnNext = next
-        ? `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado(${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        ? (lockNext
+            ? `<button class="btn-estado ${BTN_CLS[next]||''}" disabled title="El domiciliario marca este domicilio como entregado."><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+            : `<button class="btn-estado ${BTN_CLS[next]||''}" onclick="cambiarEstado('${c.tipo}',${c.id},'${next}',this)"><i class="bi bi-chevron-right"></i> ${LABEL[next]}</button>`
+        )
         : `<button class="btn-estado btn-done" disabled><i class="bi bi-check-all"></i> Completado</button>`;
 
     // Información adicional para el tipo de consumo
     let consumoInfo = '';
     let tiqClienteHtml = '';
-    if (c.tipo_consumo === 'tiquetera') {
+
+    if (isDom) {
+        consumoInfo = `<span class="badge bg-warning text-dark ms-2" style="font-size:0.65rem; font-weight:800; padding:0.2em 0.55em;"><i class="bi bi-scooter me-1"></i>Domicilio</span>`;
+    } else if (c.tipo_consumo === 'tiquetera') {
+
         consumoInfo = `<span class="badge bg-info text-dark ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-ticket-perforated me-1"></i>Tiquetera</span>`;
+
         if (c.tiquetera_cliente) {
-            tiqClienteHtml = `<span class="me-2" style="font-size:0.72rem; color:#6c757d;"><i class="bi bi-person-badge me-1"></i>${c.tiquetera_cliente}</span>`;
+            tiqClienteHtml = `
+                <span class="me-2" style="font-size:0.72rem; color:#6c757d;">
+                    <i class="bi bi-person-badge me-1"></i>
+                    ${c.tiquetera_cliente}
+                </span>
+            `;
         }
+
     } else {
+
         consumoInfo = `<span class="badge bg-secondary ms-2" style="font-size:0.65rem; font-weight:700; padding:0.2em 0.5em;"><i class="bi bi-cash me-1"></i>Normal</span>`;
     }
 
-    return `<div class="cmd-card" data-id="${c.id}" data-estado="${c.estado}">
+    let metaHtml = '';
+    if (isDom) {
+        const tel = c.cliente_telefono ? ` · ${c.cliente_telefono}` : '';
+        metaHtml = `
+            <div class="cmd-meta cmd-meta-row">
+                <div class="cmd-meta-left"><i class="bi bi-person"></i> <span>${c.cliente_nombre || 'Cliente'}${tel}</span></div>
+                ${delBtn}
+            </div>
+            <div class="cmd-meta" style="margin-top:-0.25rem;"><i class="bi bi-geo-alt"></i> ${c.direccion || ''}</div>
+        `;
+    } else {
+        metaHtml = `
+            <div class="cmd-meta cmd-meta-row">
+                <div class="cmd-meta-left">
+                    ${tiqClienteHtml}
+                    <i class="bi bi-person"></i>
+                    <span>${c.mesero}</span>
+                </div>
+                ${delBtn}
+            </div>
+        `;
+    }
+
+    return `<div class="cmd-card" data-uid="${c.uid}" data-estado="${c.estado}">
         <div class="cmd-card-inner">
             <div class="cmd-top">
-                <span class="cmd-mesa"><i class="bi bi-grid-3x3-gap-fill"></i> Mesa ${c.mesa} ${consumoInfo}</span>
-                <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.id}">${fmt(seg)}</span>
+                <span class="cmd-mesa">${isDom ? '<i class="bi bi-bag-heart-fill"></i> Domicilio' : '<i class="bi bi-grid-3x3-gap-fill"></i> Mesa ' + c.mesa} ${consumoInfo}</span>
+                <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.uid}">${fmt(seg)}</span>
             </div>
-            <div class="cmd-meta">${tiqClienteHtml}<i class="bi bi-person"></i> ${c.mesero}</div>
+
+            ${metaHtml}
+
             <ul class="cmd-items">${items}</ul>
+
             <div class="cmd-actions">${btnPrev}${btnNext}</div>
         </div>
     </div>`;
-}
+    }
+
 
 function renderBoard(comandas) {
     ESTADOS.forEach(e => {
@@ -359,16 +521,22 @@ function renderBoard(comandas) {
     const grupos = {};
     ESTADOS.forEach(e => grupos[e] = []);
     comandas.forEach(c => {
-        timerData[c.id] = c.segundos;
+        timerData[c.uid] = c.segundos;
         if (grupos[c.estado]) grupos[c.estado].push(c);
     });
     ESTADOS.forEach(estado => {
         const col  = document.getElementById(`col-${estado}`);
         const cnt  = document.getElementById(`cnt-${estado}`);
-        const list = grupos[estado];
-        cnt.textContent = list.length;
-        col.innerHTML   = list.length
-            ? list.map(buildCard).join('')
+        const list = grupos[estado] || [];
+
+        // Evitar columna inmensa: en "Entregado" solo mostrar los últimos 5
+        const shown = (estado === 'entregado') ? list.slice(0, 5) : list;
+
+        cnt.textContent = shown.length;
+        col.innerHTML   = shown.length
+            ? shown.map(buildCard).join('') + (list.length > shown.length
+                ? `<div class="col-empty" style="background:#fff; border-style:dashed; color:#adb5bd;"><i class="bi bi-three-dots"></i> Hay ${list.length - shown.length} más en historial</div>`
+                : '')
             : `<div class="col-empty"><i class="bi bi-inbox"></i>Sin pedidos</div>`;
     });
 }
@@ -381,11 +549,14 @@ async function fetchData() {
     } catch(e) { /* silencioso */ }
 }
 
-async function cambiarEstado(id, estado, btn) {
+async function cambiarEstado(tipo, id, estado, btn) {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px"></span>';
     try {
-        await fetch(`/comanda/${id}/estado/`, {
+        const url = tipo === 'domicilio'
+            ? `/domicilio/${id}/estado/`
+            : `/comanda/${id}/estado/`;
+        await fetch(url, {
             method:'POST',
             headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':CSRF, 'Content-Type':'application/x-www-form-urlencoded' },
             body:`estado=${estado}`
@@ -397,9 +568,94 @@ async function cambiarEstado(id, estado, btn) {
     }
 }
 
+let pendingDelete = { tipo: null, id: null };
+let deleteModal = null;
+
+function openDeleteModal(tipo, id) {
+    pendingDelete = { tipo, id };
+
+    const label = document.getElementById('deleteLabel');
+    if (label) {
+        label.textContent = tipo === 'domicilio'
+            ? `Domicilio #${id}`
+            : `Pedido #${id}`;
+    }
+
+    if (!deleteModal) {
+        const el = document.getElementById('deleteModal');
+        if (el && window.bootstrap && window.bootstrap.Modal) {
+            deleteModal = new window.bootstrap.Modal(el);
+            el.addEventListener('hidden.bs.modal', () => {
+                const btnConfirm = document.getElementById('deleteConfirmBtn');
+                const btnCancel = document.getElementById('deleteCancelBtn');
+                if (btnConfirm) {
+                    btnConfirm.disabled = false;
+                    btnConfirm.innerHTML = 'Confirmar';
+                }
+                if (btnCancel) btnCancel.disabled = false;
+            });
+        }
+    }
+
+    if (deleteModal) deleteModal.show();
+}
+
+async function confirmDelete() {
+    const { tipo, id } = pendingDelete || {};
+    if (!tipo || !id) return;
+
+    const btnConfirm = document.getElementById('deleteConfirmBtn');
+    const btnCancel = document.getElementById('deleteCancelBtn');
+    if (btnConfirm) {
+        btnConfirm.disabled = true;
+        btnConfirm.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width:12px;height:12px;border-width:2px"></span>Eliminando...';
+    }
+    if (btnCancel) btnCancel.disabled = true;
+
+    try {
+        const url = tipo === 'domicilio'
+            ? `/domicilio/${id}/eliminar/`
+            : `/comanda/${id}/eliminar/`;
+        await fetch(url, {
+            method:'POST',
+            headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':CSRF, 'Content-Type':'application/x-www-form-urlencoded' },
+            body:'confirm=1'
+        });
+
+        if (deleteModal) deleteModal.hide();
+        await fetchData();
+    } catch {
+        if (btnConfirm) {
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = 'Confirmar';
+        }
+        if (btnCancel) btnCancel.disabled = false;
+    }
+}
+
+async function eliminarPedido(tipo, id, btn) {
+    if (!confirm('¿Eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px"></span>';
+    try {
+        const url = tipo === 'domicilio'
+            ? `/domicilio/${id}/eliminar/`
+            : `/comanda/${id}/eliminar/`;
+        await fetch(url, {
+            method:'POST',
+            headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken':CSRF, 'Content-Type':'application/x-www-form-urlencoded' },
+            body:'confirm=1'
+        });
+        await fetchData();
+    } catch {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-exclamation-triangle"></i>';
+    }
+}
+
 setInterval(() => {
     document.querySelectorAll('.cmd-card').forEach(card => {
-        const id = parseInt(card.dataset.id);
+        const id = card.dataset.uid;
         const es = card.dataset.estado;
         if (timerData[id] !== undefined) {
             timerData[id]++;

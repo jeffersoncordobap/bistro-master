@@ -106,19 +106,13 @@ class Tiquetera(models.Model):
         if not self.pk:
             self.saldo_consumos = self.plan.cantidad_consumos
 
-        # Generar código único si no existe
         if not self.codigo:
             import uuid
-
-            # usar un fragmento de uuid4 para mantenerlo corto
             self.codigo = uuid.uuid4().hex[:10]
         super().save(*args, **kwargs)
     
     
     def clean(self):
-        # Validar solo si ambas fechas están presentes. El formulario debería
-        # reportar campos obligatorios/parseo inválido; aquí evitamos lanzar
-        # un error genérico cuando las fechas aún no fueron parseadas.
         if self.fecha_inicio is None or self.fecha_vencimiento is None:
             return
 
@@ -132,7 +126,6 @@ class Tiquetera(models.Model):
         return (
             self.activa and
             self.saldo_consumos > 0 and
-            # fecha_vencimiento puede ser None en casos inesperados, evitar TypeError
             (self.fecha_vencimiento is not None and self.fecha_vencimiento >= timezone.now().date())
         )
     

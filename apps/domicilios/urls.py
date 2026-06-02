@@ -1,0 +1,77 @@
+from django.urls import path
+
+from . import views
+
+
+urlpatterns = [
+    path(
+        'restaurante/<slug:slug>/domicilio/',
+        views.checkout_domicilio,
+        name='checkout_domicilio',
+    ),
+    path(
+        'restaurante/<slug:slug>/domicilio/crear/',
+        views.crear_pedido_domicilio,
+        name='crear_pedido_domicilio',
+    ),
+    path(
+        'domicilios/',
+        views.panel_domicilios,
+        name='panel_domicilios',
+    ),
+    path(
+        'domicilios/historial/',
+        views.historial_domicilios,
+        name='historial_domicilios',
+    ),
+    path(
+        'domicilios/<int:pedido_id>/asignar/',
+        views.asignar_domiciliario,
+        name='asignar_domiciliario',
+    ),
+    path(
+        'domicilios/<int:pedido_id>/entrega/',
+        views.cambiar_estado_entrega_domicilio,
+        name='cambiar_estado_entrega_domicilio',
+    ),
+    path(
+        'domicilio/<int:pedido_id>/estado/',
+        views.cambiar_estado_pedido_domicilio,
+        name='cambiar_estado_pedido_domicilio',
+    ),
+    path(
+        'domicilio/<int:pedido_id>/eliminar/',
+        views.eliminar_pedido_domicilio,
+        name='eliminar_pedido_domicilio',
+    ),
+    path(
+        'domiciliario/domicilios/',
+        views.domiciliario_domicilios,
+        name='domiciliario_domicilios',
+    ),
+    path(
+        'domiciliario/domicilios/<int:pedido_id>/recibido/',
+        views.domiciliario_marcar_recibido,
+        name='domiciliario_marcar_recibido',
+    ),
+    path(
+        'domiciliario/mis-domicilios/',
+        views.domiciliario_mis_domicilios,
+        name='domiciliario_mis_domicilios',
+    ),
+    path(
+        'domiciliario/mis-domicilios/historial/',
+        views.domiciliario_historial_domicilios,
+        name='domiciliario_historial_domicilios',
+    ),
+    path(
+        'domiciliario/mis-domicilios/<int:pedido_id>/en-camino/',
+        views.domiciliario_marcar_en_camino,
+        name='domiciliario_marcar_en_camino',
+    ),
+    path(
+        'domiciliario/mis-domicilios/<int:pedido_id>/entregado/',
+        views.domiciliario_marcar_entregado,
+        name='domiciliario_marcar_entregado',
+    ),
+]

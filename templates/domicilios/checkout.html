@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar pedido · {{ restaurante.nombre }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand:    {{ restaurante.color_principal|default:"#e74c3c" }};
+            --brand-dk: color-mix(in srgb, var(--brand) 82%, #111);
+            --brand-lt: color-mix(in srgb, var(--brand) 10%, #fff);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f5f4f2;
+            color: #111;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e4e2dd;
+        }
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+            gap: 1rem;
+        }
+        .topbar-name {
+            font-weight: 900;
+            font-size: .92rem;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+        }
+        .topbar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); flex-shrink: 0; }
+        .btn-topbar {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: 8px 16px;
+            border-radius: 100px;
+            background: var(--brand);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 800;
+            text-decoration: none;
+            border: none;
+            white-space: nowrap;
+        }
+        .btn-topbar:hover { filter: brightness(.9); color: #fff; }
+
+        .page-title {
+            font-weight: 900;
+            letter-spacing: -0.8px;
+            margin: 1.25rem 0 0.25rem;
+        }
+        .page-sub { color: #777; font-size: .9rem; margin:0 0 1.25rem; }
+
+        .card-soft {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #e4e2dd;
+            overflow: hidden;
+        }
+        .card-soft-hdr {
+            padding: 1rem 1.1rem;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            display:flex;
+            align-items:center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .card-soft-hdr h5 {
+            margin:0;
+            font-weight: 900;
+            font-size: .95rem;
+            letter-spacing: -0.4px;
+        }
+
+        .form-label { font-size:.78rem; color:#666; font-weight:800; }
+        .form-control { border-radius: 14px; border-color:#e6e3dd; }
+        .form-control:focus { border-color: color-mix(in srgb, var(--brand) 40%, #fff); box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--brand) 18%, transparent); }
+
+        .item-row {
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: .75rem .85rem;
+            background: #fff;
+        }
+        .qty-btn {
+            border-radius: 12px;
+            border: 1px solid #eee;
+            background: #fafafa;
+            font-weight: 900;
+            padding: .35rem .55rem;
+        }
+
+        .total-box {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: .9rem 1rem;
+            display:flex;
+            align-items:center;
+            justify-content: space-between;
+        }
+        .total-box b { color: var(--brand-dk); }
+
+        .btn-primary-brand {
+            background: var(--brand);
+            color:#fff;
+            border-radius: 16px;
+            font-weight: 900;
+            padding: .85rem 1rem;
+            border: none;
+        }
+        .btn-primary-brand:hover { filter: brightness(.9); color:#fff; }
+        .btn-primary-brand:disabled { opacity:.55; }
+
+        .muted-box {
+            text-align:center;
+            padding: 2.2rem 1.25rem;
+            color:#bbb;
+        }
+
+        @media(max-width: 992px){
+            .topbar-inner { height:auto; padding: .6rem 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="container">
+        <div class="topbar-inner">
+            <a class="topbar-name" href="{% url 'pagina_restaurante' slug=restaurante.slug %}">
+                <span class="topbar-dot"></span>
+                {{ restaurante.nombre }}
+            </a>
+            <a class="btn-topbar" href="{% url 'pagina_restaurante' slug=restaurante.slug %}">
+                <i class="bi bi-arrow-left"></i>
+                Volver al menú
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h1 class="page-title">Finalizar pedido</h1>
+    <p class="page-sub">Completa tus datos y revisa el resumen antes de confirmar.</p>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card-soft">
+                <div class="card-soft-hdr">
+                    <h5><i class="bi bi-person-lines-fill me-1" style="color:var(--brand)"></i> Datos del domicilio</h5>
+                </div>
+                <div class="p-3 p-md-4">
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label class="form-label">Nombre</label>
+                            <input id="cliNombre" class="form-control" placeholder="Tu nombre" autocomplete="name">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Teléfono</label>
+                            <input id="cliTelefono" class="form-control" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dirección</label>
+                            <input id="cliDireccion" class="form-control" placeholder="Dirección completa" autocomplete="street-address">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Referencia (opcional)</label>
+                            <textarea id="cliReferencia" class="form-control" rows="2" placeholder="Apto, torre, indicaciones..."></textarea>
+                        </div>
+                        <div class="col-12 d-grid mt-2">
+                            <button id="btnConfirmar" type="button" class="btn-primary-brand">
+                                <i class="bi bi-bag-check me-1"></i> Confirmar pedido
+                            </button>
+                            <div id="msg" class="mt-2" style="font-size:.9rem;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-soft">
+                <div class="card-soft-hdr">
+                    <h5><i class="bi bi-receipt-cutoff me-1" style="color:var(--brand)"></i> Resumen</h5>
+                    <span id="countPill" style="display:none; background:var(--brand-lt); color:var(--brand-dk); border:1px solid color-mix(in srgb, var(--brand) 18%, #fff); padding:.25rem .65rem; border-radius:999px; font-weight:900; font-size:.78rem;"></span>
+                </div>
+
+                <div class="p-3 p-md-4">
+                    <div id="empty" class="muted-box">
+                        <i class="bi bi-bag-x" style="font-size:2rem; display:block; margin-bottom:.75rem;"></i>
+                        <div style="font-weight:900; color:#999;">Tu carrito está vacío</div>
+                        <div style="font-size:.9rem;">Vuelve al menú para agregar productos.</div>
+                    </div>
+
+                    <div id="wrap" style="display:none;">
+                        <div id="list" class="d-flex flex-column gap-2"></div>
+
+                        <div class="total-box mt-3">
+                            <div style="font-weight:900;">Total</div>
+                            <div id="total" style="font-weight:900;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SLUG = "{{ restaurante.slug|escapejs }}";
+    const CART_KEY = `bm_cart_${SLUG}`;
+    const CREATE_URL = "{% url 'crear_pedido_domicilio' slug=restaurante.slug %}";
+    const RESTAURANTE_URL = "{% url 'pagina_restaurante' slug=restaurante.slug %}";
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function money(v) {
+        try {
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
+        } catch {
+            return `$${v}`;
+        }
+    }
+
+    function loadCart() {
+        try {
+            const raw = localStorage.getItem(CART_KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch {
+            return {};
+        }
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function cartCount(cart) {
+        return Object.values(cart).reduce((acc, it) => acc + (it.cantidad || 0), 0);
+    }
+
+    function cartTotal(cart) {
+        return Object.values(cart).reduce((acc, it) => acc + ((it.precio || 0) * (it.cantidad || 0)), 0);
+    }
+
+    function render() {
+        const cart = loadCart();
+        const count = cartCount(cart);
+
+        const empty = document.getElementById('empty');
+        const wrap = document.getElementById('wrap');
+        const list = document.getElementById('list');
+        const totalEl = document.getElementById('total');
+        const btn = document.getElementById('btnConfirmar');
+        const pill = document.getElementById('countPill');
+
+        if (pill) {
+            pill.style.display = count ? 'inline-flex' : 'none';
+            pill.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+        }
+
+        if (!count) {
+            if (empty) empty.style.display = '';
+            if (wrap) wrap.style.display = 'none';
+            if (list) list.innerHTML = '';
+            if (totalEl) totalEl.textContent = money(0);
+            if (btn) btn.disabled = true;
+            return;
+        }
+
+        if (empty) empty.style.display = 'none';
+        if (wrap) wrap.style.display = '';
+        if (btn) btn.disabled = false;
+
+        const rows = Object.values(cart).map(it => {
+            const lineTotal = (it.precio || 0) * (it.cantidad || 0);
+            return `
+                <div class="item-row">
+                    <div class="d-flex align-items-start justify-content-between gap-2">
+                        <div style="min-width:0;">
+                            <div style="font-weight:900; letter-spacing:-.2px; line-height:1.2;">${it.nombre}</div>
+                            <div style="color:#999; font-size:.85rem; margin-top:.2rem;">${money(it.precio)} · <span style="font-variant-numeric:tabular-nums;">${it.cantidad}</span> und</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                            <button type="button" class="qty-btn" data-dec="${it.producto_id}">−</button>
+                            <button type="button" class="qty-btn" data-inc="${it.producto_id}">+</button>
+                            <button type="button" class="qty-btn" data-rm="${it.producto_id}" title="Quitar">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-2" style="color:#666; font-size:.9rem;">
+                        <span>Subtotal</span>
+                        <span style="font-weight:900; color:#111;">${money(lineTotal)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        if (list) list.innerHTML = rows;
+        if (totalEl) totalEl.textContent = money(cartTotal(cart));
+    }
+
+    document.addEventListener('click', (e) => {
+        const inc = e.target.closest('[data-inc]');
+        if (inc) {
+            const id = parseInt(inc.getAttribute('data-inc'), 10);
+            const cart = loadCart();
+            if (cart[id]) {
+                cart[id].cantidad = (cart[id].cantidad || 0) + 1;
+                saveCart(cart);
+                render();
+            }
+            return;
+        }
+
+        const dec = e.target.closest('[data-dec]');
+        if (dec) {
+            const id = parseInt(dec.getAttribute('data-dec'), 10);
+            const cart = loadCart();
+            if (cart[id]) {
+                cart[id].cantidad = Math.max(0, (cart[id].cantidad || 0) - 1);
+                if (cart[id].cantidad < 1) delete cart[id];
+                saveCart(cart);
+                render();
+            }
+            return;
+        }
+
+        const rm = e.target.closest('[data-rm]');
+        if (rm) {
+            const id = parseInt(rm.getAttribute('data-rm'), 10);
+            const cart = loadCart();
+            if (cart[id]) {
+                delete cart[id];
+                saveCart(cart);
+                render();
+            }
+        }
+    });
+
+    async function confirmar() {
+        const msg = document.getElementById('msg');
+        const btn = document.getElementById('btnConfirmar');
+        let redirecting = false;
+
+        const nombre = (document.getElementById('cliNombre')?.value || '').trim();
+        const telefono = (document.getElementById('cliTelefono')?.value || '').trim();
+        const direccion = (document.getElementById('cliDireccion')?.value || '').trim();
+        const referencia = (document.getElementById('cliReferencia')?.value || '').trim();
+
+        const cart = loadCart();
+        const items = Object.values(cart).map(it => ({
+            producto_id: it.producto_id,
+            cantidad: it.cantidad,
+            nota: it.nota || '',
+        }));
+
+        if (!items.length) return;
+
+        if (!nombre || !telefono || !direccion) {
+            if (msg) msg.innerHTML = `<span style="color:#c0392b; font-weight:900;">Completa nombre, teléfono y dirección.</span>`;
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" style="width:14px;height:14px;border-width:2px;"></span> Enviando...`;
+        }
+        if (msg) msg.textContent = '';
+
+        try {
+            const res = await fetch(CREATE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken') || '',
+                },
+                body: JSON.stringify({
+                    cliente_nombre: nombre,
+                    cliente_telefono: telefono,
+                    direccion,
+                    referencia,
+                    items,
+                }),
+            });
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido.');
+
+            localStorage.removeItem(CART_KEY);
+            render();
+
+            if (msg) msg.innerHTML = `<span style="color:#2e7d32; font-weight:900;"><i class="bi bi-check-circle me-1"></i> Pedido enviado. Redirigiendo...</span>`;
+
+            redirecting = true;
+            setTimeout(() => {
+                window.location.href = RESTAURANTE_URL;
+            }, 650);
+
+        } catch (err) {
+            if (msg) msg.innerHTML = `<span style="color:#c0392b; font-weight:900;">${err.message || 'Error al enviar el pedido.'}</span>`;
+        } finally {
+            if (btn) {
+                if (redirecting) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" style="width:14px;height:14px;border-width:2px;"></span> Redirigiendo...`;
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="bi bi-bag-check me-1"></i> Confirmar pedido`;
+                }
+            }
+        }
+    }
+
+    document.getElementById('btnConfirmar')?.addEventListener('click', confirmar);
+
+    render();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

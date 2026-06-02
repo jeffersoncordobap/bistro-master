@@ -91,3 +91,12 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+    def descontar_stock(self, cantidad=1):
+        if self.control_stock and self.stock is not None:
+            if cantidad > self.stock:
+                raise ValueError(f'No hay suficiente stock disponible, solo quedan {self.stock} unidades de {self.nombre}.')
+            self.stock -= cantidad
+            if self.stock == 0:
+                self.disponible = False
+            self.save()

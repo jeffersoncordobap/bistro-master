@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.productos',
     'apps.comandas',
     'apps.tiqueteras',
+    'apps.domicilios',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,6 @@ STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# WhatsApp Web (sin API): asume Colombia por defecto si los teléfonos no traen indicativo
+PHONE_DEFAULT_COUNTRY_CODE = config('PHONE_DEFAULT_COUNTRY_CODE', default='57')

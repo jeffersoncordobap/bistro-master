@@ -1,0 +1,234 @@
+{% extends 'dashboard/base_domiciliario.html' %}
+
+{% block title %}Mis domicilios{% endblock %}
+{% block page_title %}Mis domicilios{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .section-header h4 { color:#fff; font-weight:900; font-size:1.05rem; margin:0 0 .15rem; }
+    .section-header p { color:rgba(255,255,255,0.75); font-size:.84rem; margin:0; }
+    .hdr-actions { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+    .btn-historial {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+    .btn-historial:hover { background: rgba(255,255,255,0.28); color:#fff; }
+    .pill {
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        padding:.3rem .75rem;
+        border-radius:999px;
+        font-size:.78rem;
+        font-weight:900;
+        white-space:nowrap;
+        background:rgba(255,255,255,0.18);
+        border:1.5px solid rgba(255,255,255,0.4);
+        color:#fff;
+    }
+
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .row-wrap {
+        padding: 1rem 1.15rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .row-wrap:last-child { border-bottom:none; }
+
+    .row-top {
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .meta {
+        font-size: .88rem;
+        color:#212529;
+    }
+    .meta b { font-weight:900; }
+    .meta small { display:block; color:#999; font-size:.76rem; margin-top:.15rem; }
+    .items {
+        margin-top: .65rem;
+        padding-top: .65rem;
+        border-top: 1px dashed #f0f0f0;
+        color:#444;
+        font-size:.86rem;
+    }
+
+    .estado-pill {
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        padding:.25rem .7rem;
+        border-radius:999px;
+        font-size:.75rem;
+        font-weight:900;
+        white-space:nowrap;
+        background:#f8f9fa;
+        border:1px solid #e9ecef;
+        color:#6c757d;
+    }
+    .st-recibido { background: rgba(255,193,7,0.16); border-color: rgba(255,193,7,0.35); color:#7a5500; }
+    .st-camino { background: rgba(13,202,240,0.14); border-color: rgba(13,202,240,0.35); color:#087990; }
+    .st-entregado { background: rgba(25,135,84,0.12); border-color: rgba(25,135,84,0.35); color:#198754; }
+
+    .status-group {
+        display:flex;
+        align-items:center;
+        gap:.35rem;
+        flex-wrap: wrap;
+    }
+    .status-line {
+        height: 2px;
+        width: 22px;
+        background: #e9ecef;
+        border-radius: 999px;
+    }
+    .btn-st {
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        background: #fff;
+        font-weight: 900;
+        font-size: .92rem;
+        padding: .7rem 1.05rem;
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        color:#495057;
+        white-space:nowrap;
+        transition: filter .14s, transform .12s, background .14s;
+    }
+    .btn-st:hover { background:#fafafa; transform: scale(.99); }
+    .btn-st:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-st.camino { border-color: rgba(13,202,240,0.35); }
+    .btn-st.entregado { border-color: rgba(25,135,84,0.35); }
+
+    @media(max-width: 768px){
+        .row-wrap { padding: .85rem .9rem; }
+        .status-group { width:100%; justify-content: space-between; }
+        .status-line { flex:1; min-width: 16px; }
+        .btn-st { flex:1; justify-content:center; padding: .75rem 1rem; }
+    }
+</style>
+
+<div class="section-header">
+    <div>
+        <h4>Mis domicilios</h4>
+        <p>Controla tus domicilios tomados y marca el progreso de entrega.</p>
+    </div>
+    <div class="hdr-actions">
+        <span class="pill"><i class="bi bi-person-badge"></i> {{ pedidos|length }} en gestión</span>
+        <a href="{% url 'domiciliario_historial_domicilios' %}" class="btn-historial">
+            <i class="bi bi-clock-history"></i> Historial
+        </a>
+    </div>
+</div>
+
+<div class="bm-card">
+    {% for p in pedidos %}
+    <div class="row-wrap">
+        <div class="row-top">
+            <div style="min-width: 240px;">
+                <div style="display:flex; align-items:center; gap:.55rem; flex-wrap:wrap;">
+                    <div style="font-weight:900;">Domicilio #{{ p.id }}</div>
+                    <span class="estado-pill {% if p.estado_entrega == 'recibido' %}st-recibido{% elif p.estado_entrega == 'en_camino' %}st-camino{% elif p.estado_entrega == 'entregado' %}st-entregado{% endif %}">
+                        {% if p.estado_entrega == 'recibido' %}<i class="bi bi-check2-circle"></i> Recibido{% endif %}
+                        {% if p.estado_entrega == 'en_camino' %}<i class="bi bi-truck"></i> En camino{% endif %}
+                        {% if p.estado_entrega == 'entregado' %}<i class="bi bi-house-check"></i> Entregado{% endif %}
+                    </span>
+                    <span style="color:#999; font-size:.78rem; font-weight:800;"><i class="bi bi-clock"></i> {{ p.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div style="margin-top:.25rem; color:#999; font-size:.82rem;">
+                    <i class="bi bi-geo-alt"></i> {{ p.direccion }}
+                    {% if p.referencia %}<span style="color:#bbb;"> · {{ p.referencia }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="meta" style="min-width: 220px;">
+                <b><i class="bi bi-person"></i> {{ p.cliente_nombre }}</b>
+                <small><i class="bi bi-telephone"></i> {{ p.cliente_telefono }}</small>
+            </div>
+
+            <div class="meta" style="min-width: 170px;">
+                <b><i class="bi bi-cash"></i> Total</b>
+                <small style="font-weight:900; color:#212529;">${{ p.total }}</small>
+            </div>
+
+                <div class="status-group">
+                    {% if p.estado_entrega != 'entregado' %}
+                    <form method="post" action="{% url 'domiciliario_marcar_en_camino' pedido_id=p.id %}" target="_blank" class="js-en-camino-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-st camino" {% if p.estado_entrega == 'en_camino' %}disabled{% endif %}>
+                            <i class="bi bi-truck"></i> En camino
+                        </button>
+                    </form>
+                    <span class="status-line"></span>
+                    <form method="post" action="{% url 'domiciliario_marcar_entregado' pedido_id=p.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-st entregado">
+                            <i class="bi bi-house-check"></i> Entregado
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="estado-pill st-entregado"><i class="bi bi-check-all"></i> Completado</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="items">
+            {% for it in p.items.all %}
+                <div>×{{ it.cantidad }} {{ it.producto.nombre }}{% if it.nota %} <span style="color:#aaa; font-style:italic;">({{ it.nota }})</span>{% endif %}</div>
+            {% empty %}
+                <div style="color:#bbb;">Sin items</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center; padding:2.5rem 1.25rem; color:#bbb; font-weight:900;">
+        <i class="bi bi-inbox" style="font-size:1.6rem; display:block; margin-bottom:.4rem;"></i>
+        Aún no tienes domicilios tomados
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // En camino: enviar POST en una pestaña nueva (target=_blank) y refrescar este panel.
+    document.querySelectorAll('form.js-en-camino-form').forEach((form) => {
+        form.addEventListener('submit', () => {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+            setTimeout(() => window.location.reload(), 600);
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Historial de Domicilios{% endblock %}
+{% block page_title %}Historial de Domicilios{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-header {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .section-header-left { display:flex; align-items:center; gap:1rem; }
+    .section-header-icon {
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: #fff; flex-shrink: 0;
+    }
+    .section-header h4 { color:#fff; font-weight:800; font-size:1.1rem; margin:0 0 0.15rem; }
+    .section-header p  { color:rgba(255,255,255,0.75); font-size:0.83rem; margin:0; }
+
+    .btn-volver {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+    .btn-volver:hover { background: rgba(255,255,255,0.28); color:#fff; }
+
+    .bm-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+    .bm-table { width:100%; margin:0; border-collapse: collapse; }
+    .bm-table thead tr { background:#f8f9fa; border-bottom: 2px solid #dee2e6; }
+    .bm-table thead th {
+        padding: 0.85rem 1.1rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+    .bm-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
+    .bm-table tbody tr:hover { background:#fafafa; }
+    .bm-table tbody tr:last-child { border-bottom:none; }
+    .bm-table tbody td {
+        padding: 1rem 1.1rem;
+        font-size: 0.88rem;
+        color: #212529;
+        vertical-align: top;
+    }
+
+    .subtle { color:#999; font-size:0.78rem; margin-top:0.15rem; }
+    .items { color:#333; font-size:0.86rem; }
+    .items span { display:block; padding:0.12rem 0; }
+
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        white-space: nowrap;
+        margin-right: .35rem;
+        margin-bottom: .25rem;
+    }
+    .estado-badge .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+    .st-pendiente { background: rgba(255,165,0,0.14); color:#e65100; }
+    .st-pendiente .dot { background:#ffa500; }
+    .st-prep { background: rgba(13,110,253,0.12); color:#0d6efd; }
+    .st-prep .dot { background:#0d6efd; }
+    .st-listo { background: rgba(25,135,84,0.12); color:#198754; }
+    .st-listo .dot { background:#198754; }
+    .st-entregado { background: rgba(108,117,125,0.14); color:#495057; }
+    .st-entregado .dot { background:#6c757d; }
+
+    .st-recibido { background: rgba(255,193,7,0.18); color:#7a5500; }
+    .st-recibido .dot { background:#ffc107; }
+    .st-camino { background: rgba(13,202,240,0.14); color:#087990; }
+    .st-camino .dot { background:#0dcaf0; }
+    .st-entrega-ok { background: rgba(25,135,84,0.12); color:#198754; }
+    .st-entrega-ok .dot { background:#198754; }
+
+    @media(max-width: 900px){
+        .bm-table thead { display:none; }
+        .bm-table, .bm-table tbody, .bm-table tr, .bm-table td { display:block; width:100%; }
+        .bm-table tbody tr { padding: .7rem .7rem; }
+        .bm-table tbody td { padding: .55rem .55rem; }
+        .bm-table tbody td[data-label]:before{
+            content: attr(data-label);
+            display:block;
+            font-size: .72rem;
+            font-weight: 900;
+            color:#999;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: .15rem;
+        }
+    }
+</style>
+
+<div class="section-header">
+    <div class="section-header-left">
+        <div class="section-header-icon"><i class="bi bi-clock-history"></i></div>
+        <div>
+            <h4>Historial de Domicilios</h4>
+            <p>Listado completo de domicilios con su información y estados</p>
+        </div>
+    </div>
+    <a href="{% url 'panel_domicilios' %}" class="btn-volver">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="bm-card">
+    <table class="bm-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Dirección</th>
+                <th>Domiciliario</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr>
+                <td data-label="#"><b>Domicilio #{{ p.id }}</b></td>
+                <td data-label="Fecha">
+                    {{ p.fecha_creacion|date:"d/m/Y H:i" }}
+                </td>
+                <td data-label="Cliente">
+                    <div style="font-weight:900;">{{ p.cliente_nombre }}</div>
+                    <div class="subtle"><i class="bi bi-telephone"></i> {{ p.cliente_telefono }}</div>
+                </td>
+                <td data-label="Dirección">
+                    <div><i class="bi bi-geo-alt"></i> {{ p.direccion }}</div>
+                    {% if p.referencia %}<div class="subtle">{{ p.referencia }}</div>{% endif %}
+                </td>
+                <td data-label="Domiciliario">
+                    {% if p.domiciliario %}
+                        <span style="font-weight:900;"><i class="bi bi-person-badge"></i> {{ p.domiciliario.username }}</span>
+                    {% else %}
+                        <span class="subtle">Sin asignar</span>
+                    {% endif %}
+                </td>
+                <td data-label="Estado">
+                    {% if p.estado == 'pendiente' %}
+                        <span class="estado-badge st-pendiente"><span class="dot"></span> Pendiente</span>
+                    {% elif p.estado == 'en_preparacion' %}
+                        <span class="estado-badge st-prep"><span class="dot"></span> En preparación</span>
+                    {% elif p.estado == 'listo' %}
+                        <span class="estado-badge st-listo"><span class="dot"></span> Listo</span>
+                    {% elif p.estado == 'entregado' %}
+                        <span class="estado-badge st-entregado"><span class="dot"></span> Entregado</span>
+                    {% endif %}
+
+                    {% if p.estado_entrega == 'recibido' %}
+                        <span class="estado-badge st-recibido"><span class="dot"></span> Recibido</span>
+                    {% elif p.estado_entrega == 'en_camino' %}
+                        <span class="estado-badge st-camino"><span class="dot"></span> En camino</span>
+                    {% elif p.estado_entrega == 'entregado' %}
+                        <span class="estado-badge st-entrega-ok"><span class="dot"></span> Entrega OK</span>
+                    {% else %}
+                        <span class="subtle">Entrega: —</span>
+                    {% endif %}
+
+                    <div class="subtle" style="margin-top:.35rem;">
+                        {% if p.fecha_recibido %}<div><i class="bi bi-check2-circle"></i> Recibido: {{ p.fecha_recibido|date:"d/m/Y H:i" }}</div>{% endif %}
+                        {% if p.fecha_en_camino %}<div><i class="bi bi-truck"></i> En camino: {{ p.fecha_en_camino|date:"d/m/Y H:i" }}</div>{% endif %}
+                        {% if p.fecha_entregado %}<div><i class="bi bi-house-check"></i> Entregado: {{ p.fecha_entregado|date:"d/m/Y H:i" }}</div>{% endif %}
+                    </div>
+                </td>
+                <td data-label="Total">
+                    <b style="color:#c0392b;">${{ p.total }}</b>
+                </td>
+                <td data-label="Items">
+                    <div class="items">
+                        {% for it in p.items.all %}
+                            <span>×{{ it.cantidad }} {{ it.producto.nombre }}{% if it.nota %} <em style="color:#aaa;">({{ it.nota }})</em>{% endif %}</span>
+                        {% empty %}
+                            <span class="subtle">Sin items</span>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align:center; padding: 2.5rem 1rem; color:#999; font-weight:900;">
+                    Aún no hay domicilios para mostrar
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
