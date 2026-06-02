@@ -507,6 +507,13 @@
             </div>
         </div>
     </div>
+    {% if restaurante_cerrado %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        El restaurante está cerrado. Puedes consultar la información,
+        pero no registrar nuevas comandas.
+    </div>
+    {% endif %}
     {% if messages %}
     {% for message in messages %}
         <div class="alert alert-danger">

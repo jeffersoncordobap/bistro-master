@@ -69,10 +69,26 @@ def registrar_comanda(request):
 
         'productos_por_categoria': productos_por_categoria,
 
-        'tiqueteras': tiqueteras
+        'tiqueteras': tiqueteras,
+        
+        'restaurante_cerrado': (
+        request.user.restaurante.estado ==
+        request.user.restaurante.Estados.CERRADO
+    )
     }
 
     if request.method == 'POST':
+        restaurante = request.user.restaurante
+        if restaurante.estado == restaurante.Estados.CERRADO:
+            messages.error(
+                request,
+                'No puedes registrar pedidos porque el restaurante está cerrado.'
+            )
+            return render(
+                request,
+                'comandas/registrar_comanda.html',
+                context
+            )
 
         try:
 

@@ -4,10 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.utils import timezone
 
 from apps.restaurantes.forms import RestauranteForm
 from apps.usuarios.forms import RegistroAdministradorForm
 from .forms import LoginForm, UsuarioForm, UsuarioUpdateForm
+
+from apps.comandas.models import Comanda
+from apps.domicilios.models import PedidoDomicilio
+from apps.tiqueteras.models import Tiquetera
 
 from .decorators import rol_requerido
 from apps.usuarios.models import Usuario
@@ -126,23 +131,42 @@ def login_usuario(request):
 def panel_admin(request):
 
     restaurante = request.user.restaurante
+    hoy = timezone.now().date()
 
     # Contar solo staff (meseros + domiciliarios), excluyendo al admin
     meseros = restaurante.usuarios.filter(
-        rol=Usuario.Roles.MESERO
+        rol=Usuario.Roles.MESERO,
+        is_active=True
     ).count()
 
     domiciliarios = restaurante.usuarios.filter(
-        rol=Usuario.Roles.DOMICILIARIO
+        rol=Usuario.Roles.DOMICILIARIO,
+        is_active=True
     ).count()
     
     empleados = meseros + domiciliarios
+
+    # Métricas de hoy
+    pedidos_hoy = Comanda.objects.filter(
+        restaurante=restaurante, 
+        fecha_creacion__date=hoy
+    ).count() + PedidoDomicilio.objects.filter(
+        restaurante=restaurante, 
+        fecha_creacion__date=hoy
+    ).count()
+
+    tiqueteras_activas = Tiquetera.objects.filter(
+        restaurante=restaurante,
+        activa=True
+    ).count()
 
     context = {
         'restaurante': restaurante,
         'empleados': empleados,
         'meseros': meseros,
-        'domiciliarios': domiciliarios
+        'domiciliarios': domiciliarios,
+        'pedidos_hoy': pedidos_hoy,
+        'tiqueteras_activas': tiqueteras_activas,
     }
 
     return render(
