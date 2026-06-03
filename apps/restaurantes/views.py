@@ -20,7 +20,7 @@ def configuracion_restaurante(request):
         return redirect('panel_admin')
 
     if request.method == 'POST':
-
+        print("FILES:", request.FILES)
         form = RestauranteUpdateForm(
             request.POST,
             request.FILES,      # ← necesario para recibir imágenes
