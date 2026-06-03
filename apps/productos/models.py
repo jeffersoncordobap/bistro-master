@@ -85,6 +85,12 @@ class Producto(models.Model):
         default=20
     )
 
+    cubierto_por_tiquetera = models.BooleanField(
+        default=False,
+        verbose_name='Cubierto por tiquetera',
+        help_text='Si está activo, este producto no se cobra cuando el consumo es por tiquetera.'
+    )
+
     creado = models.DateTimeField(
         auto_now_add=True
     )

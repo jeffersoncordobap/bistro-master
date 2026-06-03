@@ -49,6 +49,14 @@ class Comanda(models.Model):
         related_name='comandas'
     )
 
+    @property
+    def total(self):
+        return sum(
+            item.producto.precio * item.cantidad
+            for item in self.items.all()
+            if item.producto_id
+        )
+
     def __str__(self):
         return f'Mesa {self.numero_mesa} - {self.estado}'
 

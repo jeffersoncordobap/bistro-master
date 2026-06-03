@@ -492,7 +492,10 @@ function buildCard(c) {
     return `<div class="cmd-card" data-uid="${c.uid}" data-estado="${c.estado}">
         <div class="cmd-card-inner">
             <div class="cmd-top">
-                <span class="cmd-mesa">${isDom ? '<i class="bi bi-bag-heart-fill"></i> Domicilio' : '<i class="bi bi-grid-3x3-gap-fill"></i> Mesa ' + c.mesa} ${consumoInfo}</span>
+                <div>
+                    <div class="cmd-mesa">${isDom ? '<i class="bi bi-bag-heart-fill"></i> Domicilio' : '<i class="bi bi-grid-3x3-gap-fill"></i> Mesa ' + c.mesa}</div>
+                    <div style="margin-top:4px; line-height:1;">${consumoInfo}</div>
+                </div>
                 <span class="cmd-timer ${timerCls(seg,c.estado)}" id="timer-${c.uid}">${fmt(seg)}</span>
             </div>
 

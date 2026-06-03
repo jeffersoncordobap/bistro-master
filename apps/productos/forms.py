@@ -18,7 +18,8 @@ class ProductoForm(forms.ModelForm):
             'disponible',
             'control_stock',
             'stock',
-            'cantidad_maxima_por_pedido'
+            'cantidad_maxima_por_pedido',
+            'cubierto_por_tiquetera'
         ]
 
     def __init__(self, *args, **kwargs):

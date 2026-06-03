@@ -50,6 +50,13 @@
         margin: 0;
     }
 
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+    }
+
     .btn-agregar {
         background: rgba(255,255,255,0.18);
         border: 2px solid rgba(255,255,255,0.5);
@@ -70,6 +77,47 @@
     .btn-agregar:hover {
         background: rgba(255,255,255,0.28);
         color: #fff;
+    }
+
+    .btn-inactivos {
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.55rem 1.2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .btn-inactivos:hover {
+        background: rgba(255,255,255,0.28);
+        color: #fff;
+    }
+
+    .btn-inactivos.activo-now {
+        background: rgba(255,255,255,0.28);
+        border-color: rgba(255,255,255,0.7);
+        color: #fff;
+    }
+
+    .badge-count {
+        background: rgba(180,30,20,0.85);
+        color: #fff;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 0.1rem 0.45rem;
+        min-width: 18px;
+        text-align: center;
+        line-height: 1.5;
     }
 
     /* ── Tabla ────────────────────────────────────────── */
@@ -300,15 +348,17 @@
         .section-header p {
             font-size: 0.75rem;
         }
-        .btn-agregar {
+        .header-actions {
+            width: 100%;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .btn-agregar, .btn-inactivos {
             padding: 0.5rem 1rem;
             font-size: 0.78rem;
             border-radius: 8px;
             width: 100%;
             justify-content: center;
-        }
-        .btn-agregar i {
-            font-size: 1rem;
         }
         .btn-text {
             display: none;
@@ -477,16 +527,42 @@
         </div>
 
         <div>
-            <h4>Gestión de usuarios</h4>
-            <p>Administra los meseros y domiciliarios</p>
+            {% if mostrar_inactivos %}
+                <h4>Usuarios inactivos</h4>
+                <p>Reactiva empleados que ya no están en la lista principal</p>
+            {% else %}
+                <h4>Gestión de usuarios</h4>
+                <p>Empleados activos y disponibles para trabajar</p>
+            {% endif %}
         </div>
 
     </div>
 
-    <a href="{% url 'crear_usuario' %}" class="btn-agregar">
-        <i class="bi bi-plus-lg"></i>
-        <span class="btn-text">Agregar usuario</span>
-    </a>
+    <div class="header-actions">
+
+        {% if not mostrar_inactivos %}
+            <a href="{% url 'crear_usuario' %}" class="btn-agregar">
+                <i class="bi bi-plus-lg"></i>
+                <span class="btn-text">Agregar usuario</span>
+            </a>
+        {% endif %}
+
+        {% if mostrar_inactivos %}
+            <a href="{% url 'lista_usuarios' %}" class="btn-inactivos activo-now">
+                <i class="bi bi-arrow-left"></i>
+                <span class="btn-text">Ver activos</span>
+            </a>
+        {% else %}
+            <a href="{% url 'lista_usuarios' %}?inactivos=1" class="btn-inactivos">
+                <i class="bi bi-person-slash"></i>
+                <span class="btn-text">Inactivos</span>
+                {% if total_inactivos > 0 %}
+                    <span class="badge-count">{{ total_inactivos }}</span>
+                {% endif %}
+            </a>
+        {% endif %}
+
+    </div>
 
 </div>
 
@@ -605,8 +681,13 @@
                     <td colspan="6">
 
                         <div class="tabla-vacia">
-                            <i class="bi bi-people"></i>
-                            <p>No hay usuarios registrados aún.</p>
+                            {% if mostrar_inactivos %}
+                                <i class="bi bi-person-check"></i>
+                                <p>No hay usuarios inactivos.</p>
+                            {% else %}
+                                <i class="bi bi-people"></i>
+                                <p>No hay usuarios activos. <a href="{% url 'crear_usuario' %}">Agregar uno</a>.</p>
+                            {% endif %}
                         </div>
 
                     </td>
