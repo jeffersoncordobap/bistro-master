@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -225,67 +226,61 @@ def registrar_comanda(request):
                 )
 
                 for producto_id in productos_ids:
-                    if tiquetera and not tiquetera.plan.permite_multiples_consumos:
-                        cantidad = 1
-                        
-                    else:
-                        cantidad = int(
-                            request.POST.get(
-                                f'cantidad_{producto_id}',
-                                1
-                            )
+                    cantidad = int(
+                        request.POST.get(
+                            f'cantidad_{producto_id}',
+                            1
                         )
+                    )
 
                     nota = request.POST.get(
                         f'nota_{producto_id}',
                         ''
                     )
                     
-                    producto = Producto.objects.get(id=producto_id,restaurante=request.user.restaurante)
+                    producto = Producto.objects.get(id=producto_id, restaurante=request.user.restaurante)
                     if producto.control_stock:
                         producto.descontar_stock(cantidad)
 
                     ItemComanda.objects.create(
-
                         comanda=comanda,
-
                         producto_id=producto_id,
-
                         cantidad=cantidad,
-
                         nota=nota
                     )
 
                 if tiquetera:
-                    #Agregue apartado para multiples consumos de tiquetera en una misma comanda, se suman las cantidades de cada producto seleccionado
-                    if tiquetera.plan.permite_multiples_consumos:
-                        cantidad_consumos = sum(
-
-                            int(request.POST.get(
-                                f'cantidad_{pid}',
-                                1
-                            )) for pid in productos_ids
-                        )
-                        tiquetera.consumir(cantidad_consumos)
-                    else:
-                        tiquetera.consumir()
-
-                    if tiquetera.saldo_consumos <= 0:
-
-                        tiquetera.activa = False
-
-                    tiquetera.save()
-
-                    ConsumoTiquetera.objects.create(
-
-                        tiquetera=tiquetera,
-
-                        comanda=comanda,
-
-                        cantidad=cantidad_consumos if tiquetera.plan.permite_multiples_consumos else 1,
-
-                        registrado_por=request.user
+                    # Solo descuenta tiquetes por productos que cubren tiquetera
+                    cantidad_consumos = sum(
+                        int(request.POST.get(f'cantidad_{pid}', 1))
+                        for pid in productos_ids
+                        if Producto.objects.filter(
+                            id=pid,
+                            cubierto_por_tiquetera=True
+                        ).exists()
                     )
+
+                    if cantidad_consumos > 0:
+                        # Validar saldo antes de consumir
+                        if tiquetera.saldo_consumos < cantidad_consumos:
+                            raise ValidationError(
+                                f'Saldo insuficiente. Saldo actual: {tiquetera.saldo_consumos}, '
+                                f'consumos solicitados: {cantidad_consumos}.'
+                            )
+
+                        tiquetera.saldo_consumos -= cantidad_consumos
+
+                        if tiquetera.saldo_consumos <= 0:
+                            tiquetera.activa = False
+
+                        tiquetera.save()
+
+                        ConsumoTiquetera.objects.create(
+                            tiquetera=tiquetera,
+                            comanda=comanda,
+                            cantidad=cantidad_consumos,
+                            registrado_por=request.user
+                        )
 
             messages.success(
                 request,
@@ -294,20 +289,25 @@ def registrar_comanda(request):
 
             return redirect('mis_comandas')
 
-        except ValueError as e:
-            messages.error(
-                request,
-                f'Error en los datos del formulario: {str(e)}'
-            )
-
+        except ValidationError as e:
+            msg = e.messages[0] if hasattr(e, 'messages') else str(e)
+            messages.error(request, msg)
             return render(
                 request,
                 'comandas/registrar_comanda.html',
                 context
             )
 
-        except Exception as e:
-            raise e
+        except ValueError as e:
+            messages.error(
+                request,
+                f'Error en los datos del formulario: {str(e)}'
+            )
+            return render(
+                request,
+                'comandas/registrar_comanda.html',
+                context
+            )
 
     return render(
         request,
@@ -426,7 +426,8 @@ def historial_pedidos(request):
 def api_panel_pedidos(request):
 
     ahora = timezone.now()
-    inicio_dia = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
+    ahora_local = timezone.localtime(ahora)
+    inicio_dia = ahora_local.replace(hour=0, minute=0, second=0, microsecond=0)
 
     comandas = Comanda.objects.filter(
         restaurante=request.user.restaurante
@@ -598,24 +599,14 @@ def eliminar_comanda(request, comanda_id):
 def mis_comandas(request):
 
     ahora = timezone.now()
-
-    inicio_dia = ahora.replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0
-    )
-
+    ahora_local = timezone.localtime(ahora)
+    inicio_dia = ahora_local.replace(hour=0, minute=0, second=0, microsecond=0)
     fin_dia = inicio_dia + timedelta(days=1)
 
     comandas = Comanda.objects.filter(
-
         mesero=request.user,
-
         fecha_creacion__gte=inicio_dia,
-
         fecha_creacion__lt=fin_dia
-
     ).order_by(
         '-fecha_creacion'
     )

@@ -728,15 +728,18 @@
                         <div id="tiqueteraError" class="d-none" style="color:#e74c3c;font-size:.78rem;margin-top:.3rem;">
                             <i class="bi bi-exclamation-triangle-fill me-1"></i>Selecciona un cliente de tiquetera
                         </div>
+                        <div id="tiquetera_saldo_error" class="d-none" style="color:#e74c3c;font-size:.78rem;margin-top:.3rem;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i><span id="tiquetera_saldo_msg"></span>
+                        </div>
 
                         <select name="tiquetera" id="tiquetera_id" class="d-none">
 
-                            <option value="">
+                            <option value="" data-saldo="0">
                                 Selecciona una tiquetera
                             </option>
 
                             {% for tiquetera in tiqueteras %}
-                            <option value="{{ tiquetera.id }}">
+                            <option value="{{ tiquetera.id }}" data-saldo="{{ tiquetera.saldo_consumos }}">
                                 {{ tiquetera.cliente_nombre }} - {{ tiquetera.saldo_consumos }} consumos -
                                  {% if tiquetera.plan.permite_multiples_consumos %}
                                     Múltiple
@@ -847,26 +850,7 @@
 })();
 </script>
 
-<!-- Modal Bootstrap para confirmación de gasto de tiquete -->
-<div class="modal fade" id="confirmTiqueteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar gasto de tiquete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Vas a gastar 1 tiquete de:</p>
-                <p class="fw-bold" id="confirmTiqueteCliente"></p>
-                <p class="small text-muted">El registro quedará como sólo lectura y se registrará la fecha y el usuario.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" id="confirmTiqueteBtn" class="btn btn-danger">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Tipo consumo modal -->
 <div class="mt-3">
@@ -936,6 +920,28 @@
         </div>
 
     </div>
+
+    <!-- Modal Bootstrap para confirmación de gasto de tiquete -->
+    <div class="modal fade" id="confirmTiqueteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar gasto de tiquete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Vas a gastar 1 tiquete de:</p>
+                    <p class="fw-bold" id="confirmTiqueteCliente"></p>
+                    <p class="small text-muted">El registro quedará como sólo lectura y se registrará la fecha y el usuario.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmTiqueteBtn" class="btn btn-danger">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </form>
 
 <script>
@@ -1072,32 +1078,34 @@
                     if (!tiq) {
                         e.preventDefault();
                         document.getElementById('tiqueteraError').classList.remove('d-none');
+                        document.getElementById('tiquetera_saldo_error').classList.add('d-none');
                         const input = document.getElementById('buscar_tiquetera_input');
                         if (input) input.focus();
                         return false;
                     }
 
-                    // Confirmar gasto de tiquete
-                    e.preventDefault();
-                    const cliente = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
-                    const modalEl = document.getElementById('confirmTiqueteModal');
-                    const modalCliente = document.getElementById('confirmTiqueteCliente');
-                    const confirmarBtn = document.getElementById('confirmTiqueteBtn');
-
-                    if (modalEl && modalCliente && confirmarBtn && window.bootstrap){
-                        modalCliente.textContent = cliente;
-                        const bsModal = new bootstrap.Modal(modalEl);
-                        const handler = function(){
-                            confirmarBtn.removeEventListener('click', handler);
-                            bsModal.hide();
-                            form.submit();
-                        };
-                        confirmarBtn.addEventListener('click', handler);
-                        bsModal.show();
-                        return;
+                    // Validar saldo suficiente
+                    const saldoDisponible = parseInt(sel.options[sel.selectedIndex].dataset.saldo || 0);
+                    const checks = document.querySelectorAll('.producto-check-hidden:checked');
+                    let totalCubiertos = 0;
+                    checks.forEach(chk => {
+                        const pid = chk.value;
+                        if (cubiertoTiquetera[pid]) {
+                            const cantInput = document.querySelector(`input[name="cantidad_${pid}"]`);
+                            totalCubiertos += cantInput ? parseInt(cantInput.value) : 1;
+                        }
+                    });
+                    if (totalCubiertos > saldoDisponible) {
+                        e.preventDefault();
+                        const errEl = document.getElementById('tiquetera_saldo_error');
+                        const msgEl = document.getElementById('tiquetera_saldo_msg');
+                        msgEl.textContent = `Saldo insuficiente. Saldo actual: ${saldoDisponible}, consumos solicitados: ${totalCubiertos}.`;
+                        errEl.classList.remove('d-none');
+                        document.getElementById('tiqueteraError').classList.add('d-none');
+                        return false;
+                    } else {
+                        document.getElementById('tiquetera_saldo_error').classList.add('d-none');
                     }
-                    const ok = confirm(`Confirma gastar un tiquete de: ${cliente}`);
-                    if (ok) form.submit();
                 }
             });
         }
@@ -1140,7 +1148,7 @@
             lista.innerHTML = '';
             vacio.style.display = 'block';
             btn.disabled = true;
-            contador.classList.add('d-none');
+            contadorBadge.classList.add('d-none');
 
             if (modalLista) modalLista.innerHTML = '';
             if (modalVacio) modalVacio.style.display = 'block';
@@ -1308,11 +1316,13 @@
         const input = document.getElementById('buscar_tiquetera_input');
         const opt = Array.from(select.options).find(o => o.value == item.id);
         if (opt) {
+            opt.dataset.saldo = item.saldo_consumos;
             select.value = item.id;
         } else {
             const newOpt = document.createElement('option');
             newOpt.value = item.id;
             newOpt.text = `${item.cliente_nombre} - ${item.saldo_consumos} consumos`;
+            newOpt.dataset.saldo = item.saldo_consumos;
             select.appendChild(newOpt);
             select.value = item.id;
         }
@@ -1320,6 +1330,7 @@
         input.value = `${item.cliente_nombre} — ${item.saldo_consumos} consumos`;
         document.getElementById('sugerencias_tiquetera').innerHTML = '';
         document.getElementById('tiqueteraError').classList.add('d-none');
+        document.getElementById('tiquetera_saldo_error').classList.add('d-none');
         input.blur();
 
         // Sincronizar modal
