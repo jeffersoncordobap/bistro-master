@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from decouple import config
 import dj_database_url
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -61,6 +62,8 @@ INSTALLED_APPS = [
     'apps.comandas',
     'apps.tiqueteras',
     'apps.domicilios',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -156,5 +159,14 @@ MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 # WhatsApp Web (sin API): asume Colombia por defecto si los teléfonos no traen indicativo
 PHONE_DEFAULT_COUNTRY_CODE = config('PHONE_DEFAULT_COUNTRY_CODE', default='57')
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
