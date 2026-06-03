@@ -338,6 +338,13 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
+                                <label class="field-label">Tiquetera</label>
+                                <div class="toggle-row">
+                                    {{ form.cubierto_por_tiquetera }}
+                                    <span class="toggle-text"><strong>Cubre tiquetera</strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <label class="field-label">Control stock</label>
                                 <div class="toggle-row">
                                     {{ form.control_stock }}
@@ -349,6 +356,8 @@
                                 {{ form.stock }}
                                 {% if form.stock.errors %}<div class="field-error"><i class="bi bi-exclamation-circle-fill"></i>{{ form.stock.errors|join:", " }}</div>{% endif %}
                             </div>
+                        </div>
+                        <div class="row g-2 align-items-end mt-2">
                             <div class="col-md-3">
                                 <label class="field-label">Máx. por pedido</label>
                                 {{ form.cantidad_maxima_por_pedido }}

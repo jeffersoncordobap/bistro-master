@@ -125,15 +125,53 @@
     }
 </style>
 
+<style>
+    .banner-cerrado {
+        background: linear-gradient(to right, #2c2c2c, #3a3a3a);
+        border-radius: 14px;
+        border: 2px solid rgba(255, 100, 100, 0.35);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        color: #ffcdd2;
+        font-size: 0.88rem;
+    }
+    .banner-cerrado i {
+        font-size: 1.5rem;
+        color: #ef9a9a;
+        flex-shrink: 0;
+    }
+    .banner-cerrado strong { color: #ff8a80; }
+</style>
+
 <div class="welcome-card">
     <div>
         <h3>Bienvenido, {{ request.user.username }} 👋</h3>
         <p>Registra los pedidos de las mesas desde aquí.</p>
     </div>
-    <a href="{% url 'registrar_comanda' %}" class="btn-nueva-comanda">
-        <i class="bi bi-plus-circle-fill"></i> Nueva comanda
-    </a>
+
+    {% if request.user.restaurante.estado == 'cerrado' %}
+        <span class="btn-nueva-comanda" style="opacity:0.45; cursor:not-allowed; pointer-events:none;">
+            <i class="bi bi-lock-fill"></i> Nueva comanda
+        </span>
+    {% else %}
+        <a href="{% url 'registrar_comanda' %}" class="btn-nueva-comanda">
+            <i class="bi bi-plus-circle-fill"></i> Nueva comanda
+        </a>
+    {% endif %}
 </div>
+
+{% if request.user.restaurante.estado == 'cerrado' %}
+<div class="banner-cerrado">
+    <i class="bi bi-moon-stars-fill"></i>
+    <div>
+        <strong>Restaurante cerrado</strong> — No puedes registrar comandas fuera del horario de atención.
+        Cuando el administrador abra el restaurante podrás volver a tomar pedidos.
+    </div>
+</div>
+{% endif %}
 
 <div class="info-card">
     <div class="info-card-header">

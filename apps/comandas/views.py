@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Q
 
 from apps.usuarios.decorators import rol_requerido
 from apps.usuarios.models import Usuario
@@ -31,6 +32,20 @@ from .models import (
 @login_required
 @rol_requerido([Usuario.Roles.MESERO])
 def registrar_comanda(request):
+
+    restaurante = request.user.restaurante
+
+    # ── Bloqueo por horario: no se permiten comandas con restaurante cerrado ──
+    if (
+        restaurante is not None
+        and restaurante.estado == restaurante.Estados.CERRADO
+    ):
+        messages.error(
+            request,
+            '🔒 El restaurante está cerrado. '
+            'No se pueden registrar comandas fuera del horario de atención.'
+        )
+        return redirect('mis_comandas')
 
     productos = Producto.objects.filter(
         restaurante=request.user.restaurante,
@@ -89,6 +104,16 @@ def registrar_comanda(request):
                 'comandas/registrar_comanda.html',
                 context
             )
+
+        # ── Segunda verificación: releer el estado desde la BD en el momento del envío ──
+        restaurante.refresh_from_db(fields=['estado'])
+        if restaurante.estado == restaurante.Estados.CERRADO:
+            messages.error(
+                request,
+                '🔒 El restaurante está cerrado. '
+                'No se pueden registrar comandas fuera del horario de atención.'
+            )
+            return redirect('mis_comandas')
 
         try:
 
@@ -401,9 +426,13 @@ def historial_pedidos(request):
 def api_panel_pedidos(request):
 
     ahora = timezone.now()
+    inicio_dia = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
 
     comandas = Comanda.objects.filter(
         restaurante=request.user.restaurante
+    ).filter(
+        Q(estado=Comanda.Estados.ENTREGADO, fecha_creacion__gte=inicio_dia) |
+        ~Q(estado=Comanda.Estados.ENTREGADO)
     ).prefetch_related(
         'items__producto'
     ).select_related(

@@ -200,14 +200,25 @@ def panel_domiciliario(request):
 @rol_requerido([Usuario.Roles.ADMIN])
 def lista_usuarios(request):
 
-    usuarios = Usuario.objects.filter(
+    mostrar_inactivos = request.GET.get('inactivos') == '1'
+
+    base_qs = Usuario.objects.filter(
         restaurante=request.user.restaurante
     ).exclude(
         id=request.user.id
     )
 
+    total_inactivos = base_qs.filter(is_active=False).count()
+
+    if mostrar_inactivos:
+        usuarios = base_qs.filter(is_active=False)
+    else:
+        usuarios = base_qs.filter(is_active=True)
+
     context = {
-        'usuarios': usuarios
+        'usuarios': usuarios,
+        'mostrar_inactivos': mostrar_inactivos,
+        'total_inactivos': total_inactivos,
     }
 
     return render(

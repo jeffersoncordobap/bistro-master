@@ -7,28 +7,69 @@
 
 <style>
 
-    .page-header{
+    .section-header{
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
         display:flex;
         justify-content:space-between;
         align-items:center;
         gap:1rem;
-        margin-bottom:1.5rem;
         flex-wrap:wrap;
     }
 
-    .btn-crear{
-        background:linear-gradient(to right, #c0392b, #e74c3c);
+    .section-title{
+        display:flex;
+        align-items:center;
+        gap:1rem;
+    }
+
+    .section-icon{
+        width:46px;
+        height:46px;
+        border-radius:12px;
+        background: rgba(255,255,255,0.15);
+        display:flex;
+        align-items:center;
+        justify-content:center;
         color:#fff;
+        font-size:1.3rem;
+        flex-shrink:0;
+    }
+
+    .section-header h4{
+        color:#fff;
+        margin:0;
+        font-weight:700;
+        font-size:1.1rem;
+    }
+
+    .section-header p{
+        color:rgba(255,255,255,0.8);
+        margin:0;
+        font-size:0.85rem;
+    }
+
+    .btn-crear{
         border:none;
+        background:#fff;
+        color:#c0392b;
+        padding:0.75rem 1rem;
         border-radius:10px;
-        padding:0.8rem 1rem;
         font-weight:700;
         text-decoration:none;
+        transition:0.2s;
+        display:inline-flex;
+        align-items:center;
+        gap:0.4rem;
+        white-space:nowrap;
     }
 
     .btn-crear:hover{
-        opacity:0.95;
-        color:#fff;
+        background:#f8f9fa;
+        transform:translateY(-1px);
+        color:#c0392b;
     }
 
     .table-card{
@@ -107,25 +148,24 @@
 
 </style>
 
-<div class="page-header">
+<div class="section-header">
 
-    <div>
+    <div class="section-title">
 
-        <h4 class="fw-bold mb-1">
-            Planes de Tiquetera
-        </h4>
+        <div class="section-icon">
+            <i class="bi bi-card-checklist"></i>
+        </div>
 
-        <p class="text-muted mb-0 small">
-            Administra los planes disponibles del restaurante
-        </p>
+        <div>
+            <h4>Planes de Tiquetera</h4>
+            <p>Administra los planes disponibles del restaurante</p>
+        </div>
 
     </div>
 
     <a href="{% url 'crear_plan' %}" class="btn-crear">
-
-        <i class="bi bi-plus-circle me-1"></i>
+        <i class="bi bi-plus-circle"></i>
         Nuevo plan
-
     </a>
 
 </div>

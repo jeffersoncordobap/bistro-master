@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_mesero.html' %}
+{% load l10n %}
 {% block title %}Registrar Comanda{% endblock %}
 {% block page_title %}Registrar Comanda{% endblock %}
 {% block content %}
@@ -150,14 +151,43 @@
         font-size: .85rem; padding: 1.5rem 0;
     }
     .resumen-vacio i { font-size: 2rem; display: block; margin-bottom: .5rem; }
+    .resumen-section-header {
+        font-weight: 700; font-size: .82rem;
+        padding: .4rem 0; display: flex; align-items: center;
+        border-bottom: 1px solid #dee2e6; margin-bottom: .2rem;
+    }
+    .resumen-tiquetera-section {
+        padding: .5rem .6rem;
+        background: #f0fdf4;
+        border-radius: 8px;
+        border: 1px solid #bbf7d0;
+        margin-top: .5rem;
+    }
+    .resumen-extra-section {
+        padding: .5rem .6rem;
+        background: #fef2f2;
+        border-radius: 8px;
+        border: 1px solid #fecaca;
+    }
+    .resumen-item-precio {
+        font-weight: 700; color: #e74c3c;
+        font-size: .85rem; white-space: nowrap;
+    }
+    .resumen-total {
+        font-weight: 800; font-size: .95rem;
+        padding-top: .6rem; margin-top: .2rem;
+        border-top: 2px solid #e74c3c;
+        color: #e74c3c;
+        display: flex; justify-content: space-between; align-items: center;
+    }
     .resumen-item {
-        display: flex; justify-content: space-between; align-items: flex-start;
+        display: flex; align-items: center;
         flex-wrap: wrap;
         padding: .6rem 0; border-bottom: 1px solid #f8f9fa;
         font-size: .85rem; gap: .5rem;
     }
     .resumen-item:last-child { border-bottom: none; }
-    .resumen-item-nombre { font-weight: 600; color: #212529; flex: 1; }
+    .resumen-item-nombre { font-weight: 600; color: #212529; }
     .resumen-item-nota {
         flex: 0 0 100%;
         margin-top: .25rem;
@@ -175,6 +205,7 @@
         background: rgba(231,76,60,.08);
         padding: .2rem .5rem;
         border-radius: 20px;
+        margin-left: auto;
     }
     .resumen-cant-btn {
         background: #e74c3c;
@@ -587,9 +618,13 @@
                                         <p class="producto-desc">{{ producto.descripcion }}</p>
                                         {% endif %}
 
-                                        
-
                                         <p class="producto-precio">${{ producto.precio }}</p>
+
+                                        {% if producto.cubierto_por_tiquetera %}
+                                        <span class="producto-stock" style="color:var(--success);font-weight:600;">
+                                            Cubierto por tiquetera
+                                        </span>
+                                        {% endif %}
 
                                         <div class="producto-controles">
                                             <div class="mb-2">
@@ -686,12 +721,15 @@
                             Cliente con tiquetera
                         </label>
 
-                        <div class="mb-2">
+                        <div id="tiqueteraSearchArea" class="position-relative">
                             <input type="search" id="buscar_tiquetera_input" class="form-control" placeholder="Buscar por ID o nombre de cliente">
-                            <div id="sugerencias_tiquetera" class="list-group mt-1" style="position:relative; z-index:1000;"></div>
+                            <div id="sugerencias_tiquetera" class="list-group mt-1" style="position:absolute; z-index:1000; width:100%;"></div>
+                        </div>
+                        <div id="tiqueteraError" class="d-none" style="color:#e74c3c;font-size:.78rem;margin-top:.3rem;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>Selecciona un cliente de tiquetera
                         </div>
 
-                        <select name="tiquetera" id="tiquetera_id" class="form-control mesa-input">
+                        <select name="tiquetera" id="tiquetera_id" class="d-none">
 
                             <option value="">
                                 Selecciona una tiquetera
@@ -709,8 +747,6 @@
                             {% endfor %}
 
                         </select>
-
-                        <div class="small text-muted mt-1" id="selected_tiquetera"></div>
 
                     </div>
 
@@ -773,7 +809,6 @@
     const input = document.getElementById('buscar_tiquetera_input');
     const sugerencias = document.getElementById('sugerencias_tiquetera');
     const select = document.getElementById('tiquetera_id');
-    const selectedInfo = document.getElementById('selected_tiquetera');
 
     if (!input) return;
 
@@ -799,20 +834,7 @@
                         el.className = 'list-group-item list-group-item-action';
                         el.textContent = `${item.cliente_nombre} — ${item.saldo_consumos} consumos (ID ${item.id})`;
                         el.addEventListener('click', ()=>{
-                            // seleccionar en el select
-                            const opt = Array.from(select.options).find(o=>o.value==item.id);
-                            if(opt){
-                                select.value = item.id;
-                            } else {
-                                // si no existe en select, añadirlo
-                                const newOpt = document.createElement('option');
-                                newOpt.value = item.id;
-                                newOpt.text = `${item.cliente_nombre} - ${item.saldo_consumos} consumos`;
-                                select.appendChild(newOpt);
-                                select.value = item.id;
-                            }
-                            selectedInfo.textContent = `Seleccionado: ${item.cliente_nombre} — ${item.saldo_consumos} consumos`;
-                            sugerencias.innerHTML = '';
+                            seleccionarClienteTiquetera(item);
                         });
                         sugerencias.appendChild(el);
                     });
@@ -922,6 +944,16 @@
         {{ producto.id }}: "{{ producto.nombre }}",
         {% endfor %}
     };
+    const precios = {
+        {% for producto in productos %}
+        {{ producto.id }}: {{ producto.precio|unlocalize }},
+        {% endfor %}
+    };
+    const cubiertoTiquetera = {
+        {% for producto in productos %}
+        {{ producto.id }}: {% if producto.cubierto_por_tiquetera %}true{% else %}false{% endif %},
+        {% endfor %}
+    };
 
     // Sincronizar inputs de número de mesa
     document.addEventListener('DOMContentLoaded', function() {
@@ -964,7 +996,13 @@
 
                     tiqueteraSelect.value = '';
                     tiqueteraSelectModal.value = '';
+                    // Reset input de búsqueda
+                    const inp = document.getElementById('buscar_tiquetera_input');
+                    inp.value = '';
+                    document.getElementById('sugerencias_tiquetera').innerHTML = '';
+                    document.getElementById('tiqueteraError').classList.add('d-none');
                 }
+                actualizarResumen();
             });
 
             tipoConsumoModal.addEventListener('change', function() {
@@ -983,16 +1021,30 @@
 
                     tiqueteraSelect.value = '';
                     tiqueteraSelectModal.value = '';
+                    // Reset input de búsqueda
+                    const inp = document.getElementById('buscar_tiquetera_input');
+                    inp.value = '';
+                    document.getElementById('sugerencias_tiquetera').innerHTML = '';
+                    document.getElementById('tiqueteraError').classList.add('d-none');
                 }
+                actualizarResumen();
             });
 
             // Sincronizar tiquetera
             tiqueteraSelect.addEventListener('change', function() {
                 tiqueteraSelectModal.value = this.value;
+                if (this.value) {
+                    const input = document.getElementById('buscar_tiquetera_input');
+                    const opt = this.options[this.selectedIndex];
+                    input.value = opt.text;
+                    document.getElementById('sugerencias_tiquetera').innerHTML = '';
+                }
+                actualizarResumen();
             });
 
             tiqueteraSelectModal.addEventListener('change', function() {
                 tiqueteraSelect.value = this.value;
+                tiqueteraSelect.dispatchEvent(new Event('change'));
             });
         }
 
@@ -1009,6 +1061,43 @@
                         mesaModalInput.focus();
                     }
                     return false;
+                }
+
+                // Validar tiquetera
+                const tipoEl = document.getElementById('tipo_consumo') || document.getElementById('tipo_consumo_modal');
+                const tipo = tipoEl ? tipoEl.value : 'normal';
+                if (tipo === 'tiquetera') {
+                    const sel = document.getElementById('tiquetera_id') || document.getElementById('tiquetera_id_modal');
+                    const tiq = sel ? sel.value : '';
+                    if (!tiq) {
+                        e.preventDefault();
+                        document.getElementById('tiqueteraError').classList.remove('d-none');
+                        const input = document.getElementById('buscar_tiquetera_input');
+                        if (input) input.focus();
+                        return false;
+                    }
+
+                    // Confirmar gasto de tiquete
+                    e.preventDefault();
+                    const cliente = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+                    const modalEl = document.getElementById('confirmTiqueteModal');
+                    const modalCliente = document.getElementById('confirmTiqueteCliente');
+                    const confirmarBtn = document.getElementById('confirmTiqueteBtn');
+
+                    if (modalEl && modalCliente && confirmarBtn && window.bootstrap){
+                        modalCliente.textContent = cliente;
+                        const bsModal = new bootstrap.Modal(modalEl);
+                        const handler = function(){
+                            confirmarBtn.removeEventListener('click', handler);
+                            bsModal.hide();
+                            form.submit();
+                        };
+                        confirmarBtn.addEventListener('click', handler);
+                        bsModal.show();
+                        return;
+                    }
+                    const ok = confirm(`Confirma gastar un tiquete de: ${cliente}`);
+                    if (ok) form.submit();
                 }
             });
         }
@@ -1032,8 +1121,6 @@
         const lista  = document.getElementById('resumenLista');
         const vacio  = document.getElementById('resumenVacio');
         const btn    = document.getElementById('btnEnviar');
-        const contador = document.getElementById('contadorBadge');
-        const mesa   = document.getElementById('numero_mesa').value;
 
         // Elementos del modal
         const modalLista = document.getElementById('modalResumenLista');
@@ -1041,50 +1128,165 @@
         const modalBtn = document.getElementById('modalBtnEnviar');
         const fabBadge = document.getElementById('fabBadge');
 
+        // Determinar tipo de consumo
+        const tipoEl = document.getElementById('tipo_consumo');
+        const tipoConsumo = tipoEl ? tipoEl.value : 'normal';
+
+        // Obtener tiquetera seleccionada
+        const tiqueteraSelect = document.getElementById('tiquetera_id');
+        const tiqueteraId = tiqueteraSelect ? tiqueteraSelect.value : '';
+
         if (checks.length === 0) {
             lista.innerHTML = '';
             vacio.style.display = 'block';
             btn.disabled = true;
             contador.classList.add('d-none');
 
-            // Modal
-            modalLista.innerHTML = '';
-            modalVacio.style.display = 'block';
-            modalBtn.disabled = true;
+            if (modalLista) modalLista.innerHTML = '';
+            if (modalVacio) modalVacio.style.display = 'block';
+            if (modalBtn) modalBtn.disabled = true;
             fabBadge.textContent = '0';
-        } else {
-            vacio.style.display = 'none';
-            btn.disabled = false;
-            contador.classList.remove('d-none');
-            contador.textContent = checks.length;
-
-            // Modal
-            modalVacio.style.display = 'none';
-            modalBtn.disabled = false;
-            fabBadge.textContent = checks.length;
-
-            let html = '';
-            checks.forEach(chk => {
-                const pid = chk.value;
-                const cantInput = document.querySelector(`input[name="cantidad_${pid}"]`);
-                const notaInput = document.querySelector(`input[name="nota_${pid}"]`);
-                const cant = cantInput ? parseInt(cantInput.value) : 1;
-                const max = cantInput ? parseInt(cantInput.max) : 20;
-                const nota = notaInput ? notaInput.value.trim() : '';
-                html += `
-                    <div class="resumen-item">
-                        <span class="resumen-item-nombre">${nombres[pid]}</span>
-                        <div class="resumen-item-cant-control">
-                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${pid}, -1)">−</button>
-                            <span class="resumen-cant-value" id="resumenCant_${pid}">${cant}</span>
-                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${pid}, 1)">+</button>
-                        </div>
-                        ${nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${nota}</div>` : ''}
-                    </div>`;
-            });
-            lista.innerHTML = html;
-            modalLista.innerHTML = html;
+            return;
         }
+
+        vacio.style.display = 'none';
+        btn.disabled = false;
+
+        if (modalVacio) modalVacio.style.display = 'none';
+        if (modalBtn) modalBtn.disabled = false;
+        fabBadge.textContent = checks.length;
+
+        // Recolectar items con sus datos
+        const items = [];
+        checks.forEach(chk => {
+            const pid = chk.value;
+            const cantInput = document.querySelector(`input[name="cantidad_${pid}"]`);
+            const notaInput = document.querySelector(`input[name="nota_${pid}"]`);
+            const cant = cantInput ? parseInt(cantInput.value) : 1;
+            const nota = notaInput ? notaInput.value.trim() : '';
+            items.push({
+                pid,
+                nombre: nombres[pid] || 'Producto',
+                precio: precios[pid] || 0,
+                cubierto: cubiertoTiquetera[pid] || false,
+                cant,
+                nota,
+                max: cantInput ? parseInt(cantInput.max) : 20
+            });
+        });
+
+        let html = '';
+
+        if (tipoConsumo === 'tiquetera') {
+            // === MODO TIQUETERA ===
+            if (!tiqueteraId) {
+                // Sin cliente seleccionado: mostrar items normalmente
+                items.forEach(item => {
+                    const subtotal = item.precio * item.cant;
+                    html += `<div class="resumen-item">
+                        <span class="resumen-item-nombre">${item.nombre}</span>
+                        <span class="resumen-item-precio">$${subtotal.toFixed(0)}</span>
+                        <div class="resumen-item-cant-control">
+                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, -1)">−</button>
+                            <span class="resumen-cant-value" id="resumenCant_${item.pid}">${item.cant}</span>
+                            <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, 1)">+</button>
+                        </div>
+                        ${item.nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${item.nota}</div>` : ''}
+                    </div>`;
+                });
+            } else {
+                // Hay cliente seleccionado: categorizar
+                const cubiertos = items.filter(i => i.cubierto);
+                const extras = items.filter(i => !i.cubierto);
+
+                if (cubiertos.length > 0) {
+                    const soloTiquetera = extras.length === 0;
+                    if (!soloTiquetera) {
+                        // Mixto: mostrar header verde
+                        html += '<div class="resumen-tiquetera-section"><div class="resumen-section-header" style="color:var(--success);">Cubierto por tiquetera</div>';
+                    }
+                    if (soloTiquetera) {
+                        // Solo tiquetera: mostrar items con control de cantidad
+                        cubiertos.forEach(item => {
+                            html += `<div class="resumen-item">
+                                <span class="resumen-item-nombre">${item.nombre}</span>
+                                <div class="resumen-item-cant-control">
+                                    <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, -1)">−</button>
+                                    <span class="resumen-cant-value" id="resumenCant_${item.pid}">${item.cant}</span>
+                                    <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, 1)">+</button>
+                                </div>
+                                ${item.nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${item.nota}</div>` : ''}
+                            </div>`;
+                        });
+                        const totalTqs = cubiertos.reduce((s, i) => s + i.cant, 0);
+                        const txtTq = totalTqs === 1 ? 'Gasta 1 tiquete' : `Gasta ${totalTqs} tiquetes`;
+                        html += `<div class="fw-bold" style="color:var(--success);font-size:.85rem;padding:.3rem 0;">${txtTq}</div>`;
+                    } else {
+                        // Mixto: mostrar items con control de cantidad
+                        cubiertos.forEach(item => {
+                            html += `<div class="resumen-item" style="border-left:3px solid var(--success);">
+                                <span class="resumen-item-nombre">${item.nombre}</span>
+                                <div class="resumen-item-cant-control">
+                                    <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, -1)">−</button>
+                                    <span class="resumen-cant-value" id="resumenCant_${item.pid}">${item.cant}</span>
+                                    <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, 1)">+</button>
+                                </div>
+                                ${item.nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${item.nota}</div>` : ''}
+                            </div>`;
+                        });
+                        html += '</div>';
+                    }
+                }
+
+                if (extras.length > 0) {
+                    // Sección roja: extras (a pagar)
+                    html += '<div class="resumen-extra-section mt-2"><div class="resumen-section-header" style="color:var(--danger);">Pago adicional</div>';
+                    let totalExtra = 0;
+                    extras.forEach(item => {
+                        const subtotal = item.precio * item.cant;
+                        totalExtra += subtotal;
+                        html += `<div class="resumen-item" style="border-left:3px solid var(--danger);">
+                            <span class="resumen-item-nombre">${item.nombre}</span>
+                            <span class="resumen-item-precio">$${subtotal.toFixed(0)}</span>
+                            <div class="resumen-item-cant-control">
+                                <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, -1)">−</button>
+                                <span class="resumen-cant-value" id="resumenCant_${item.pid}">${item.cant}</span>
+                                <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, 1)">+</button>
+                            </div>
+                            ${item.nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${item.nota}</div>` : ''}
+                        </div>`;
+                    });
+                    html += `<div class="resumen-total" style="color:#e74c3c;border-color:#e74c3c;"><span>TOTAL A PAGAR</span><span>$${totalExtra.toFixed(0)}</span></div>`;
+                    html += '</div>';
+                }
+
+                // Si no hay ni cubiertos ni extras (no debería pasar)
+                if (cubiertos.length === 0 && extras.length === 0) {
+                    html = '<div class="text-muted text-center py-2">Sin productos seleccionados</div>';
+                }
+            }
+        } else {
+            // === MODO NORMAL ===
+            let total = 0;
+            items.forEach(item => {
+                const subtotal = item.precio * item.cant;
+                total += subtotal;
+                html += `<div class="resumen-item">
+                    <span class="resumen-item-nombre">${item.nombre}</span>
+                    <span class="resumen-item-precio">$${subtotal.toFixed(0)}</span>
+                    <div class="resumen-item-cant-control">
+                        <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, -1)">−</button>
+                        <span class="resumen-cant-value" id="resumenCant_${item.pid}">${item.cant}</span>
+                        <button type="button" class="resumen-cant-btn" onclick="cambiarCantidad(${item.pid}, 1)">+</button>
+                    </div>
+                    ${item.nota ? `<div class="resumen-item-nota"><i class="bi bi-chat-left-text me-1"></i>${item.nota}</div>` : ''}
+                </div>`;
+            });
+            html += `<div class="resumen-total"><span>TOTAL A PAGAR</span><span>$${total.toFixed(0)}</span></div>`;
+        }
+
+        lista.innerHTML = html;
+        if (modalLista) modalLista.innerHTML = html;
     }
 
     function cambiarCantidad(pid, delta) {
@@ -1099,6 +1301,32 @@
             cantInput.value = cant;
             actualizarResumen();
         }
+    }
+
+    function seleccionarClienteTiquetera(item) {
+        const select = document.getElementById('tiquetera_id');
+        const input = document.getElementById('buscar_tiquetera_input');
+        const opt = Array.from(select.options).find(o => o.value == item.id);
+        if (opt) {
+            select.value = item.id;
+        } else {
+            const newOpt = document.createElement('option');
+            newOpt.value = item.id;
+            newOpt.text = `${item.cliente_nombre} - ${item.saldo_consumos} consumos`;
+            select.appendChild(newOpt);
+            select.value = item.id;
+        }
+
+        input.value = `${item.cliente_nombre} — ${item.saldo_consumos} consumos`;
+        document.getElementById('sugerencias_tiquetera').innerHTML = '';
+        document.getElementById('tiqueteraError').classList.add('d-none');
+        input.blur();
+
+        // Sincronizar modal
+        const selectModal = document.getElementById('tiquetera_id_modal');
+        if (selectModal) selectModal.value = item.id;
+
+        actualizarResumen();
     }
 
     document.getElementById('numero_mesa').addEventListener('input', actualizarResumen);
@@ -1201,50 +1429,3 @@
 </script>
 
 {% endblock %}
-
-<script>
-// Global submit handler: confirm tiquetera consumption and allow submit
-document.addEventListener('DOMContentLoaded', function(){
-    const form = document.getElementById('formComanda');
-    if (!form) return;
-
-    form.addEventListener('submit', function(e){
-        const tipoEl = document.getElementById('tipo_consumo') || document.getElementById('tipo_consumo_modal');
-        const tipo = tipoEl ? tipoEl.value : 'normal';
-        if (tipo !== 'tiquetera') return; // allow normal submits
-
-        // determine selected tiquetera from either select
-        const sel = document.getElementById('tiquetera_id') || document.getElementById('tiquetera_id_modal');
-        const tiq = sel ? sel.value : '';
-        if (!tiq){
-            e.preventDefault();
-            alert('Debes seleccionar una tiquetera antes de confirmar el consumo.');
-            return;
-        }
-
-        // show bootstrap modal if available, otherwise native confirm
-        const cliente = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
-        const modalEl = document.getElementById('confirmTiqueteModal');
-        const modalCliente = document.getElementById('confirmTiqueteCliente');
-        const confirmarBtn = document.getElementById('confirmTiqueteBtn');
-
-        e.preventDefault();
-
-        if (modalEl && modalCliente && confirmarBtn && window.bootstrap){
-            modalCliente.textContent = cliente;
-            const bsModal = new bootstrap.Modal(modalEl);
-            const handler = function(){
-                confirmarBtn.removeEventListener('click', handler);
-                bsModal.hide();
-                form.submit();
-            };
-            confirmarBtn.addEventListener('click', handler);
-            bsModal.show();
-            return;
-        }
-
-        const ok = confirm(`Confirma gastar un tiquete de: ${cliente}`);
-        if (ok) form.submit();
-    });
-});
-</script>

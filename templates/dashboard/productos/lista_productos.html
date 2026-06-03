@@ -619,6 +619,11 @@
                                     </span>
                                 {% endif %}
                             {% endif %}
+                            {% if producto.cubierto_por_tiquetera %}
+                                <span class="meta-chip" style="border-color:var(--success);color:var(--success);">
+                                    <i class="bi bi-ticket-perforated-fill"></i> Cubierto por tiquetera
+                                </span>
+                            {% endif %}
                             {% if producto.cantidad_maxima_por_pedido %}
                                 <span class="meta-chip">
                                     <i class="bi bi-bag-check"></i> Máx. {{ producto.cantidad_maxima_por_pedido }}/pedido
