@@ -56,14 +56,18 @@
         padding: 0.1rem 0.55rem; font-size:0.72rem; font-weight:700;
     }
 
-    .col-pendiente   .kanban-col-header { border-bottom-color:#ffa500; color:#e65100; }
-    .col-pendiente   .col-dot           { background:#ffa500; }
-    .col-preparacion .kanban-col-header { border-bottom-color:#2196f3; color:#1565c0; }
-    .col-preparacion .col-dot           { background:#2196f3; }
-    .col-listo       .kanban-col-header { border-bottom-color:#4caf50; color:#2e7d32; }
-    .col-listo       .col-dot           { background:#4caf50; }
-    .col-entregado   .kanban-col-header { border-bottom-color:#757575; color:#424242; }
-    .col-entregado   .col-dot           { background:#757575; }
+    .col-pendiente   .kanban-col-header { background: linear-gradient(to right, #ffa500, #ffb74d); border-bottom-color:#ffa500; color:#fff; }
+    .col-pendiente   .col-dot           { background:rgba(255,255,255,0.7); }
+    .col-pendiente   .col-count         { background:rgba(255,255,255,0.25); color:#fff; }
+    .col-preparacion .kanban-col-header { background: linear-gradient(to right, #2196f3, #42a5f5); border-bottom-color:#2196f3; color:#fff; }
+    .col-preparacion .col-dot           { background:rgba(255,255,255,0.7); }
+    .col-preparacion .col-count         { background:rgba(255,255,255,0.25); color:#fff; }
+    .col-listo       .kanban-col-header { background: linear-gradient(to right, #4caf50, #66bb6a); border-bottom-color:#4caf50; color:#fff; }
+    .col-listo       .col-dot           { background:rgba(255,255,255,0.7); }
+    .col-listo       .col-count         { background:rgba(255,255,255,0.25); color:#fff; }
+    .col-entregado   .kanban-col-header { background: linear-gradient(to right, #757575, #9e9e9e); border-bottom-color:#757575; color:#fff; }
+    .col-entregado   .col-dot           { background:rgba(255,255,255,0.7); }
+    .col-entregado   .col-count         { background:rgba(255,255,255,0.25); color:#fff; }
 
     .kanban-cards {
         padding: 0.75rem;
@@ -402,11 +406,13 @@ const BTN_CLS = { en_preparacion:'btn-next-preparacion', listo:'btn-next-listo',
 let timerData = {};
 
 function fmt(seg) {
+    if (seg < 0) seg = Math.abs(seg);
     if (seg < 60)   return `${seg}s`;
     if (seg < 3600) return `${Math.floor(seg/60)}m ${String(seg%60).padStart(2,'0')}s`;
     return `${Math.floor(seg/3600)}h ${Math.floor((seg%3600)/60)}m`;
 }
 function timerCls(seg, estado) {
+    seg = Math.abs(seg);
     if (estado === 'entregado') return '';
     if (seg > 1800) return 'alert';
     if (seg > 600)  return 'warn';
@@ -532,8 +538,10 @@ function renderBoard(comandas) {
         const cnt  = document.getElementById(`cnt-${estado}`);
         const list = grupos[estado] || [];
 
-        // Evitar columna inmensa: en "Entregado" solo mostrar los últimos 5
-        const shown = (estado === 'entregado') ? list.slice(0, 5) : list;
+        // Mostrar los 5 entregados más recientes primero
+        const shown = (estado === 'entregado')
+            ? list.slice().sort((a, b) => b.created_ts - a.created_ts).slice(0, 5)
+            : list;
 
         cnt.textContent = shown.length;
         col.innerHTML   = shown.length

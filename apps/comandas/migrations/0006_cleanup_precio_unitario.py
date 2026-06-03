@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql='ALTER TABLE comandas_itemcomanda DROP COLUMN precio_unitario',
-            reverse_sql='ALTER TABLE comandas_itemcomanda ADD COLUMN precio_unitario numeric(10,2)'
+        migrations.SeparateDatabaseAndState(
+            state_operations=[],
+            database_operations=[],
         ),
     ]

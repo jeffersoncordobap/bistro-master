@@ -556,9 +556,6 @@
             <a href="{% url 'lista_usuarios' %}?inactivos=1" class="btn-inactivos">
                 <i class="bi bi-person-slash"></i>
                 <span class="btn-text">Inactivos</span>
-                {% if total_inactivos > 0 %}
-                    <span class="badge-count">{{ total_inactivos }}</span>
-                {% endif %}
             </a>
         {% endif %}
 
